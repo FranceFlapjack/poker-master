@@ -92,6 +92,16 @@ let mixed = createHand({
 mixed = act(mixed, 'fold'); mixed = act(mixed, 'fold'); mixed = act(mixed, 'raise', 8000)
 show('Folded seats dimmed, one player all in', 'Two folded seats must dim; the all-in seat must read ALL IN rather than a stack of zero.', mixed, { hero: 0 })
 
+// 5 — seat portraits: supplied images against the built-in figure
+let portraits = createHand({
+  seats: stacks(6, 8000, ['Hero', 'Ana', 'Bo', 'Cy', 'Dee', 'Eli']),
+  button: 0, blinds: { sb: 100, bb: 200 }, seed: 8,
+})
+show('Seat portraits', 'Seats 0 and 3 take a supplied image; the rest fall back to the built-in figure, each in its own tint. A table must never depend on an image file existing.', portraits, {
+  hero: 0,
+  avatars: { 0: 'content/images/avatars/example-figure.svg', 3: 'content/images/avatars/example-figure.svg' },
+})
+
 console.log('dev-table: rendered', out.querySelectorAll('svg.pk-table').length, 'tables')
 </script>
 </body>

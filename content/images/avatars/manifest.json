@@ -1,0 +1,28 @@
+{
+  "note": "Every image file in this folder needs a row here. See README.md — copyright stays with whoever made the artwork, and this file is where that is recorded.",
+  "licences": {
+    "shigureni": {
+      "name": "shigureni free illust",
+      "site": "https://shigureni.com",
+      "terms": "https://shigureni.com/terms",
+      "termsRead": "2026-09-24",
+      "holder": "shigureni",
+      "summary": "Free for use in apps and websites. Resizing, cropping, recolouring and flipping are permitted. Redrawing or tracing a derivative illustration is not, nor is any generative-AI use. Up to 5 illustrations free per production for commercial use; ¥1,000 each thereafter.",
+      "attributionRequired": false
+    },
+    "own-work": {
+      "name": "Drawn for this project",
+      "holder": "Poker Master",
+      "summary": "Original artwork made for this repo; no outside terms apply."
+    }
+  },
+  "images": [
+    {
+      "file": "example-figure.svg",
+      "title": "Built-in placeholder figure",
+      "licence": "own-work",
+      "source": null,
+      "note": "Proves the avatars option end to end without using anyone else's artwork. Safe to delete once real portraits are in."
+    }
+  ]
+}

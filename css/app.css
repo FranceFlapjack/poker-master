@@ -389,11 +389,24 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .plate { fill: var(--tb-seat); stroke: var(--line-2); stroke-width: 1; }
 .pk-table .hero .plate { fill: var(--tb-seat-hero); stroke: var(--accent); }
 .pk-table .to-act .plate { stroke: var(--accent); stroke-width: 2.5; }
-.pk-table .seat-name { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; fill: var(--ink); }
-.pk-table .seat-stack { font-size: 11px; letter-spacing: 0.04em; fill: var(--ink-2); }
+.pk-table .seat-name { text-anchor: start; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; fill: var(--ink); }
+.pk-table .seat-stack { text-anchor: start; font-size: 11px; letter-spacing: 0.04em; fill: var(--ink-2); }
 .pk-table .allin .seat-stack { fill: var(--bad); font-weight: 600; }
 .pk-table .folded { opacity: 0.38; }
-.pk-table .blind-tag { font-size: 9px; font-weight: 600; letter-spacing: var(--track); fill: #fff; opacity: 0.7; }
+.pk-table .blind-tag { font-size: 9px; font-weight: 600; letter-spacing: var(--track); fill: var(--ink-3); }
+
+.pk-table .portrait .av-disc { fill: var(--av-disc); }
+.pk-table .portrait .av-ring { fill: none; stroke: var(--av-ring); stroke-width: 1; }
+.pk-table .portrait .av-figure { fill: var(--av-tint); }
+.pk-table .portrait.tint-0 { --av-tint: var(--av-0); }
+.pk-table .portrait.tint-1 { --av-tint: var(--av-1); }
+.pk-table .portrait.tint-2 { --av-tint: var(--av-2); }
+.pk-table .portrait.tint-3 { --av-tint: var(--av-3); }
+.pk-table .portrait.tint-4 { --av-tint: var(--av-4); }
+.pk-table .portrait.tint-5 { --av-tint: var(--av-5); }
+.pk-table .portrait.tint-6 { --av-tint: var(--av-6); }
+.pk-table .portrait.tint-7 { --av-tint: var(--av-7); }
+.pk-table .portrait.tint-8 { --av-tint: var(--av-8); }
 
 .pk-table .bet-pill { fill: rgba(0, 0, 0, 0.34); }
 .pk-table .bet-t { font-size: 11px; font-weight: 600; fill: #fff; }

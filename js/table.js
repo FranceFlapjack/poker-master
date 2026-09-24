@@ -15,8 +15,12 @@ const NS = 'http://www.w3.org/2000/svg'
 const W = 960, HGT = 600
 const CX = W / 2, CY = 286
 const FELT_RX = 330, FELT_RY = 176
-const SEAT_RX = 404, SEAT_RY = 236
+const SEAT_RX = 392, SEAT_RY = 236          // 392, not more: a 160-wide plate at the far seats must stay on canvas
 const CARD_W = 44, CARD_H = 62
+const PLATE_W = 160, PLATE_H = 48
+const AVATAR_R = 19
+
+let instances = 0   // clipPath ids must be unique when several tables share a page
 
 const el = (name, attrs = {}, children = []) => {
   const n = document.createElementNS(NS, name)
@@ -37,9 +41,13 @@ const round = n => String(Math.round(n * 10) / 10)
  * @param {(action:{type:string, amount?:number}) => void} [opts.onAction]
  * @param {boolean} [opts.reveal]      show every hole card (a finished hand, or a teaching spot)
  * @param {boolean} [opts.showBB]      label stacks in big blinds as well as chips
+ * @param {Record<number, string>} [opts.avatars]  seat → image url. Presentation only, deliberately not
+ *        part of the engine's seat record: `rules.js` should never carry anything a renderer invented.
+ *        Seats with no entry get the built-in figure, so a table never depends on an outside file.
  */
 export function mountTable(host, opts) {
-  let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, ...opts }
+  let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, avatars: {}, ...opts }
+  const uid = `t${++instances}`
   const root = document.createElement('div')
   root.className = 'table-wrap'
   host.append(root)
@@ -48,6 +56,8 @@ export function mountTable(host, opts) {
     root.innerHTML = ''
     const s = o.state
     const svg = el('svg', { class: 'pk-table', viewBox: `0 0 ${W} ${HGT}`, role: 'img', 'aria-label': describeTable(s, o) })
+    const defs = el('defs')
+    svg.append(defs)
 
     svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: FELT_RX, ry: FELT_RY }))
     svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: FELT_RX + 10, ry: FELT_RY + 10 }))
@@ -69,7 +79,7 @@ export function mountTable(host, opts) {
 
     const n = s.seats.length
     const sb = sbSeat(s), bb = bbSeat(s)
-    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb))
+    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb, defs))
 
     // The button sits just inside the felt, offset around the rim rather than straight in towards the
     // middle — directly in line it lands on top of that seat's hole cards.
@@ -81,7 +91,7 @@ export function mountTable(host, opts) {
     if (o.interactive && s.toAct != null) root.append(controls(s))
   }
 
-  function seat(s, k, n, sb, bb) {
+  function seat(s, k, n, sb, bb, defs) {
     const p = s.seats[k]
     const pos = seatPos(k, n, o.hero ?? 0, SEAT_RX, SEAT_RY)
     const isHero = k === o.hero
@@ -99,17 +109,18 @@ export function mountTable(host, opts) {
       g.append(card(p.hole[1], pos.x + 3, cy - CARD_H / 2, !shown))
     }
 
-    // name plate
-    const plateW = 132, plateH = 44
-    g.append(el('rect', { class: 'plate', x: pos.x - plateW / 2, y: pos.y - plateH / 2, width: plateW, height: plateH }))
-    g.append(text(p.name, { class: 'seat-name', x: pos.x, y: pos.y - 4, 'text-anchor': 'middle' }))
+    // name plate, with the portrait inset at its leading edge
+    const left = pos.x - PLATE_W / 2
+    g.append(el('rect', { class: 'plate', x: left, y: pos.y - PLATE_H / 2, width: PLATE_W, height: PLATE_H }))
+    g.append(portrait(left + 26, pos.y, k, o.avatars[k], p.name, defs, uid))
+    const textX = left + 52
+    g.append(text(p.name, { class: 'seat-name', x: textX, y: pos.y - 3 }))
     const bbCount = o.showBB && s.blinds.bb ? ` · ${round(p.stack / s.blinds.bb)}bb` : ''
-    g.append(text(p.stack > 0 ? chips(p.stack) + bbCount : 'ALL IN',
-      { class: 'seat-stack', x: pos.x, y: pos.y + 14, 'text-anchor': 'middle' }))
+    g.append(text(p.stack > 0 ? chips(p.stack) + bbCount : 'ALL IN', { class: 'seat-stack', x: textX, y: pos.y + 15 }))
 
     // blind marker
     const blind = k === sb ? 'SB' : k === bb ? 'BB' : null
-    if (blind) g.append(text(blind, { class: 'blind-tag', x: pos.x - plateW / 2 - 8, y: pos.y + 4, 'text-anchor': 'end' }))
+    if (blind) g.append(text(blind, { class: 'blind-tag', x: pos.x + PLATE_W / 2 - 6, y: pos.y - PLATE_H / 2 - 5, 'text-anchor': 'end' }))
 
     // Chips wagered, between the seat and the middle — far enough in to clear that seat's hole cards.
     if (p.committed > 0) {
@@ -206,6 +217,44 @@ function seatPos(k, n, hero, rx, ry, degOffset = 0) {
 }
 
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })
+
+/**
+ * The portrait inset in a seat plate. With a url it clips that image to a circle; without one it draws
+ * the built-in figure, so a table never depends on an outside file being present.
+ *
+ * Any artwork passed in here belongs to whoever made it. `content/images/avatars/manifest.json` is where
+ * each file's source and licence are recorded — see the README there before adding any.
+ */
+function portrait(cx, cy, k, url, name, defs, uid) {
+  const g = el('g', { class: `portrait tint-${k % 9}` })
+  g.append(el('circle', { class: 'av-disc', cx, cy, r: AVATAR_R }))
+  if (url) {
+    const id = `${uid}-av${k}`
+    defs.append(el('clipPath', { id }, el('circle', { cx, cy, r: AVATAR_R })))
+    const img = el('image', {
+      href: url, x: cx - AVATAR_R, y: cy - AVATAR_R, width: AVATAR_R * 2, height: AVATAR_R * 2,
+      preserveAspectRatio: 'xMidYMid slice', 'clip-path': `url(#${id})`,
+    })
+    const t = el('title'); t.textContent = name
+    img.append(t)
+    g.append(img)
+  } else {
+    g.append(builtInFigure(cx, cy))
+  }
+  g.append(el('circle', { class: 'av-ring', cx, cy, r: AVATAR_R }))
+  return g
+}
+
+/**
+ * Our own placeholder: a disc, a head and a pair of shoulders, deliberately faceless and geometric so it
+ * reads as a marker rather than a person, and sits inside the series' flat, square-cornered language.
+ */
+function builtInFigure(cx, cy) {
+  const g = el('g', { class: 'av-figure' })
+  g.append(el('circle', { cx, cy: cy - 4.5, r: 5.6 }))
+  g.append(el('path', { d: `M ${cx - 10} ${cy + 11} a 10 10 0 0 1 20 0 z` }))
+  return g
+}
 
 function card(c, x, y, faceDown) {
   const g = el('g', { class: 'card' + (faceDown ? ' back' : '') })

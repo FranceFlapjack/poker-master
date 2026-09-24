@@ -66,6 +66,20 @@
   --chip-1000: #b38b1a;
   --chip-edge: rgba(0, 0, 0, 0.35);
 
+  /* seat portraits: nine muted tints at roughly one value, so seats are told apart without any of
+     them shouting. The built-in figure uses these; a supplied image overrides them entirely. */
+  --av-0: #2b4a6f;
+  --av-1: #5e6b52;
+  --av-2: #7a5a4e;
+  --av-3: #4a4a6b;
+  --av-4: #6b5470;
+  --av-5: #3f6360;
+  --av-6: #7a6a3f;
+  --av-7: #6b4550;
+  --av-8: #4f5a66;
+  --av-disc: #e8e8e4;
+  --av-ring: rgba(0, 0, 0, 0.14);
+
   /* range grid (the 169-hand matrix): raise / call / fold, plus mixed frequencies */
   --rg-raise: #0f2d57;
   --rg-call: #7d94b5;
