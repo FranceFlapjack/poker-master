@@ -16,6 +16,8 @@ import { parseRange, serializeRange, cellName, nameToCell, cellCombos, rangeComb
 import { equityExact, equityMC, runoutCount } from '../js/engine/equity.js'
 import { createHand, legalActions, applyAction, buildPots, potTotal, sbSeat, bbSeat, effectiveStack } from '../js/engine/rules.js'
 import { newHand, recordFromState, validateHand } from '../js/engine/hand.js'
+import { potOdds, requiredEquity, evCall, outsEquity, ruleOf4And2, outsError, mdf, alpha,
+         evShove, breakEvenFoldEquity, impliedOddsNeeded, betSizing, inBB } from '../js/engine/ev.js'
 
 let fails = 0, passes = 0
 const ok = (cond, msg) => { if (!cond) { fails++; console.log('FAIL', msg) } else { passes++; if (VERBOSE) console.log('ok  ', msg) } }
@@ -442,6 +444,93 @@ section('hand record')
   const bad = recordFromState(g, { hero: 0 })
   bad.hole[1] = bad.hole[0].slice()
   ok(validateHand(bad).length > 0, 'a duplicated card is caught by validation')
+}
+
+// ------------------------------------------------------------------- ev
+section('ev')
+{
+  // pot odds and the equity that makes a call break even
+  near(requiredEquity(100, 200), 1 / 3, 1e-12, 'calling 100 into 200 needs a third of the pot')
+  near(potOdds(100, 200).ratio, 2, 1e-12, 'that is 2 to 1')
+  near(potOdds(100, 300).required, 0.25, 1e-12, 'calling 100 into 300 needs a quarter')
+  throws(() => potOdds(0, 100), 'pot odds on a zero call throws rather than dividing by zero')
+
+  // the definition has to agree with itself: EV is exactly zero at the required equity
+  for (const [toCall, pot] of [[100, 200], [50, 325], [1200, 1800], [7, 13]]) {
+    near(evCall({ equity: requiredEquity(toCall, pot), pot, toCall }), 0, 1e-9,
+      `EV of calling ${toCall} into ${pot} is zero at exactly the required equity`)
+  }
+  ok(evCall({ equity: 0.5, pot: 200, toCall: 100 }) > 0, 'a call above the required equity gains chips')
+  ok(evCall({ equity: 0.2, pot: 200, toCall: 100 }) < 0, 'a call below it loses chips')
+
+  // outs: check the closed form against brute enumeration of every runout, not against memory
+  for (const outs of [0, 1, 4, 8, 9, 15, 21]) {
+    let hits = 0, total = 0
+    for (let i = 0; i < 47; i++) for (let j = i + 1; j < 47; j++) { total++; if (i < outs || j < outs) hits++ }
+    near(outsEquity(outs, 2), hits / total, 1e-12, `${outs} outs over two cards matches an exhaustive count of all ${total} runouts`)
+  }
+  near(outsEquity(9, 1), 9 / 46, 1e-12, 'nine outs with one card to come is nine of the forty-six unseen')
+  eq(outsEquity(0, 2), 0, 'no outs is no chance')
+  ok(outsEquity(9, 2) > outsEquity(9, 1), 'two cards beat one')
+  throws(() => outsEquity(9, 3), 'there is no third card to come')
+  throws(() => outsEquity(-1), 'negative outs throws')
+
+  // the shortcut, and what it costs — the numbers the lesson quotes
+  near(ruleOf4And2(9, 2), 0.36, 1e-12, 'the rule says 36% on nine outs')
+  ok(Math.abs(outsError(9, 2)) < 1.5, 'and it is within a point and a half there')
+  ok(outsError(20, 2) > 10, 'but it flatters you badly on twenty outs')
+  ok(outsError(9, 1) < 0, 'the x2 half is pessimistic, never optimistic')
+  ok([1, 2, 4, 6, 8, 9, 12, 15, 20].every(o => outsError(o, 1) <= 0), 'x2 is pessimistic at every out count')
+
+  // MDF and alpha are complements, whatever the sizing
+  for (const [bet, pot] of [[100, 100], [50, 200], [300, 100], [1, 7]]) {
+    near(mdf(bet, pot) + alpha(bet, pot), 1, 1e-12, `MDF and alpha sum to one at ${bet} into ${pot}`)
+  }
+  near(mdf(100, 100), 0.5, 1e-12, 'a pot-sized bet must be defended half the time')
+  near(alpha(100, 100), 0.5, 1e-12, 'and a pot-sized bluff must work half the time')
+  near(mdf(50, 100), 2 / 3, 1e-12, 'a half-pot bet must be defended two thirds of the time')
+  ok(mdf(300, 100) < mdf(50, 100), 'the bigger the bet, the less you must defend')
+
+  // shoving
+  eq(evShove({ risk: 1000, pot: 500, foldEquity: 1, equityWhenCalled: 0 }), 500, 'a shove that always works wins the pot')
+  near(evShove({ risk: 1000, pot: 500, foldEquity: 0, equityWhenCalled: 0.5 }), 250, 1e-9,
+    'a shove that is always called wins half the final pot on average')
+  eq(breakEvenFoldEquity({ risk: 1000, pot: 500, equityWhenCalled: 0.6 }), 0,
+    'a shove that profits when called needs no fold equity at all')
+  // With dead money in the pot there is ALWAYS a fold frequency that breaks even, however bad the hand —
+  // which is why stealing works, and why "they might fold" is never on its own a reason to shove.
+  {
+    const hopeless = breakEvenFoldEquity({ risk: 10000, pot: 100, equityWhenCalled: 0 })
+    ok(hopeless > 0.98 && hopeless < 1, 'shoving 10,000 into 100 with no equity still breaks even at ~99% folds')
+    near(evShove({ risk: 10000, pot: 100, foldEquity: hopeless, equityWhenCalled: 0 }), 0, 1e-6,
+      'and at exactly that frequency it is break-even')
+  }
+  eq(breakEvenFoldEquity({ risk: 100, pot: 0, equityWhenCalled: 0 }), 1,
+    'with no dead money a bluff must work every time, which means it never does')
+  ok([0.05, 0.2, 0.45].every(e => {
+    const fe = breakEvenFoldEquity({ risk: 900, pot: 300, equityWhenCalled: e })
+    return fe >= 0 && fe < 1
+  }), 'a break-even fold frequency always exists below one when the pot has dead money')
+  {
+    const args = { risk: 1000, pot: 500, equityWhenCalled: 0.3 }
+    const fe = breakEvenFoldEquity(args)
+    ok(fe > 0 && fe < 1, 'a marginal shove needs some fold equity')
+    near(evShove({ ...args, foldEquity: fe }), 0, 1e-9, 'and at exactly that fold equity it breaks even')
+  }
+
+  // implied odds
+  eq(impliedOddsNeeded({ equity: 0.5, pot: 200, toCall: 100 }), 0, 'a call that is already good needs nothing later')
+  {
+    const need = impliedOddsNeeded({ equity: 0.2, pot: 200, toCall: 100 })
+    ok(need > 0, 'a call short of the price needs to win more later')
+    near(evCall({ equity: 0.2, pot: 200 + need, toCall: 100 }), 0, 1e-9, 'and that much extra makes it break even')
+  }
+
+  // sizing, and stack depth
+  const sz = betSizing(100, 100)
+  near(sz.fraction, 1, 1e-12, 'a pot-sized bet is one pot')
+  near(sz.callerRequires, 1 / 3, 1e-12, 'which lays the caller 2 to 1')
+  near(inBB(25000, 200), 125, 1e-12, 'a 25,000 stack at 200 is 125 big blinds')
 }
 
 // ---------------------------------------------------------------- report
