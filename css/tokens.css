@@ -1,0 +1,113 @@
+/* Design tokens — the one file to tweak between design drafts.
+   Draft 1 (2026-09-24): the Master series language (Chess Master → Go Master → here): white ground,
+   near-black ink, Helvetica Neue, small uppercase letter-spaced labels, hairline borders, square corners.
+   The accent is deep navy — the siblings' tone rotated to blue, the one cool accent of the three, chosen
+   so the Poker tile reads as distinct beside Chess's green and Go's red in the family bubble.
+   Comment on any line here and it becomes a small diff. */
+:root {
+  /* ground & ink */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f5;
+  --ink: #111111;
+  --ink-2: #555555;
+  --ink-3: #aaaaaa;
+  --line: #e6e6e6;
+  --line-2: #cccccc;
+
+  /* theme: deep navy, a card-room blue at the same darkness as the siblings' accents.
+     Used for everything selected, done, or primary. */
+  --accent: #0f2d57;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1e6ef;
+  --accent-deep: #0a1f3d;
+
+  /* the family bubble on the logo (Apple-style glass, the one rounded, translucent element of the shell) */
+  --bubble-radius: 22px;
+  --bubble-row-radius: 14px;
+  --bubble-tile-radius: 12px;
+  --bubble-bg: rgba(255, 255, 255, 0.38);
+  --bubble-blur: 28px;
+  --bubble-saturate: 200%;
+  --bubble-rim: rgba(255, 255, 255, 0.85);
+  --bubble-edge: rgba(0, 0, 0, 0.08);
+  --bubble-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0) 70%);
+  --bubble-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 24px 48px rgba(0, 0, 0, 0.16);
+  --bubble-fallback: #ffffff;
+  --bubble-gap: 8px;
+  --bubble-anim: 180ms;
+
+  /* semantic (used only on the table and drill states) — green/red mean right/wrong, not theme */
+  --good: #0f4c3a;
+  --bad: #c00000;
+  --warn: #7a5c00;
+
+  /* table — muted casino felt, hairline rail, classic card faces.
+     The felt is deliberately desaturated: full casino green fights the navy accent. */
+  --tb-felt: #35654d;
+  --tb-felt-2: #2c5442;
+  --tb-rail: #d8d8d2;
+  --tb-seat: #f5f5f5;
+  --tb-seat-hero: var(--accent-soft);
+  --tb-dealer: #ffffff;
+
+  /* cards */
+  --card-face: #fdfdfb;
+  --card-edge: #c9c9c2;
+  --card-back: var(--accent);
+  --card-shadow: rgba(0, 0, 0, 0.22);
+  --suit-red: #b3141a;
+  --suit-black: #161616;
+
+  /* chips, by the usual tournament denominations */
+  --chip-25: #2f8f4e;
+  --chip-100: #16181a;
+  --chip-500: #6b2d8f;
+  --chip-1000: #b38b1a;
+  --chip-edge: rgba(0, 0, 0, 0.35);
+
+  /* range grid (the 169-hand matrix): raise / call / fold, plus mixed frequencies */
+  --rg-raise: #0f2d57;
+  --rg-call: #7d94b5;
+  --rg-fold: #eeeeee;
+  --rg-line: #ffffff;
+  --rg-hero: #b3141a;
+
+  --board-anim: 160ms;
+  --board-max: 560px;
+
+  /* type */
+  --font-sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: var(--font-sans);
+  --font-mono: "Courier New", Courier, monospace;
+  --fs-0: 11px;
+  --fs-1: 13px;
+  --fs-2: 15px;   /* body */
+  --fs-3: 18px;
+  --fs-4: 22px;
+  --fs-5: 28px;
+  --lh: 1.6;
+  --measure: 640px;
+  --track: 0.1em;   /* letter-spacing for uppercase labels */
+
+  /* space & shape */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --radius: 0;
+  --radius-lg: 0;
+  --sidebar-w: 260px;
+  --page-w: 900px;
+
+  /* activity grid levels: paper to theme navy */
+  --act-0: #eeeeee;
+  --act-1: #d3dae5;
+  --act-2: #93a7c2;
+  --act-3: #47648e;
+  --act-4: #0f2d57;
+}

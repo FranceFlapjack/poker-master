@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "poker-master",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["scripts/serve.py", "8002"],
+      "port": 8002
+    }
+  ]
+}
