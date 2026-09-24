@@ -160,6 +160,10 @@ async function showTool(main, slug) {
       const { mountOdds } = await import('./tools/odds.js')
       main.innerHTML = ''
       mountOdds(main)
+    } else if (slug === 'ranges') {
+      const { mountRanges } = await import('./tools/ranges.js')
+      main.innerHTML = ''
+      await mountRanges(main)
     } else { location.hash = '#/'; return }
   } catch (e) {
     main.innerHTML = `<div class="page"><p>Could not load this tool.</p><p class="small">${esc(e.message)}</p></div>`

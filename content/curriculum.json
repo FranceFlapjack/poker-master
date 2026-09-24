@@ -112,6 +112,12 @@
       ],
       "tools": [
         {
+          "slug": "ranges",
+          "title": "Preflop range trainer",
+          "ready": true,
+          "blurb": "Open or fold, scored against the chart."
+        },
+        {
           "slug": "odds",
           "title": "Pot odds & equity",
           "ready": true,

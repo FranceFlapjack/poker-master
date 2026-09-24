@@ -53,7 +53,13 @@ Validate before committing:
 node scripts/check-content.mjs
 node scripts/engine-test.mjs
 node scripts/verify-drills.mjs
+node scripts/check-charts.mjs
 ```
+
+`check-charts.mjs` recomputes every percentage in `content/charts/` from the range notation itself and
+fails if a chart's stated figure has drifted, so a chart can never claim a width it does not have. It
+also requires a `provenance` block on every chart stating whether it is solver output — "where did this
+come from" must stay answerable by anyone reading the file.
 
 ## Layout
 
@@ -80,8 +86,11 @@ Written down because it is the thing most likely to go wrong:
 - **There is no postflop solver and there will not be one.** A real one is CFR over abstracted game trees.
   Postflop is served by equity vs an assumed range, pot odds, required equity, MDF/alpha and blockers —
   useful, and honest about what it is.
-- **Never label an approximation "GTO."** Every chart carries a provenance field (`computed` /
-  `open source + attribution`) and shows it.
+- **Never label an approximation "GTO."** Every chart carries a provenance block and the app SHOWS it on
+  the page, not just in the file. `content/charts/rfi-9max.json` is authored for this app from general
+  positional principles: not solver output, not equilibrium, and not copied from anyone's chart. The
+  shape of a positional opening range is ordinary poker knowledge; a solver's cell-by-cell output is
+  somebody's product.
 
 ## Content rules — non-negotiable
 

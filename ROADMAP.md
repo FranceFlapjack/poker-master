@@ -21,8 +21,8 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **0** | Repo skeleton from the sibling pattern; accent chosen; shell boots | ✅ done 2026-09-24 |
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
 | **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
-| **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | next |
-| **4** | `js/bot/` + Play a hand + Ranges section written | |
+| **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
+| **4** | `js/bot/` + Play a hand + Ranges section written | next |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
@@ -148,6 +148,32 @@ cannot check the prose. A `choice` drill that states a number — the side pots 
 the ante arithmetic in `blinds-and-antes` — could be confidently wrong and pass. Those figures were
 checked by running the spot through the engine and reading `result.pots` (900 / 1,400, and a 525 pot from
 nine 25 antes at 100/200). Any future lesson quoting a number should get the same treatment.
+
+## Phase 3 — done 2026-09-25
+
+`js/engine/ev.js` (pot odds, required equity, exact outs, MDF, alpha, EV of a call or shove, break-even
+fold equity, implied odds), the **pot odds & equity sandbox** at `#/tools/odds`, and the **preflop range
+trainer** at `#/tools/ranges`.
+
+**On the chart, because this is the part that could quietly go wrong.** `content/charts/rfi-9max.json`
+holds eight opening ranges, UTG through SB, at 40–60bb. It is **authored for this app** from general
+positional principles — not solver output, not equilibrium, and not copied from anybody's chart. The
+shape of a positional opening range is ordinary poker knowledge; a solver's cell-by-cell output is
+somebody's product, and the content rules forbid lifting it.
+
+The app says all of this **on the page**, not just in the file, because a chart looks authoritative
+whether or not it has earned it.
+
+`scripts/check-charts.mjs` recomputes every percentage from the range notation and fails if the file
+drifts, requires a provenance block stating `isSolverOutput`, and checks the shape makes sense — an
+opening chart that does not widen as position improves is either mis-authored or mis-labelled. The small
+blind is the one allowed exception, because it acts last preflop and first on every street after.
+
+**One deliberate distortion, stated on the page.** The trainer draws hands half from inside the range and
+half outside. A real table would have you folding nine hands in ten under the gun, learning almost
+nothing per spot; drawing from both sides puts you on the boundary, which is the only part of a range
+anyone has to remember. It means your accuracy in the trainer is not your accuracy at a table, and the
+page says so.
 
 ## Phase 8 — why review does not port from Chess Master
 

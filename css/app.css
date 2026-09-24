@@ -514,3 +514,24 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .tool .verdict { font-size: var(--fs-2); font-weight: 600; margin: 0; padding-left: var(--s-3); border-left: 2px solid var(--line-2); }
 .tool .verdict.good { border-left-color: var(--good); }
 .tool .verdict.bad { border-left-color: var(--bad); }
+
+/* ---------- the 169-hand grid, and the range trainer ---------- */
+.grid169 { display: grid; grid-template-columns: repeat(13, 1fr); gap: 1px; background: var(--rg-line); border: 1px solid var(--rg-line); max-width: 560px; }
+.grid169 .c { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; font-style: normal;
+  font-size: 9px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; background: var(--rg-fold); color: var(--ink-3); }
+.grid169 .c.on { background: var(--rg-call); color: #fff; }
+.grid169 .c.on.pair { background: var(--rg-raise); }
+.grid169 .c.here { outline: 2px solid var(--rg-hero); outline-offset: -2px; z-index: 1; color: #fff; font-weight: 700; }
+.grid169 .c.off.here { background: var(--ink-3); }
+@media (max-width: 560px) { .grid169 .c { font-size: 0; } .grid169 .c.here { font-size: 8px; } }
+
+.trainer .spot-head { display: flex; flex-wrap: wrap; gap: var(--s-6); margin-bottom: var(--s-4); }
+.trainer .spot-head > div { display: flex; flex-direction: column; gap: 2px; }
+.trainer .spot-head .k { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.trainer .pos { font-size: var(--fs-5); font-weight: 700; letter-spacing: 0.04em; line-height: 1.1; }
+.trainer .posname, .trainer .spot-head .n { font-size: var(--fs-1); color: var(--ink-2); }
+.trainer .hand { font-size: var(--fs-5); letter-spacing: 0.06em; line-height: 1.1; }
+.trainer .hand .pc.red { color: var(--suit-red); }
+.trainer .hand .pc.black { color: var(--suit-black); }
+.trainer .hand .pc + .pc { margin-left: 0.35em; }
+.trainer .actions { display: flex; gap: var(--s-2); margin-bottom: var(--s-3); }

@@ -1,0 +1,81 @@
+{
+  "id": "rfi-9max",
+  "title": "Opening ranges, nine-handed",
+  "subtitle": "Raise first in — nobody has entered the pot before you",
+  "stackDepth": "40–60 big blinds",
+  "provenance": {
+    "kind": "authored-for-this-app",
+    "isSolverOutput": false,
+    "isGTO": false,
+    "basis": "Written for this app from general positional principles: open tighter the more players are still to act, prefer suited and connected hands as position improves because they play better postflop, and widen sharply on the button where you will act last for the rest of the hand.",
+    "note": "These are a teaching baseline, not equilibrium. A solver would disagree with individual cells — it would mix some of these hands some of the time rather than always opening them, and it would size differently by position. They are deliberately simple enough to hold in your head at a live table, which a mixed strategy is not.",
+    "copied": "Nothing here is copied from a commercial chart or a solver output. Cell-by-cell solver ranges are somebody's product; the shape of a positional opening range is ordinary poker knowledge.",
+    "percentages": "Computed by this app from the range notation itself — see scripts/check-charts.mjs, which recomputes them and fails if this file drifts."
+  },
+  "positions": [
+    {
+      "id": "UTG",
+      "name": "Under the gun",
+      "seatsBehind": 8,
+      "range": "55+, A9s+, KJs+, QJs, JTs, AQo+, KQo",
+      "pct": 10.0,
+      "note": "Eight players still to act. Almost everything you open here you are happy to continue with against a raise."
+    },
+    {
+      "id": "UTG1",
+      "name": "Under the gun + 1",
+      "seatsBehind": 7,
+      "range": "44+, A8s+, KTs+, QTs+, JTs, T9s, AJo+, KQo",
+      "pct": 12.5,
+      "note": "One fewer player behind, so a little wider — mostly by adding suited hands rather than offsuit ones."
+    },
+    {
+      "id": "MP",
+      "name": "Middle position",
+      "seatsBehind": 6,
+      "range": "33+, A7s+, K9s+, Q9s+, J9s+, T9s, 98s, AJo+, KJo+, QJo",
+      "pct": 16.3,
+      "note": "Suited connectors start to earn their place here."
+    },
+    {
+      "id": "LJ",
+      "name": "Lojack",
+      "seatsBehind": 5,
+      "range": "22+, A5s+, K9s+, Q9s+, J9s+, T8s+, 98s, 87s, ATo+, KJo+, QJo",
+      "pct": 18.9,
+      "note": "All pairs are in from here down. The small ones are opening to flop a set, not to win at showdown."
+    },
+    {
+      "id": "HJ",
+      "name": "Hijack",
+      "seatsBehind": 4,
+      "range": "22+, A2s+, K8s+, Q9s+, J9s+, T8s+, 97s+, 87s, 76s, ATo+, KTo+, QJo, JTo",
+      "pct": 22.5,
+      "note": "Every suited ace is now open. The small ones are here for the flush and the blocker, not the ace."
+    },
+    {
+      "id": "CO",
+      "name": "Cutoff",
+      "seatsBehind": 3,
+      "range": "22+, A2s+, K5s+, Q8s+, J8s+, T8s+, 97s+, 86s+, 76s, 65s, A9o+, KTo+, QTo+, JTo",
+      "pct": 26.4,
+      "note": "Only three players behind, and two of them are the blinds. Stealing starts to be most of the point."
+    },
+    {
+      "id": "BTN",
+      "name": "Button",
+      "seatsBehind": 2,
+      "range": "22+, A2s+, K2s+, Q5s+, J7s+, T7s+, 96s+, 86s+, 75s+, 65s, 54s, A2o+, K8o+, Q9o+, J9o+, T9o, 98o",
+      "pct": 41.5,
+      "note": "The widest seat at the table, and it is not close. You will act last on every street for the rest of the hand, and only two blinds stand between you and the pot."
+    },
+    {
+      "id": "SB",
+      "name": "Small blind",
+      "seatsBehind": 1,
+      "range": "22+, A2s+, K5s+, Q6s+, J7s+, T7s+, 96s+, 86s+, 75s+, 65s, 54s, A4o+, K9o+, Q9o+, J9o+, T9o",
+      "pct": 36.7,
+      "note": "Wide, but be careful about what this hides: one player behind, yet you act FIRST for the rest of the hand. That is why this range raises rather than limps — playing a small pot out of position is the thing to avoid."
+    }
+  ]
+}
