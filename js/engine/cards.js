@@ -37,6 +37,11 @@ export function parseCards(input) {
 
 export const cardsStr = cards => cards.map(cardStr).join(' ')
 
+// For a reader, not for data. "9h" is a code you have to decode; "9♥" is a card you recognise.
+// cardStr stays the machine form — it is what lesson files are authored in and what parseCard round-trips.
+export const cardGlyph = c => RANKS[rankOf(c)] + SUIT_GLYPH[suitOf(c)]
+export const cardsGlyph = cards => cards.map(cardGlyph).join(' ')
+
 export function makeDeck() {
   const d = new Array(52)
   for (let i = 0; i < 52; i++) d[i] = i

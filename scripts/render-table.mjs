@@ -20,7 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const ESC = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 class Node {
-  constructor(tag) { this.tag = tag; this.attrs = {}; this.children = []; this.text = null }
+  constructor(tag) { this.tag = tag; this.attrs = {}; this.children = []; this.text = null; this.style = {} }
   setAttribute(k, v) { this.attrs[k] = String(v) }
   getAttribute(k) { return this.attrs[k] ?? null }
   append(...kids) { for (const k of kids) if (k != null) this.children.push(k) }
@@ -31,6 +31,9 @@ class Node {
   addEventListener() {}
   remove() {}
   toString() {
+    // inline styles are real layout here (the table caps its own width), so they have to survive
+    const css = Object.entries(this.style).map(([k, v]) => `${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}:${v}`).join(';')
+    if (css) this.attrs.style = [this.attrs.style, css].filter(Boolean).join(';')
     const a = Object.entries(this.attrs).map(([k, v]) => ` ${k}="${ESC(v)}"`).join('')
     const inner = this.text != null ? ESC(this.text) : this.children.map(String).join('')
     return `<${this.tag}${a}>${inner}</${this.tag}>`

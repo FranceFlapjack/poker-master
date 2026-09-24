@@ -108,7 +108,7 @@
   --rg-hero: #b3141a;
 
   --board-anim: 160ms;
-  --board-max: 560px;
+  --board-max: 660px;   /* was 560px — a table needs room to be read */
 
   /* type */
   --font-sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;

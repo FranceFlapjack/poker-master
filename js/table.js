@@ -8,17 +8,42 @@
 // The hero always sits at the bottom and the other seats run clockwise from there, which is what every
 // poker client does and therefore what a reader's eye already expects.
 
-import { RANKS, SUIT_GLYPH, rankOf, suitOf, isRed } from './engine/cards.js'
+import { RANKS, SUIT_GLYPH, rankOf, suitOf, isRed, cardGlyph } from './engine/cards.js'
 import { legalActions, potTotal, sbSeat, bbSeat } from './engine/rules.js'
 
 const NS = 'http://www.w3.org/2000/svg'
-// The canvas is sized by the WORST case: nine seats, each a ~200px column, around an ellipse. The
-// binding constraint is the two seats nearest the left and right extremes — they sit only ~202px apart
-// vertically, so the column height is what dictates everything else here.
-const W = 1000, HGT = 880
-const CX = W / 2, CY = 430
-const FELT_RX = 330, FELT_RY = 150
-const SEAT_RX = 420, SEAT_RY = 300
+// The layout origin. The CANVAS is not fixed: the viewBox is cropped to whatever the seats actually
+// occupy, which is what keeps text legible. A fixed 1000-wide viewBox meant a two-handed lesson spot was
+// scaled down exactly as hard as a nine-handed one — at 560px on screen that is 56%, so a 12-unit label
+// rendered under 7 real pixels and nothing could be read on a phone at all.
+const CX = 500, CY = 430
+
+/**
+ * Table size by seat count. Two players do not need the ellipse nine players need, and shrinking it for
+ * them is most of what makes a lesson spot readable — a smaller viewBox at the same display width is a
+ * larger scale factor.
+ */
+function geometry(n) {
+  if (n <= 2) return { FELT_RX: 200, FELT_RY: 105, SEAT_RX: 235, SEAT_RY: 212 }
+  if (n <= 4) return { FELT_RX: 245, FELT_RY: 125, SEAT_RX: 305, SEAT_RY: 248 }
+  if (n <= 6) return { FELT_RX: 275, FELT_RY: 135, SEAT_RX: 345, SEAT_RY: 268 }
+  return { FELT_RX: 330, FELT_RY: 150, SEAT_RX: 420, SEAT_RY: 300 }
+}
+
+const COL_HALF = 46          // half the width of a seat column: illustration 42, two cards 43, plus air
+const VIEW_PAD = 12
+
+/** The box the drawing actually occupies, so the viewBox can hug it instead of padding empty canvas. */
+function contentBox(n, g, hero) {
+  let x1 = CX - g.FELT_RX - 12, y1 = CY - g.FELT_RY - 12
+  let x2 = CX + g.FELT_RX + 12, y2 = CY + g.FELT_RY + 12
+  for (let k = 0; k < n; k++) {
+    const p = seatPos(k, n, hero, g.SEAT_RX, g.SEAT_RY)
+    x1 = Math.min(x1, p.x - COL_HALF); x2 = Math.max(x2, p.x + COL_HALF)
+    y1 = Math.min(y1, p.y + Y_ILLO_TOP - 17); y2 = Math.max(y2, p.y + Y_CARDS_TOP + CARD_H)
+  }
+  return { x: x1 - VIEW_PAD, y: y1 - VIEW_PAD, w: x2 - x1 + VIEW_PAD * 2, h: y2 - y1 + VIEW_PAD * 2 }
+}
 const CARD_W = 40, CARD_H = 56
 const BOARD_CARD_W = 46, BOARD_CARD_H = 64   // the board reads as the shared hand, so it stays larger
 
@@ -63,17 +88,20 @@ export function mountTable(host, opts) {
   function render() {
     root.innerHTML = ''
     const s = o.state
-    const svg = el('svg', { class: 'pk-table', viewBox: `0 0 ${W} ${HGT}`, role: 'img', 'aria-label': describeTable(s, o) })
+    const n = s.seats.length
+    const g = geometry(n)
+    const box = contentBox(n, g, o.hero ?? 0)
+    const svg = el('svg', { class: 'pk-table', viewBox: `${box.x} ${box.y} ${box.w} ${box.h}`, role: 'img', 'aria-label': describeTable(s, o) })
 
-    svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: FELT_RX, ry: FELT_RY }))
-    svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: FELT_RX + 10, ry: FELT_RY + 10 }))
+    svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: g.FELT_RX, ry: g.FELT_RY }))
+    svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: g.FELT_RX + 10, ry: g.FELT_RY + 10 }))
 
     // pot and board in the middle
     const pot = potTotal(s)
     if (pot > 0) {
-      svg.append(text(`POT ${chips(pot)}`, { class: 'pot', x: CX, y: CY - 74, 'text-anchor': 'middle' }))
+      svg.append(text(`POT ${chips(pot)}`, { class: 'pot', x: CX, y: CY - g.FELT_RY + 26, 'text-anchor': 'middle' }))
     } else if (s.result) {
-      svg.append(text(`POT ${chips(s.result.total)} — PAID`, { class: 'pot', x: CX, y: CY - 74, 'text-anchor': 'middle' }))
+      svg.append(text(`POT ${chips(s.result.total)} — PAID`, { class: 'pot', x: CX, y: CY - g.FELT_RY + 26, 'text-anchor': 'middle' }))
     }
     const boardW = 5 * BOARD_CARD_W + 4 * 8
     s.board.forEach((c, i) => {
@@ -83,15 +111,23 @@ export function mountTable(host, opts) {
       svg.append(text(streetLabel(s), { class: 'street', x: CX, y: CY + 6, 'text-anchor': 'middle' }))
     }
 
-    const n = s.seats.length
     const sb = sbSeat(s), bb = bbSeat(s)
-    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb))
+    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb, g))
 
     // The button sits just inside the felt, offset around the rim rather than straight in towards the
     // middle — directly in line it lands on top of that seat's hole cards.
-    const bpos = seatPos(s.button, n, o.hero ?? 0, FELT_RX - 30, FELT_RY - 24, 360 / n * 0.42)
+    const bpos = seatPos(s.button, n, o.hero ?? 0, g.FELT_RX - 26, g.FELT_RY - 22, 360 / n * 0.42)
     svg.append(el('circle', { class: 'dealer', cx: bpos.x, cy: bpos.y, r: 15 }))
     svg.append(text('D', { class: 'dealer-t', x: bpos.x, y: bpos.y + 5, 'text-anchor': 'middle' }))
+
+    // Cap the drawn width near the content's own size. A two-handed spot stretched to the full column
+    // width renders at a scale where the type is comically large; the cap keeps every table at roughly
+    // the same apparent size whatever its seat count, and --board-max still limits the big ones.
+    svg.style.maxWidth = `${Math.round(box.w * 1.15)}px`
+    // Seven or more seats cannot be legible on a phone at any scale that fits, so those scroll rather
+    // than shrink into unreadability. Everything smaller fits, and must never scroll — horizontal
+    // scrolling inside a lesson is worse than slightly smaller type.
+    if (n >= 7) svg.style.minWidth = `${Math.round(Math.min(box.w * 0.5, 500))}px`
 
     root.append(svg)
     if (o.interactive && s.toAct != null) root.append(controls(s))
@@ -109,9 +145,9 @@ export function mountTable(host, opts) {
    * The order does not flip by hemisphere. Consistency is the point: the reader learns one shape and
    * then reads all nine seats the same way, which they cannot do if the top half is upside down.
    */
-  function seat(s, k, n, sb, bb) {
+  function seat(s, k, n, sb, bb, geo) {   // `geo`, not `g`: `g` is this function's <g> element
     const p = s.seats[k]
-    const pos = seatPos(k, n, o.hero ?? 0, SEAT_RX, SEAT_RY)
+    const pos = seatPos(k, n, o.hero ?? 0, geo.SEAT_RX, geo.SEAT_RY)
     const isHero = k === o.hero
     const toAct = s.toAct === k
     const g = el('g', {
@@ -298,7 +334,7 @@ function card(c, x, y, faceDown, w = CARD_W, h = CARD_H) {
 /** A one-line description for screen readers and for test output. */
 export function describeTable(s, o = {}) {
   const parts = [`${s.seats.length}-handed, ${s.street}`]
-  if (s.board.length) parts.push(`board ${s.board.map(c => RANKS[rankOf(c)] + SUIT_GLYPH[suitOf(c)]).join(' ')}`)
+  if (s.board.length) parts.push(`board ${s.board.map(cardGlyph).join(' ')}`)
   parts.push(`pot ${potTotal(s) || (s.result ? s.result.total : 0)}`)
   if (s.toAct != null) parts.push(`${s.seats[s.toAct].name} to act`)
   return parts.join(', ')
@@ -349,7 +385,7 @@ export function mountHands(host, { board = [], hands = [], caption = null } = {}
 }
 
 function describeHands(board, hands) {
-  const say = cs => cs.map(c => RANKS[rankOf(c)] + SUIT_GLYPH[suitOf(c)]).join(' ')
+  const say = cs => cs.map(cardGlyph).join(' ')
   const parts = board.length ? [`board ${say(board)}`] : []
   hands.forEach((h, i) => parts.push(`${String.fromCharCode(65 + i)} ${say(h)}`))
   return parts.join(', ')

@@ -6,7 +6,7 @@
 //
 // Pure — no DOM — so the Node checkers can import it.
 
-import { parseCards, cardsStr } from './engine/cards.js'
+import { parseCards, cardsStr, cardsGlyph } from './engine/cards.js'
 import { evaluate, describe } from './engine/evaluator.js'
 import { createHand, applyAction, legalActions, STREETS } from './engine/rules.js'
 
@@ -154,7 +154,7 @@ export function solveDrill(p) {
     const best = Math.max(...evs.map(e => e.score))
     const winners = evs.map((e, i) => (e.score === best ? i : -1)).filter(i => i >= 0)
 
-    const labels = hands.map((h, i) => `${String.fromCharCode(65 + i)} — ${cardsStr(h)}`)
+    const labels = hands.map((h, i) => `${String.fromCharCode(65 + i)} — ${cardsGlyph(h)}`)
     const options = [...labels, 'They split']
     const correct = winners.length > 1 ? options.length - 1 : winners[0]
     const explain = winners.length > 1
