@@ -8,7 +8,8 @@
       "termsRead": "2026-09-24",
       "holder": "shigureni",
       "summary": "Free for use in apps and websites. Resizing, cropping, recolouring and flipping are permitted. Redrawing or tracing a derivative illustration is not, nor is any generative-AI use. Up to 5 illustrations free per production for commercial use; ¥1,000 each thereafter.",
-      "attributionRequired": false
+      "attributionRequired": false,
+      "commercialUse": "Nine illustrations are used here, which is above the 5 that are free for COMMERCIAL use. Poker Master is a free site with no revenue, so the ceiling does not apply as things stand. If that ever changes, four additional licences are needed — see README.md."
     },
     "own-work": {
       "name": "Drawn for this project",
@@ -17,12 +18,21 @@
     }
   },
   "images": [
+    { "file": "shigureni-icon-01.png", "title": "女子高生のアイコン-1", "titleEn": "High school girl icon 1", "licence": "shigureni", "source": "https://shigureni.com/icon/1/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-05.png", "title": "推し活をする女の子のアイコン-1", "titleEn": "Girl at a fan event, icon 1", "licence": "shigureni", "source": "https://shigureni.com/icon/5/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-06.png", "title": "推し活をする女の子のアイコン-2", "titleEn": "Girl at a fan event, icon 2", "licence": "shigureni", "source": "https://shigureni.com/icon/6/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-07.png", "title": "推し活をする女の子のアイコン-3", "titleEn": "Girl at a fan event, icon 3", "licence": "shigureni", "source": "https://shigureni.com/icon/7/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-08.png", "title": "推し活をする女の子のアイコン-4", "titleEn": "Girl at a fan event, icon 4", "licence": "shigureni", "source": "https://shigureni.com/icon/8/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-09.png", "title": "推し活をする女の子のアイコン-5", "titleEn": "Girl at a fan event, icon 5", "licence": "shigureni", "source": "https://shigureni.com/icon/9/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-10.png", "title": "推し活をする女の子のアイコン-6", "titleEn": "Girl at a fan event, icon 6", "licence": "shigureni", "source": "https://shigureni.com/icon/10/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-11.png", "title": "推し活をする女の子のアイコン-7", "titleEn": "Girl at a fan event, icon 7", "licence": "shigureni", "source": "https://shigureni.com/icon/11/", "downloaded": "2026-09-24" },
+    { "file": "shigureni-icon-12.png", "title": "推し活をする女の子のアイコン-8", "titleEn": "Girl at a fan event, icon 8", "licence": "shigureni", "source": "https://shigureni.com/icon/12/", "downloaded": "2026-09-24" },
     {
       "file": "example-figure.svg",
       "title": "Built-in placeholder figure",
       "licence": "own-work",
       "source": null,
-      "note": "Proves the avatars option end to end without using anyone else's artwork. Safe to delete once real portraits are in."
+      "note": "Proves the avatars option end to end without using anyone else's artwork. Kept as the zero-dependency fallback reference."
     }
   ]
 }

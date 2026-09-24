@@ -28,6 +28,7 @@
 import { parseCards, cardsStr } from './js/engine/cards.js'
 import { createHand, applyAction, legalActions, potTotal } from './js/engine/rules.js'
 import { mountTable, describeTable } from './js/table.js'
+import { avatarsForSeats } from './js/avatars.js'
 
 const out = document.getElementById('out')
 const H = s => parseCards(s)
@@ -92,14 +93,22 @@ let mixed = createHand({
 mixed = act(mixed, 'fold'); mixed = act(mixed, 'fold'); mixed = act(mixed, 'raise', 8000)
 show('Folded seats dimmed, one player all in', 'Two folded seats must dim; the all-in seat must read ALL IN rather than a stack of zero.', mixed, { hero: 0 })
 
-// 5 — seat portraits: supplied images against the built-in figure
+// 5 — the real portrait set, nine handed
 let portraits = createHand({
+  seats: stacks(9, 25000, ['Hero', 'Ana', 'Bo', 'Cy', 'Dee', 'Eli', 'Fay', 'Gus', 'Hal']),
+  button: 6, blinds: { sb: 100, bb: 200, ante: 25 }, anteType: 'each', seed: 8,
+})
+show('Seat portraits — the real set', 'Nine portraits by shigureni (shigureni.com), used under their terms. Check they stay tellable apart at this size: that is the whole job of a seat portrait.', portraits, {
+  hero: 0, avatars: avatarsForSeats(9),
+})
+
+// 6 — mixed: some seats with art, some without, so the fallback path stays exercised
+let mixedArt = createHand({
   seats: stacks(6, 8000, ['Hero', 'Ana', 'Bo', 'Cy', 'Dee', 'Eli']),
   button: 0, blinds: { sb: 100, bb: 200 }, seed: 8,
 })
-show('Seat portraits', 'Seats 0 and 3 take a supplied image; the rest fall back to the built-in figure, each in its own tint. A table must never depend on an image file existing.', portraits, {
-  hero: 0,
-  avatars: { 0: 'content/images/avatars/example-figure.svg', 3: 'content/images/avatars/example-figure.svg' },
+show('Missing art falls back', 'Seats 2 and 4 have no portrait and get the built-in figure. A table must never depend on an image file existing.', mixedArt, {
+  hero: 0, avatars: avatarsForSeats(6, { skip: [2, 4] }),
 })
 
 console.log('dev-table: rendered', out.querySelectorAll('svg.pk-table').length, 'tables')
