@@ -27,7 +27,11 @@ function geometry(n) {
   if (n <= 2) return { FELT_RX: 200, FELT_RY: 105, SEAT_RX: 235, SEAT_RY: 212 }
   if (n <= 4) return { FELT_RX: 245, FELT_RY: 125, SEAT_RX: 305, SEAT_RY: 248 }
   if (n <= 6) return { FELT_RX: 275, FELT_RY: 135, SEAT_RX: 345, SEAT_RY: 268 }
-  return { FELT_RX: 330, FELT_RY: 150, SEAT_RX: 420, SEAT_RY: 300 }
+  // Seven or more: the ellipse gets NARROWER and taller, not wider. Width is what pushes a table off a
+  // phone screen, and for a dense table it is set by the seats nearest the left and right extremes; the
+  // vertical spread is what keeps their columns from colliding. Trading one for the other fits nine
+  // seats on a 375px screen without scrolling and without shrinking the type.
+  return { FELT_RX: 240, FELT_RY: 150, SEAT_RX: 309, SEAT_RY: 320 }
 }
 
 const COL_HALF = 46          // half the width of a seat column: illustration 42, two cards 43, plus air
@@ -124,10 +128,6 @@ export function mountTable(host, opts) {
     // width renders at a scale where the type is comically large; the cap keeps every table at roughly
     // the same apparent size whatever its seat count, and --board-max still limits the big ones.
     svg.style.maxWidth = `${Math.round(box.w * 1.15)}px`
-    // Seven or more seats cannot be legible on a phone at any scale that fits, so those scroll rather
-    // than shrink into unreadability. Everything smaller fits, and must never scroll — horizontal
-    // scrolling inside a lesson is worse than slightly smaller type.
-    if (n >= 7) svg.style.minWidth = `${Math.round(Math.min(box.w * 0.5, 500))}px`
 
     root.append(svg)
     if (o.interactive && s.toAct != null) root.append(controls(s))

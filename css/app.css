@@ -379,7 +379,7 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 }
 
 /* the poker table — js/table.js draws it as SVG; everything visual is here, tokens in tokens.css */
-.table-wrap { max-width: var(--board-max); margin: 0 0 var(--s-5); overflow-x: auto; }
+.table-wrap { max-width: var(--board-max); margin: 0 0 var(--s-5); }
 svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 .pk-table .felt { fill: var(--tb-felt); }
 .pk-table .rail { fill: none; stroke: var(--tb-rail); stroke-width: var(--tb-rail-w); }
