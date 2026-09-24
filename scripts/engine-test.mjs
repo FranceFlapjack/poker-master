@@ -267,6 +267,8 @@ const can = (s, type) => legalActions(s).some(a => a.type === type)
   const nine = createHand({ seats: stacks(9, 10000), button: 4, blinds: { sb: 50, bb: 100 } })
   eq(nine.toAct, 7, 'nine-handed seats wrap correctly')
   throws(() => createHand({ seats: stacks(10, 100), button: 0, blinds: { sb: 1, bb: 2 } }), 'ten seats throws')
+  throws(() => createHand({ seats: stacks(2, 1000), button: 0, blinds: { sb: 50, bb: 100 }, hole: { 0: H('As Ks Qs Js Ts') } }),
+    'a five-card hole hand throws rather than being silently truncated to two')
   throws(() => createHand({ seats: stacks(1, 100), button: 0, blinds: { sb: 1, bb: 2 } }), 'one seat throws')
 
   // THE BIG BLIND'S OPTION — the round must not close just because everyone has matched

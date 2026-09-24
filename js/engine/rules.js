@@ -32,6 +32,13 @@ export function createHand(cfg) {
   const { seats: seatCfg, button, blinds, anteType = 'none', hole = {}, board = [], seed = 1 } = cfg
   if (seatCfg.length < 2 || seatCfg.length > 9) throw new Error('A hand needs 2 to 9 seats')
   if (button < 0 || button >= seatCfg.length) throw new Error('Button is not a seat')
+  // Hold'em deals exactly two. Accepting any other count let a five-card ranking hand through, which the
+  // table then drew the first two of — a wrong picture rather than a visible error.
+  for (const [seat, cards] of Object.entries(hole)) {
+    if (!Array.isArray(cards) || cards.length !== 2) {
+      throw new Error(`Seat ${seat}: hold'em hole cards must be exactly 2, got ${Array.isArray(cards) ? cards.length : typeof cards}`)
+    }
+  }
 
   const seats = seatCfg.map((s, i) => ({
     name: s.name || `Seat ${i + 1}`,

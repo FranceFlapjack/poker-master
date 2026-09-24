@@ -303,3 +303,54 @@ export function describeTable(s, o = {}) {
   if (s.toAct != null) parts.push(`${s.seats[s.toAct].name} to act`)
   return parts.join(', ')
 }
+
+// --- hand comparison --------------------------------------------------------
+
+/**
+ * A board and a set of hands, as rows of cards. NOT a table.
+ *
+ * "Which hand wins?" is a card comparison, not a spot: there are no blinds, no pot, no button and
+ * nobody to act, and mountTable would draw all of that as noise. It also draws exactly two hole cards
+ * per seat — correct for hold'em, wrong for a five-card ranking question, which is how a drill came to
+ * show two cards while asking about five.
+ *
+ * Row labels are A, B, C… to match the option buttons the reader is choosing between.
+ */
+export function mountHands(host, { board = [], hands = [], caption = null } = {}) {
+  const LBL = 26, GAP = 8, PAD = 10
+  const widest = Math.max(board.length, ...hands.map(h => h.length), 1)
+  const W2 = PAD * 2 + LBL + widest * BOARD_CARD_W + (widest - 1) * GAP
+  const rowH = BOARD_CARD_H + 16
+  const rows = (board.length ? 1 : 0) + hands.length
+  const H2 = PAD * 2 + rows * rowH - 16
+
+  const root = document.createElement('div')
+  root.className = 'hands-wrap'
+  const svg = el('svg', { class: 'pk-hands', viewBox: `0 0 ${W2} ${H2}`, role: 'img', 'aria-label': describeHands(board, hands) })
+
+  let y = PAD
+  const row = (label, cards, cls) => {
+    svg.append(text(label, { class: `hand-label ${cls}`, x: PAD + LBL - 8, y: y + BOARD_CARD_H / 2 + 5, 'text-anchor': 'end' }))
+    cards.forEach((c, i) => svg.append(card(c, PAD + LBL + i * (BOARD_CARD_W + GAP), y, false, BOARD_CARD_W, BOARD_CARD_H)))
+    y += rowH
+  }
+  if (board.length) row('', board, 'board')
+  hands.forEach((h, i) => row(String.fromCharCode(65 + i), h, 'hand'))
+
+  root.append(svg)
+  if (caption) {
+    const cap = document.createElement('div')
+    cap.className = 'hands-caption'
+    cap.textContent = caption
+    root.append(cap)
+  }
+  host.append(root)
+  return { destroy() { root.remove() } }
+}
+
+function describeHands(board, hands) {
+  const say = cs => cs.map(c => RANKS[rankOf(c)] + SUIT_GLYPH[suitOf(c)]).join(' ')
+  const parts = board.length ? [`board ${say(board)}`] : []
+  hands.forEach((h, i) => parts.push(`${String.fromCharCode(65 + i)} ${say(h)}`))
+  return parts.join(', ')
+}

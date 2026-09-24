@@ -13,7 +13,8 @@
 //
 // solveDrill() itself lives in spot.js, which has no DOM imports, so the Node checkers can run it.
 
-import { mountTable } from './table.js'
+import { mountTable, mountHands } from './table.js'
+import { parseCards } from './engine/cards.js'
 import { spotFromParams, solveDrill } from './spot.js'
 import { progress } from './progress.js'
 import { sound } from './sound.js'
@@ -46,14 +47,18 @@ export function mountExercise(container, p, ctx = {}) {
       </div>
     </div>`
 
-  // the table, when the drill is about a spot rather than a bare question
+  // A picture of the question — but WHICH picture depends on the kind. A showdown is a comparison of
+  // cards; an action drill is a spot at a table. Using a table for both was wrong in two ways: it drew
+  // blinds, a pot and a button that have nothing to do with "who wins", and it draws exactly two hole
+  // cards per seat, so a five-card ranking hand silently lost three of them.
   if (kind !== 'choice') {
     try {
       const wrap = container.querySelector('.exercise-table')
       if (kind === 'showdown' || kind === 'rank') {
-        const hands = String(p.hands).split('|').map(h => h.trim()).filter(Boolean)
-        const { state } = spotFromParams({ ...p, seats: String(hands.length), hero: 'none', hands: p.hands })
-        mountTable(wrap, { state, hero: null, reveal: true, showBB: false, avatars: avatarsForSeats(hands.length) })
+        mountHands(wrap, {
+          board: p.board ? parseCards(p.board) : [],
+          hands: String(p.hands).split('|').map(h => h.trim()).filter(Boolean).map(parseCards),
+        })
       } else {
         const { state, hero } = spotFromParams(p)
         mountTable(wrap, { state, hero, avatars: avatarsForSeats(state.seats.length) })

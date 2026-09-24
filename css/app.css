@@ -474,3 +474,9 @@ body[data-mode="grinder"] .beginner-only { display: none; }
 .prose .trick ul { margin: 0; font-size: var(--fs-1); }
 .prose .trick li { margin-bottom: var(--s-2); }
 .prose .trick li:last-child { margin-bottom: 0; }
+
+/* a board-and-hands comparison — used by showdown and ranking drills, where a full table would be noise */
+.hands-wrap { max-width: 420px; margin: 0 0 var(--s-3); }
+svg.pk-hands { display: block; width: 100%; height: auto; }
+.pk-hands .hand-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; fill: var(--ink-2); }
+.hands-caption { font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--s-2); }
