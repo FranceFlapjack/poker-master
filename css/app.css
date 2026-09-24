@@ -386,17 +386,16 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .pot { font-size: 15px; font-weight: 600; letter-spacing: var(--track); fill: var(--tb-pot-ink); opacity: 0.95; }
 .pk-table .street { font-size: 13px; letter-spacing: var(--track); fill: var(--tb-pot-ink); opacity: 0.6; }
 
-.pk-table .plate { fill: var(--tb-seat); stroke: var(--card-edge); stroke-width: 1; rx: var(--plate-radius); }
-.pk-table .hero .plate { fill: var(--tb-seat-hero); stroke: var(--accent); }
-.pk-table .to-act .plate { stroke: var(--accent); stroke-width: 2.5; }
-.pk-table .seat-name { text-anchor: start; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; fill: var(--ink); }
-.pk-table .seat-stack { text-anchor: start; font-size: 11px; letter-spacing: 0.04em; fill: var(--ink-2); }
-.pk-table .allin .seat-stack { fill: var(--bad); font-weight: 600; }
-.pk-table .folded { opacity: 0.38; }
-.pk-table .blind-tag { font-size: 9px; font-weight: 600; letter-spacing: var(--track); fill: var(--ink-3); }
+.pk-table .seat-name { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; fill: var(--ink); }
+.pk-table .seat-detail { font-size: 11px; letter-spacing: 0.04em; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.pk-table .hero .seat-name { fill: var(--accent); }
+.pk-table .allin .seat-detail { fill: var(--bad); font-weight: 600; }
+.pk-table .folded { opacity: 0.34; }
+.pk-table .blind-chip { fill: var(--tb-bet-bg); stroke: var(--card-edge); stroke-width: 1; rx: 7px; }
+.pk-table .blind-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; fill: var(--ink-2); }
+.pk-table .act-ring { fill: none; stroke: var(--accent); stroke-width: 2.5; }
 
 .pk-table .portrait .av-disc { fill: var(--av-disc); }
-.pk-table .portrait .av-ring { fill: none; stroke: var(--av-ring); stroke-width: 1; }
 .pk-table .portrait .av-figure { fill: var(--av-tint); }
 .pk-table .portrait.tint-0 { --av-tint: var(--av-0); }
 .pk-table .portrait.tint-1 { --av-tint: var(--av-1); }
@@ -415,10 +414,10 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 
 .pk-table .card rect { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 1; rx: var(--card-radius); }
 .pk-table .card.back rect { fill: var(--card-back); stroke: var(--card-back-edge); }
-.pk-table .card .rank { font-size: 21px; font-weight: 600; }
+.pk-table .card .rank { font-weight: 600; }
 .pk-table .card .rank.red, .pk-table .card .pip.red { fill: var(--suit-red); }
 .pk-table .card .rank.black, .pk-table .card .pip.black { fill: var(--suit-black); }
-.pk-table .card .pip { font-size: 19px; }
+
 .pk-table .card.deal { animation: card-deal var(--board-anim) ease-out; }
 @keyframes card-deal { from { transform: scale(0.82); opacity: 0.3 } to { transform: scale(1); opacity: 1 } }
 

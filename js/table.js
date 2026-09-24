@@ -12,15 +12,20 @@ import { RANKS, SUIT_GLYPH, rankOf, suitOf, isRed } from './engine/cards.js'
 import { legalActions, potTotal, sbSeat, bbSeat } from './engine/rules.js'
 
 const NS = 'http://www.w3.org/2000/svg'
-const W = 960, HGT = 600
-const CX = W / 2, CY = 286
-const FELT_RX = 330, FELT_RY = 176
-const SEAT_RX = 392, SEAT_RY = 236          // 392, not more: a 160-wide plate at the far seats must stay on canvas
-const CARD_W = 44, CARD_H = 62
-const PLATE_W = 160, PLATE_H = 48
-const AVATAR_R = 19
+const W = 960, HGT = 760
+const CX = W / 2, CY = 372
+const FELT_RX = 310, FELT_RY = 138
+const SEAT_RX = 396, SEAT_RY = 248
+const CARD_W = 40, CARD_H = 56
+const BOARD_CARD_W = 44, BOARD_CARD_H = 62   // the board reads as the shared hand, so it stays larger
 
-let instances = 0   // clipPath ids must be unique when several tables share a page
+// A seat is a single centred column: illustration, then name, then stack on one line, then cards.
+// These offsets are from the seat's centre point and are what keeps every seat on the same grid.
+const ILLO = 62                 // illustration box, square
+const Y_ILLO_TOP = -78
+const Y_NAME = 2
+const Y_DETAIL = 19
+const Y_CARDS_TOP = 28
 
 const el = (name, attrs = {}, children = []) => {
   const n = document.createElementNS(NS, name)
@@ -47,7 +52,6 @@ const round = n => String(Math.round(n * 10) / 10)
  */
 export function mountTable(host, opts) {
   let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, avatars: {}, ...opts }
-  const uid = `t${++instances}`
   const root = document.createElement('div')
   root.className = 'table-wrap'
   host.append(root)
@@ -56,8 +60,6 @@ export function mountTable(host, opts) {
     root.innerHTML = ''
     const s = o.state
     const svg = el('svg', { class: 'pk-table', viewBox: `0 0 ${W} ${HGT}`, role: 'img', 'aria-label': describeTable(s, o) })
-    const defs = el('defs')
-    svg.append(defs)
 
     svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: FELT_RX, ry: FELT_RY }))
     svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: FELT_RX + 10, ry: FELT_RY + 10 }))
@@ -69,9 +71,9 @@ export function mountTable(host, opts) {
     } else if (s.result) {
       svg.append(text(`POT ${chips(s.result.total)} — PAID`, { class: 'pot', x: CX, y: CY - 74, 'text-anchor': 'middle' }))
     }
-    const boardW = 5 * CARD_W + 4 * 8
+    const boardW = 5 * BOARD_CARD_W + 4 * 8
     s.board.forEach((c, i) => {
-      svg.append(card(c, CX - boardW / 2 + i * (CARD_W + 8), CY - CARD_H / 2, false))
+      svg.append(card(c, CX - boardW / 2 + i * (BOARD_CARD_W + 8), CY - BOARD_CARD_H / 2, false, BOARD_CARD_W, BOARD_CARD_H))
     })
     if (!s.board.length) {
       svg.append(text(streetLabel(s), { class: 'street', x: CX, y: CY + 6, 'text-anchor': 'middle' }))
@@ -79,7 +81,7 @@ export function mountTable(host, opts) {
 
     const n = s.seats.length
     const sb = sbSeat(s), bb = bbSeat(s)
-    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb, defs))
+    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb))
 
     // The button sits just inside the felt, offset around the rim rather than straight in towards the
     // middle — directly in line it lands on top of that seat's hole cards.
@@ -91,7 +93,19 @@ export function mountTable(host, opts) {
     if (o.interactive && s.toAct != null) root.append(controls(s))
   }
 
-  function seat(s, k, n, sb, bb, defs) {
+  /**
+   * A seat is one centred column on the seat's own axis, in a fixed order every time:
+   *
+   *      blind tag
+   *      illustration      standing free — no plate behind it
+   *      name
+   *      stack · big blinds     one line
+   *      cards
+   *
+   * The order does not flip by hemisphere. Consistency is the point: the reader learns one shape and
+   * then reads all nine seats the same way, which they cannot do if the top half is upside down.
+   */
+  function seat(s, k, n, sb, bb) {
     const p = s.seats[k]
     const pos = seatPos(k, n, o.hero ?? 0, SEAT_RX, SEAT_RY)
     const isHero = k === o.hero
@@ -100,31 +114,36 @@ export function mountTable(host, opts) {
       class: ['seat', p.folded ? 'folded' : '', p.allIn ? 'allin' : '', toAct ? 'to-act' : '', isHero ? 'hero' : ''].filter(Boolean).join(' '),
     })
 
-    // Hole cards sit on the side of the plate that faces the middle of the table. Always drawing them
-    // above the plate puts the top seats' cards off the top of the canvas, and buries the bet pill.
-    const shown = o.reveal || isHero || o.hero == null
-    const cy = pos.y < CY ? pos.y + 54 : pos.y - 54
-    if (p.hole && !p.folded) {
-      g.append(card(p.hole[0], pos.x - CARD_W - 3, cy - CARD_H / 2, !shown))
-      g.append(card(p.hole[1], pos.x + 3, cy - CARD_H / 2, !shown))
+    // The blind marker needs its own chip: depending on the seat it lands on felt or on white, and no
+    // single ink colour is legible on both.
+    const blind = k === sb ? 'SB' : k === bb ? 'BB' : null
+    if (blind) {
+      const by = pos.y + Y_ILLO_TOP - 14
+      g.append(el('rect', { class: 'blind-chip', x: pos.x - 13, y: by, width: 26, height: 14 }))
+      g.append(text(blind, { class: 'blind-tag', x: pos.x, y: by + 10.5, 'text-anchor': 'middle' }))
     }
 
-    // name plate, with the portrait inset at its leading edge
-    const left = pos.x - PLATE_W / 2
-    g.append(el('rect', { class: 'plate', x: left, y: pos.y - PLATE_H / 2, width: PLATE_W, height: PLATE_H }))
-    g.append(portrait(left + 26, pos.y, k, o.avatars[k], p.name, defs, uid))
-    const textX = left + 52
-    g.append(text(p.name, { class: 'seat-name', x: textX, y: pos.y - 3 }))
-    const bbCount = o.showBB && s.blinds.bb ? ` · ${round(p.stack / s.blinds.bb)}bb` : ''
-    g.append(text(p.stack > 0 ? chips(p.stack) + bbCount : 'ALL IN', { class: 'seat-stack', x: textX, y: pos.y + 15 }))
+    // whose turn it is, shown as a ring around the illustration rather than a box around the seat
+    if (toAct) {
+      g.append(el('circle', { class: 'act-ring', cx: pos.x, cy: pos.y + Y_ILLO_TOP + ILLO / 2, r: ILLO / 2 + 3 }))
+    }
+    g.append(illustration(pos.x, pos.y + Y_ILLO_TOP, k, o.avatars[k], p.name))
 
-    // blind marker
-    const blind = k === sb ? 'SB' : k === bb ? 'BB' : null
-    if (blind) g.append(text(blind, { class: 'blind-tag', x: pos.x + PLATE_W / 2 - 6, y: pos.y - PLATE_H / 2 - 5, 'text-anchor': 'end' }))
+    g.append(text(p.name, { class: 'seat-name', x: pos.x, y: pos.y + Y_NAME, 'text-anchor': 'middle' }))
 
-    // Chips wagered, between the seat and the middle — far enough in to clear that seat's hole cards.
+    const bbCount = o.showBB && s.blinds.bb ? ` · ${round(p.stack / s.blinds.bb)} bb` : ''
+    g.append(text(p.stack > 0 ? chips(p.stack) + bbCount : 'ALL IN',
+      { class: 'seat-detail', x: pos.x, y: pos.y + Y_DETAIL, 'text-anchor': 'middle' }))
+
+    const shown = o.reveal || isHero || o.hero == null
+    if (p.hole && !p.folded) {
+      g.append(card(p.hole[0], pos.x - CARD_W - 3, pos.y + Y_CARDS_TOP, !shown))
+      g.append(card(p.hole[1], pos.x + 3, pos.y + Y_CARDS_TOP, !shown))
+    }
+
+    // Chips wagered, between the seat and the middle — clear of the column at either end.
     if (p.committed > 0) {
-      const b = lerp(pos, { x: CX, y: CY }, 0.52)
+      const b = lerp(pos, { x: CX, y: CY }, 0.46)
       g.append(el('rect', { class: 'bet-pill', x: b.x - 30, y: b.y - 12, width: 60, height: 24 }))
       g.append(text(chips(p.committed), { class: 'bet-t', x: b.x, y: b.y + 5, 'text-anchor': 'middle' }))
     }
@@ -219,51 +238,54 @@ function seatPos(k, n, hero, rx, ry, degOffset = 0) {
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })
 
 /**
- * The portrait inset in a seat plate. With a url it clips that image to a circle; without one it draws
- * the built-in figure, so a table never depends on an outside file being present.
+ * The seat's illustration, standing free — no disc, no crop, no box. The supplied artwork is drawn whole
+ * at its own aspect ratio, which is why it needs a transparent background to sit on the felt.
  *
  * Any artwork passed in here belongs to whoever made it. `content/images/avatars/manifest.json` is where
  * each file's source and licence are recorded — see the README there before adding any.
  */
-function portrait(cx, cy, k, url, name, defs, uid) {
+function illustration(cx, top, k, url, name) {
   const g = el('g', { class: `portrait tint-${k % 9}` })
-  g.append(el('circle', { class: 'av-disc', cx, cy, r: AVATAR_R }))
   if (url) {
-    const id = `${uid}-av${k}`
-    defs.append(el('clipPath', { id }, el('circle', { cx, cy, r: AVATAR_R })))
     const img = el('image', {
-      href: url, x: cx - AVATAR_R, y: cy - AVATAR_R, width: AVATAR_R * 2, height: AVATAR_R * 2,
-      preserveAspectRatio: 'xMidYMid slice', 'clip-path': `url(#${id})`,
+      href: url, x: cx - ILLO / 2, y: top, width: ILLO, height: ILLO,
+      preserveAspectRatio: 'xMidYMid meet',   // whole illustration, never cropped
     })
     const t = el('title'); t.textContent = name
     img.append(t)
     g.append(img)
   } else {
-    g.append(builtInFigure(cx, cy))
+    // No artwork: our own marker gets a disc, because unlike an illustration it has no silhouette of
+    // its own and would read as a smudge floating on the felt.
+    g.append(el('circle', { class: 'av-disc', cx, cy: top + ILLO / 2, r: ILLO / 2 - 3 }))
+    g.append(builtInFigure(cx, top + ILLO / 2, ILLO / 2 - 3))
   }
-  g.append(el('circle', { class: 'av-ring', cx, cy, r: AVATAR_R }))
   return g
 }
 
 /**
- * Our own placeholder: a disc, a head and a pair of shoulders, deliberately faceless and geometric so it
- * reads as a marker rather than a person, and sits inside the series' flat, square-cornered language.
+ * Our own placeholder: a head and a pair of shoulders, deliberately faceless and geometric so it reads
+ * as a marker rather than a person. Drawn at r = 19 originally, so it scales from there.
  */
-function builtInFigure(cx, cy) {
+function builtInFigure(cx, cy, r) {
+  const k = r / 19
   const g = el('g', { class: 'av-figure' })
-  g.append(el('circle', { cx, cy: cy - 4.5, r: 5.6 }))
-  g.append(el('path', { d: `M ${cx - 10} ${cy + 11} a 10 10 0 0 1 20 0 z` }))
+  g.append(el('circle', { cx, cy: cy - 4.5 * k, r: 5.6 * k }))
+  g.append(el('path', { d: `M ${cx - 10 * k} ${cy + 11 * k} a ${10 * k} ${10 * k} 0 0 1 ${20 * k} 0 z` }))
   return g
 }
 
-function card(c, x, y, faceDown) {
+function card(c, x, y, faceDown, w = CARD_W, h = CARD_H) {
   const g = el('g', { class: 'card' + (faceDown ? ' back' : '') })
-  g.append(el('rect', { x, y, width: CARD_W, height: CARD_H }))   // corner radius comes from --card-radius
+  g.append(el('rect', { x, y, width: w, height: h }))   // corner radius comes from --card-radius
   if (faceDown || c == null) return g
   const r = RANKS[rankOf(c)], glyph = SUIT_GLYPH[suitOf(c)]
-  const cls = isRed(c) ? 'pip red' : 'pip black'
-  g.append(text(r, { class: `rank ${isRed(c) ? 'red' : 'black'}`, x: x + CARD_W / 2, y: y + 26, 'text-anchor': 'middle' }))
-  g.append(text(glyph, { class: cls, x: x + CARD_W / 2, y: y + 50, 'text-anchor': 'middle' }))
+  const red = isRed(c)
+  // proportional to the card, so hole cards and board cards read as the same object at two sizes
+  g.append(text(r, { class: `rank ${red ? 'red' : 'black'}`, x: x + w / 2, y: y + h * 0.42,
+    'text-anchor': 'middle', style: `font-size:${Math.round(h * 0.34)}px` }))
+  g.append(text(glyph, { class: red ? 'pip red' : 'pip black', x: x + w / 2, y: y + h * 0.81,
+    'text-anchor': 'middle', style: `font-size:${Math.round(h * 0.31)}px` }))
   return g
 }
 
