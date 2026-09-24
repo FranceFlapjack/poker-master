@@ -79,13 +79,6 @@
   --suit-red: #d1615b;         /* Draft 1: #b3141a */
   --suit-black: #3d4348;       /* Draft 1: #161616 */
 
-  /* the chip stack beside each seat — height encodes depth in big blinds, colour rises with it.
-     Muted on purpose: real denomination colours are far too loud against the Draft 2 felt. */
-  --chipstack-0: #cdd6dd;
-  --chipstack-1: #8fa3b5;
-  --chipstack-2: #3f5f87;
-  --chipstack-edge: rgba(60, 50, 40, 0.24);
-
   /* chips, by the usual tournament denominations */
   --chip-25: #2f8f4e;
   --chip-100: #16181a;
