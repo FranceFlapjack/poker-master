@@ -1,7 +1,5 @@
-// App shell: curriculum sidebar, hash router, home page, mute + activity footer.
-// Phase 0 is the shell only — no lesson, trainer or play route yet (see ROADMAP.md). Every lesson in
-// content/curriculum.json is `ready: false`, so the sidebar renders the whole course greyed out, which is
-// the point: the shape of the app is visible before any of it is written.
+// App shell: curriculum sidebar, hash router, home and lesson pages, mute + activity footer.
+import { renderLesson } from './lesson.js'
 import { progress } from './progress.js'
 import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
@@ -10,12 +8,14 @@ import { mountFamily } from './family.js'
 const $ = s => document.querySelector(s)
 let curriculum = null
 let current = null // {track, slug}
+let unsubLesson = null
 
 const ICON_SOUND_ON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 7a4 4 0 010 6M15.5 4.5a7.5 7.5 0 010 11"/></svg>'
 const ICON_SOUND_OFF = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 8l4 4M17 8l-4 4"/></svg>'
 
 async function boot() {
   curriculum = await (await fetch('content/curriculum.json')).json()
+  applyMode()
   renderSidebar()
   mountActivity($('#activity'))
   const mute = $('#mute')
@@ -29,6 +29,15 @@ async function boot() {
   window.addEventListener('hashchange', route)
   window.addEventListener('resize', () => { if (innerWidth > 760) toggleSidebar(false) }) // an `open` left over from the narrow layout is invisible on desktop and must not survive back into it
   route()
+}
+
+/**
+ * The two-audience switch. Beginner mode shows the First steps track and tells components to keep the
+ * jargon down; Grinder mode hides it and lets the numbers through. It is a data attribute on <body> so
+ * CSS and any component can read it without being passed a flag.
+ */
+function applyMode() {
+  document.body.dataset.mode = progress.beginner ? 'beginner' : 'grinder'
 }
 
 function visibleTracks() { return curriculum.tracks.filter(t => !t.beginner || progress.beginner) }
@@ -65,8 +74,11 @@ function toggleSidebar(force) {
 }
 
 function route() {
+  const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
+  const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
+  if (m) return showLesson(main, m[1], m[2])
   current = null
   renderSidebar()
   showHome(main)
@@ -75,7 +87,10 @@ function route() {
 function showHome(main) {
   document.title = 'Poker Master'
   const tracks = visibleTracks()
-  const readyCount = allLessons().filter(l => l.ready).length
+  const lessons = allLessons()
+  const last = progress.state.lastLesson && lessons.find(l => lessonId(l.track, l.slug) === progress.state.lastLesson)
+  const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.track, l.slug)))
+  const cont = last && !progress.isLessonDone(progress.state.lastLesson) ? last : next
   main.innerHTML = `
     <div class="page">
       <section class="hero">
@@ -83,7 +98,7 @@ function showHome(main) {
         <h1>Learn the hand before you learn the odds.</h1>
         <p>No-limit hold'em, from the first deal through to the maths a tournament actually asks of you. Every lesson puts a table in the text so you act on the spot rather than read about it, and every drill is checked against the app's own engine before it ships.</p>
       </section>
-      ${readyCount === 0 ? `<div class="card continue"><div><span class="eyebrow">Phase 0</span><h3>The shell is up; the course is not written yet</h3><div class="small">The whole curriculum is laid out in the sidebar so the shape is visible. Lessons unlock as they are written — the engine comes first, because every drill answer is verified against it.</div></div></div>` : ''}
+      ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${tracks.map((t, i) => {
           const ready = t.lessons.filter(l => l.ready).length
@@ -93,11 +108,61 @@ function showHome(main) {
         }).join('')}
       </div>
       <div class="switch-row">
-        <button class="switch" id="beginner" role="switch" aria-checked="${progress.beginner}" aria-label="Show the first steps track"></button>
-        <span>New to poker? Show the <em>First steps</em> track (the deck, what beats what, position, blinds).</span>
+        <button class="switch" id="beginner" role="switch" aria-checked="${progress.beginner}" aria-label="Beginner mode"></button>
+        <span>New to poker? <em>Beginner</em> shows the First steps track and keeps the jargon down. Turn it off for the tournament material.</span>
       </div>
     </div>`
-  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; showHome(main); renderSidebar() })
+  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; applyMode(); showHome(main); renderSidebar() })
+}
+
+async function showLesson(main, track, slug) {
+  const t = curriculum.tracks.find(x => x.id === track)
+  const l = t && t.lessons.find(x => x.slug === slug)
+  if (!l || !l.ready) { location.hash = '#/'; return }
+  if (t.beginner && !progress.beginner) { progress.beginner = true; applyMode() }
+  current = { track, slug }
+  renderSidebar()
+  const id = lessonId(track, slug)
+  main.innerHTML = '<div class="page"><p class="small">Loading…</p></div>'
+  let md
+  try { md = await (await fetch(`content/lessons/${track}/${slug}.md`)).text() } catch (e) {
+    main.innerHTML = '<div class="page"><p>Could not load this lesson.</p></div>'; return
+  }
+  const page = document.createElement('div'); page.className = 'page'
+  main.innerHTML = ''; main.append(page)
+  if (unsubLesson) { unsubLesson(); unsubLesson = null }
+  const { meta, drillIds } = await renderLesson(page, md, { lessonId: id, onSolved: () => checkAuto() })
+  document.title = `${meta.title || slug} · Poker Master`
+  progress.setLastLesson(id)
+
+  // A lesson with drills completes itself once they are all answered; "mark as read" is the fallback
+  // for one that has none.
+  const lessons = allLessons()
+  const idx = lessons.findIndex(x => x.track === track && x.slug === slug)
+  const prev = lessons.slice(0, idx).reverse().find(x => x.ready), next = lessons.slice(idx + 1).find(x => x.ready)
+  const row = document.createElement('div'); row.className = 'complete-row'
+  const solvedCount = () => drillIds.filter(d => progress.isDrillDone(d)).length
+  const paintRow = () => {
+    const done = progress.isLessonDone(id); row.classList.toggle('done', done)
+    if (done) row.innerHTML = `<span class="msg">Lesson complete.</span>${drillIds.length ? `<span class="count">${solvedCount()}/${drillIds.length} drills</span>` : ''}`
+    else if (drillIds.length) row.innerHTML = `<span class="msg">Answer the drills to complete this lesson.</span><span class="count">${solvedCount()}/${drillIds.length}</span><button class="btn quiet" id="complete">Mark as read instead</button>`
+    else row.innerHTML = `<button class="btn primary" id="complete">Mark as read</button><span class="msg">Ticks the lesson in the sidebar.</span>`
+    const b = row.querySelector('#complete')
+    if (b) b.addEventListener('click', () => { progress.completeLesson(id); sound.play('success'); paintRow() })
+  }
+  function checkAuto() {
+    if (!progress.isLessonDone(id) && drillIds.length && solvedCount() === drillIds.length) {
+      progress.completeLesson(id); sound.play('success')
+    }
+    paintRow()
+  }
+  paintRow(); page.append(row)
+  unsubLesson = progress.onChange(paintRow)
+
+  const nav = document.createElement('nav'); nav.className = 'lesson-nav'
+  nav.innerHTML = `<div>${prev ? `<a href="#/lesson/${prev.track}/${prev.slug}"><span class="eyebrow">Previous</span>${esc(prev.title)}</a>` : ''}</div><div class="next">${next ? `<a href="#/lesson/${next.track}/${next.slug}"><span class="eyebrow">Next</span>${esc(next.title)}</a>` : '<a href="#/"><span class="eyebrow">Next</span>Back to the course</a>'}</div>`
+  page.append(nav)
+  window.scrollTo({ top: 0 })
 }
 
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }

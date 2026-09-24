@@ -6,10 +6,26 @@
       "beginner": true,
       "blurb": "For someone who has never played a hand. The deck, what beats what, where you sit and why it matters, and the blinds that force the action.",
       "lessons": [
-        { "slug": "the-deck-and-the-hand", "title": "The deck and the five-card hand", "ready": false },
-        { "slug": "hand-rankings", "title": "What beats what", "ready": false },
-        { "slug": "the-table-and-positions", "title": "The table, the button, and position", "ready": false },
-        { "slug": "blinds-and-antes", "title": "Blinds and antes: why anyone bets at all", "ready": false }
+        {
+          "slug": "the-deck-and-the-hand",
+          "title": "The deck and the five-card hand",
+          "ready": true
+        },
+        {
+          "slug": "hand-rankings",
+          "title": "What beats what",
+          "ready": false
+        },
+        {
+          "slug": "the-table-and-positions",
+          "title": "The table, the button, and position",
+          "ready": false
+        },
+        {
+          "slug": "blinds-and-antes",
+          "title": "Blinds and antes: why anyone bets at all",
+          "ready": false
+        }
       ]
     },
     {
@@ -17,10 +33,26 @@
       "title": "How a hand is played",
       "blurb": "One hand from deal to showdown: the four streets, the actions you may take, what happens when someone is all in, and who wins at the end.",
       "lessons": [
-        { "slug": "the-four-streets", "title": "Preflop, flop, turn, river", "ready": false },
-        { "slug": "actions-and-betting", "title": "Check, bet, call, raise, fold", "ready": false },
-        { "slug": "all-in-and-side-pots", "title": "All in, and how side pots work", "ready": false },
-        { "slug": "showdown", "title": "Showdown: reading the winner", "ready": false }
+        {
+          "slug": "the-four-streets",
+          "title": "Preflop, flop, turn, river",
+          "ready": false
+        },
+        {
+          "slug": "actions-and-betting",
+          "title": "Check, bet, call, raise, fold",
+          "ready": false
+        },
+        {
+          "slug": "all-in-and-side-pots",
+          "title": "All in, and how side pots work",
+          "ready": false
+        },
+        {
+          "slug": "showdown",
+          "title": "Showdown: reading the winner",
+          "ready": false
+        }
       ]
     },
     {
@@ -28,10 +60,26 @@
       "title": "Starting hands",
       "blurb": "The 169 hands you can be dealt, why the same hand is a raise in one seat and a fold in another, and a first chart to lean on.",
       "lessons": [
-        { "slug": "the-169-grid", "title": "The 169 hands, on one grid", "ready": false },
-        { "slug": "position-changes-everything", "title": "Why position changes the answer", "ready": false },
-        { "slug": "a-first-opening-chart", "title": "A first opening chart", "ready": false },
-        { "slug": "defending-the-blinds", "title": "Defending the blinds", "ready": false }
+        {
+          "slug": "the-169-grid",
+          "title": "The 169 hands, on one grid",
+          "ready": false
+        },
+        {
+          "slug": "position-changes-everything",
+          "title": "Why position changes the answer",
+          "ready": false
+        },
+        {
+          "slug": "a-first-opening-chart",
+          "title": "A first opening chart",
+          "ready": false
+        },
+        {
+          "slug": "defending-the-blinds",
+          "title": "Defending the blinds",
+          "ready": false
+        }
       ]
     },
     {
@@ -39,10 +87,26 @@
       "title": "Tournament basics",
       "blurb": "What makes a tournament different from a cash game: rising blinds, counting your stack in big blinds, the bubble, and why chips are not money.",
       "lessons": [
-        { "slug": "blind-levels-and-stack-depth", "title": "Blind levels and counting in big blinds", "ready": false },
-        { "slug": "survival-and-accumulation", "title": "Survival against accumulation", "ready": false },
-        { "slug": "the-bubble", "title": "The bubble", "ready": false },
-        { "slug": "chips-are-not-money", "title": "Chips are not money", "ready": false }
+        {
+          "slug": "blind-levels-and-stack-depth",
+          "title": "Blind levels and counting in big blinds",
+          "ready": false
+        },
+        {
+          "slug": "survival-and-accumulation",
+          "title": "Survival against accumulation",
+          "ready": false
+        },
+        {
+          "slug": "the-bubble",
+          "title": "The bubble",
+          "ready": false
+        },
+        {
+          "slug": "chips-are-not-money",
+          "title": "Chips are not money",
+          "ready": false
+        }
       ]
     },
     {
@@ -50,9 +114,21 @@
       "title": "Not losing money",
       "blurb": "The arithmetic that stops most of the bleeding: whether the pot is paying you enough to call, what a bluff actually is, and the leaks every beginner has.",
       "lessons": [
-        { "slug": "pot-odds", "title": "Pot odds, in plain words", "ready": false },
-        { "slug": "what-a-bluff-is", "title": "What a bluff actually is", "ready": false },
-        { "slug": "five-beginner-leaks", "title": "Five leaks to close", "ready": false }
+        {
+          "slug": "pot-odds",
+          "title": "Pot odds, in plain words",
+          "ready": false
+        },
+        {
+          "slug": "what-a-bluff-is",
+          "title": "What a bluff actually is",
+          "ready": false
+        },
+        {
+          "slug": "five-beginner-leaks",
+          "title": "Five leaks to close",
+          "ready": false
+        }
       ]
     }
   ]

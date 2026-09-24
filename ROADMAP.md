@@ -20,7 +20,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 |---|---|---|
 | **0** | Repo skeleton from the sibling pattern; accent chosen; shell boots | ✅ done 2026-09-24 |
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
-| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | next |
+| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | in progress — pipeline done, 1 of 8 lessons written |
 | **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | |
 | **4** | `js/bot/` + Play a hand + track 2 written | |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
@@ -97,6 +97,28 @@ Test targets for `scripts/engine-test.mjs`:
 - equity: enumeration deterministic and cross-checked against published values hardcoded as fixtures;
   Monte Carlo converges within its reported standard error.
 - ranges: parse → grid → re-serialize round-trip; combo counts with and without card removal.
+
+## Phase 2 — the lesson pipeline
+
+Done: `js/lesson.js` (Markdown → components), `js/exercise.js` (drills), `js/spot.js` (one spot builder
+shared by lessons, drills and the checkers), the lesson route and the Beginner/Grinder mode switch,
+`scripts/check-content.mjs` and `scripts/verify-drills.mjs`.
+
+**Four kinds of drill, and the split between them is the important part:**
+
+| kind | question | answer comes from |
+|---|---|---|
+| `showdown` | who wins this board? | **the engine** |
+| `rank` | which hand is stronger? | **the engine** |
+| `action` | fold, call or raise? | the author — it is a judgement |
+| `choice` | a plain question | the author |
+
+The first two cannot be authored wrong because nobody authors them; `verify-drills.mjs` recomputes every
+one offline. The last two have no ground truth, and the checker reports them as **unverified** rather
+than implying it has confirmed an opinion. It also rejects an `answer:` written on an engine-decided
+drill, since that number would be silently ignored and the author would never know.
+
+Remaining: seven more lessons across tracks 0 and 1.
 
 ## Phase 8 — why review does not port from Chess Master
 
