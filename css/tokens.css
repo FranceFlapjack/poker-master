@@ -1,8 +1,19 @@
 /* Design tokens — the one file to tweak between design drafts.
+
    Draft 1 (2026-09-24): the Master series language (Chess Master → Go Master → here): white ground,
    near-black ink, Helvetica Neue, small uppercase letter-spaced labels, hairline borders, square corners.
    The accent is deep navy — the siblings' tone rotated to blue, the one cool accent of the three, chosen
    so the Poker tile reads as distinct beside Chess's green and Go's red in the family bubble.
+
+   Draft 2 (2026-09-24, owner's comment: bring the table and cards towards a soft flat illustration look,
+   to sit with the seat portraits): the SHELL is untouched — same ground, type, hairlines and square
+   corners as Draft 1, and the same --radius: 0 — and only the felt and the cards soften. Casino green
+   becomes a dusty sage, the rail a thick warm cream, cards gain rounded corners and a warm face, and the
+   suits drop from pillar-box red and near-black to a muted coral and a soft charcoal. Bet pills go from a
+   black wash to cream with dark ink. Rounding lives in the --*-radius tokens below rather than in
+   --radius, so the table can be soft while the shell stays square. Draft 1's table values are kept in
+   comments beside each line so reverting is a one-line edit.
+
    Comment on any line here and it becomes a small diff. */
 :root {
   /* ground & ink */
@@ -42,22 +53,31 @@
   --bad: #c00000;
   --warn: #7a5c00;
 
-  /* table — muted casino felt, hairline rail, classic card faces.
-     The felt is deliberately desaturated: full casino green fights the navy accent. */
-  --tb-felt: #35654d;
-  --tb-felt-2: #2c5442;
-  --tb-rail: #d8d8d2;
-  --tb-seat: #f5f5f5;
-  --tb-seat-hero: var(--accent-soft);
-  --tb-dealer: #ffffff;
+  /* table — Draft 2: a dusty sage felt and a thick warm rail, so the green stops reading as a casino
+     and starts reading as a drawn surface. Still clearly darker than the seat plates sitting on it. */
+  --tb-felt: #789b82;          /* Draft 1: #35654d */
+  --tb-felt-2: #6b8d75;        /* Draft 1: #2c5442 */
+  --tb-rail: #efe7da;          /* Draft 1: #d8d8d2 */
+  --tb-rail-w: 5px;            /* Draft 1: 2px — a thicker rail is most of the softening */
+  --tb-seat: #fdfaf4;          /* Draft 1: #f5f5f5 */
+  --tb-seat-hero: #e6edf6;     /* Draft 1: var(--accent-soft) */
+  --tb-dealer: #fffdf8;        /* Draft 1: #ffffff */
+  --tb-bet-bg: #fdfaf4;        /* Draft 1: rgba(0,0,0,0.34) — a cream chip, not a hole in the felt */
+  --tb-bet-ink: #3d4348;       /* Draft 1: #ffffff */
+  --tb-pot-ink: #fdfaf4;
+  --plate-radius: 10px;        /* Draft 1: 0 (square, via --radius) */
+  --pill-radius: 13px;
 
-  /* cards */
-  --card-face: #fdfdfb;
-  --card-edge: #c9c9c2;
-  --card-back: var(--accent);
-  --card-shadow: rgba(0, 0, 0, 0.22);
-  --suit-red: #b3141a;
-  --suit-black: #161616;
+  /* cards — Draft 2: warm face, rounded corners, and suits at illustration weight rather than print
+     weight. The red is a muted coral and the black a soft charcoal; both still pass against the face. */
+  --card-face: #fffdf7;        /* Draft 1: #fdfdfb */
+  --card-edge: #ded7c9;        /* Draft 1: #c9c9c2 */
+  --card-back: #3f5f87;        /* Draft 1: var(--accent) — the accent at full strength was too severe */
+  --card-back-edge: #345072;
+  --card-shadow: rgba(60, 50, 40, 0.18);
+  --card-radius: 8px;          /* Draft 1: 4px */
+  --suit-red: #d1615b;         /* Draft 1: #b3141a */
+  --suit-black: #3d4348;       /* Draft 1: #161616 */
 
   /* chips, by the usual tournament denominations */
   --chip-25: #2f8f4e;
@@ -77,8 +97,8 @@
   --av-6: #7a6a3f;
   --av-7: #6b4550;
   --av-8: #4f5a66;
-  --av-disc: #e8e8e4;
-  --av-ring: rgba(0, 0, 0, 0.14);
+  --av-disc: #efe9dd;          /* Draft 1: #e8e8e4 */
+  --av-ring: rgba(60, 50, 40, 0.16);
 
   /* range grid (the 169-hand matrix): raise / call / fold, plus mixed frequencies */
   --rg-raise: #0f2d57;

@@ -125,7 +125,7 @@ export function mountTable(host, opts) {
     // Chips wagered, between the seat and the middle — far enough in to clear that seat's hole cards.
     if (p.committed > 0) {
       const b = lerp(pos, { x: CX, y: CY }, 0.52)
-      g.append(el('rect', { class: 'bet-pill', x: b.x - 30, y: b.y - 12, width: 60, height: 24, rx: 12 }))
+      g.append(el('rect', { class: 'bet-pill', x: b.x - 30, y: b.y - 12, width: 60, height: 24 }))
       g.append(text(chips(p.committed), { class: 'bet-t', x: b.x, y: b.y + 5, 'text-anchor': 'middle' }))
     }
     return g
@@ -258,7 +258,7 @@ function builtInFigure(cx, cy) {
 
 function card(c, x, y, faceDown) {
   const g = el('g', { class: 'card' + (faceDown ? ' back' : '') })
-  g.append(el('rect', { x, y, width: CARD_W, height: CARD_H, rx: 4 }))
+  g.append(el('rect', { x, y, width: CARD_W, height: CARD_H }))   // corner radius comes from --card-radius
   if (faceDown || c == null) return g
   const r = RANKS[rankOf(c)], glyph = SUIT_GLYPH[suitOf(c)]
   const cls = isRed(c) ? 'pip red' : 'pip black'
