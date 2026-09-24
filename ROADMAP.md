@@ -19,8 +19,8 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | Phase | Deliverable | State |
 |---|---|---|
 | **0** | Repo skeleton from the sibling pattern; accent chosen; shell boots | ✅ done 2026-09-24 |
-| **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | next |
-| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | |
+| **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
+| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | next |
 | **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | |
 | **4** | `js/bot/` + Play a hand + track 2 written | |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
@@ -56,10 +56,34 @@ default just because they shipped first.
    that the first reader of this app is someone learning the game, so the friend should not have to find a
    switch. It does mean the owner sees the First steps track on first load and has to turn it off once.
 
-## Phase 1 — the engine, first
+## Phase 1 — done 2026-09-24
 
-The engine comes before any content, because `scripts/verify-drills.mjs` checks every lesson answer
-against it. Content written before the engine exists cannot be trusted.
+`js/engine/` — `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity` — plus `js/table.js` and
+`scripts/engine-test.mjs` (**177 checks, all passing**, ~1s including full preflop enumeration).
+
+Verified by running it, not by reading it: `dev-table.html` renders the four shapes the table has to
+handle — nine-handed with antes, a three-way all-in with side pots shown down, a playable heads-up spot,
+and a board with folded and all-in seats. Three layout bugs were found that way and only that way: the
+dealer button sat on the bottom seat's cards, top seats drew their hole cards off the top of the canvas,
+and the bet pill overlapped the hero's hand.
+
+**On equity fixtures.** `engine-test.mjs` deliberately hardcodes no published percentage. It asserts
+invariants instead: equities summing to one, wins and ties accounting for every runout, and — the useful
+one — that two hands related by a suit swap have *exactly* equal equity, which catches suit-handling bugs
+no remembered number would. For the record, our own exhaustive enumeration gives **AsAh vs KsKh =
+82.64% / 17.36% over all 1,712,304 runouts**. That figure is self-computed, not quoted, and it is
+suit-specific: two black aces against two black kings is not the same enumeration as aces against kings
+with all four suits live, so it should not be compared casually against a chart. Checking it against an
+independent calculator is still worth doing once, with matching suits.
+
+**Known gap, deliberate:** a big blind whose big-blind-ante obligation exceeds their stack simply posts
+what they have and is all-in before cards. Real rooms differ on the remedy; it is marked TODO in
+`rules.js` rather than guessed at.
+
+### Why the engine came first
+
+`scripts/verify-drills.mjs` checks every lesson answer against this engine. Content written before it
+existed could not be trusted.
 
 `js/table.js` is the load-bearing piece — street progression, turn order, legal actions, bet/raise sizing,
 pot and **side-pot** management, showdown, **2–9 handed**. It is needed by the lessons' interactive spots,

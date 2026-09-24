@@ -378,15 +378,39 @@ details.more > .more-body { padding-bottom: var(--s-4); }
   .switch::after, .track-head .bar i { transition: none; }
 }
 
-/* the poker table (js/table.js draws it as SVG; everything visual is here).
-   Placeholder block — filled in at Phase 1 when table.js lands. */
-svg.pk-table { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+/* the poker table — js/table.js draws it as SVG; everything visual is here, tokens in tokens.css */
+.table-wrap { max-width: var(--board-max); margin: 0 0 var(--s-5); }
+svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 .pk-table .felt { fill: var(--tb-felt); }
 .pk-table .rail { fill: none; stroke: var(--tb-rail); stroke-width: 2; }
-.pk-table .seat text { font-family: var(--font-sans); font-size: 11px; letter-spacing: var(--track); text-transform: uppercase; fill: var(--ink-2); }
-.pk-table .card { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 0.6; }
-.pk-table .card.back { fill: var(--card-back); }
-.pk-table .card .pip.red { fill: var(--suit-red); }
-.pk-table .card .pip.black { fill: var(--suit-black); }
+.pk-table .pot { font-size: 15px; font-weight: 600; letter-spacing: var(--track); fill: #fff; opacity: 0.92; }
+.pk-table .street { font-size: 13px; letter-spacing: var(--track); fill: #fff; opacity: 0.5; }
+
+.pk-table .plate { fill: var(--tb-seat); stroke: var(--line-2); stroke-width: 1; }
+.pk-table .hero .plate { fill: var(--tb-seat-hero); stroke: var(--accent); }
+.pk-table .to-act .plate { stroke: var(--accent); stroke-width: 2.5; }
+.pk-table .seat-name { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; fill: var(--ink); }
+.pk-table .seat-stack { font-size: 11px; letter-spacing: 0.04em; fill: var(--ink-2); }
+.pk-table .allin .seat-stack { fill: var(--bad); font-weight: 600; }
+.pk-table .folded { opacity: 0.38; }
+.pk-table .blind-tag { font-size: 9px; font-weight: 600; letter-spacing: var(--track); fill: #fff; opacity: 0.7; }
+
+.pk-table .bet-pill { fill: rgba(0, 0, 0, 0.34); }
+.pk-table .bet-t { font-size: 11px; font-weight: 600; fill: #fff; }
+.pk-table .dealer { fill: var(--tb-dealer); stroke: var(--ink-3); stroke-width: 1; }
+.pk-table .dealer-t { font-size: 11px; font-weight: 700; fill: var(--ink); }
+
+.pk-table .card rect { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 1; }
+.pk-table .card.back rect { fill: var(--card-back); stroke: var(--accent-deep); }
+.pk-table .card .rank { font-size: 21px; font-weight: 600; }
+.pk-table .card .rank.red, .pk-table .card .pip.red { fill: var(--suit-red); }
+.pk-table .card .rank.black, .pk-table .card .pip.black { fill: var(--suit-black); }
+.pk-table .card .pip { font-size: 19px; }
 .pk-table .card.deal { animation: card-deal var(--board-anim) ease-out; }
 @keyframes card-deal { from { transform: scale(0.82); opacity: 0.3 } to { transform: scale(1); opacity: 1 } }
+
+.table-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); max-width: var(--board-max); margin-bottom: var(--s-5); }
+.raise-control { display: flex; align-items: center; gap: var(--s-2); flex: 1 1 260px; }
+.raise-control input[type=range] { flex: 1; min-width: 110px; }
+.raise-amount { font-size: var(--fs-1); font-variant-numeric: tabular-nums; min-width: 5.5em; color: var(--ink-2); }
+@media (max-width: 560px) { .table-actions { gap: var(--s-1); } .raise-control { flex-basis: 100%; } }
