@@ -6,10 +6,26 @@
       "beginner": true,
       "blurb": "Everything you need to sit down and play, in four lessons. The cards, the table, how a hand runs, and how pots are won.",
       "lessons": [
-        { "slug": "the-cards", "title": "The cards", "ready": true },
-        { "slug": "the-table", "title": "The table", "ready": true },
-        { "slug": "playing-a-hand", "title": "Playing a hand", "ready": true },
-        { "slug": "winning-the-pot", "title": "Winning the pot", "ready": true }
+        {
+          "slug": "the-cards",
+          "title": "The cards",
+          "ready": true
+        },
+        {
+          "slug": "the-table",
+          "title": "The table",
+          "ready": true
+        },
+        {
+          "slug": "playing-a-hand",
+          "title": "Playing a hand",
+          "ready": true
+        },
+        {
+          "slug": "winning-the-pot",
+          "title": "Winning the pot",
+          "ready": true
+        }
       ]
     },
     {
@@ -22,10 +38,26 @@
           "title": "Ranges",
           "blurb": "The 169 hands, why the same hand is a raise in one seat and a fold in another, and charts you can lean on.",
           "lessons": [
-            { "slug": "the-169-grid", "title": "The 169 hands, on one grid", "ready": false },
-            { "slug": "position-and-ranges", "title": "Why position changes the answer", "ready": false },
-            { "slug": "opening-charts", "title": "Opening charts, and where they come from", "ready": false },
-            { "slug": "defending-the-blinds", "title": "Defending the blinds", "ready": false }
+            {
+              "slug": "the-169-grid",
+              "title": "The 169 hands, on one grid",
+              "ready": false
+            },
+            {
+              "slug": "position-and-ranges",
+              "title": "Why position changes the answer",
+              "ready": false
+            },
+            {
+              "slug": "opening-charts",
+              "title": "Opening charts, and where they come from",
+              "ready": false
+            },
+            {
+              "slug": "defending-the-blinds",
+              "title": "Defending the blinds",
+              "ready": false
+            }
           ]
         },
         {
@@ -33,10 +65,26 @@
           "title": "Stack depth and ICM",
           "blurb": "Counting in big blinds, what changes as the blinds rise, the bubble, and why chips are not money.",
           "lessons": [
-            { "slug": "counting-in-big-blinds", "title": "Counting in big blinds", "ready": false },
-            { "slug": "survival-and-accumulation", "title": "Survival against accumulation", "ready": false },
-            { "slug": "the-bubble", "title": "The bubble", "ready": false },
-            { "slug": "chips-are-not-money", "title": "Chips are not money", "ready": false }
+            {
+              "slug": "counting-in-big-blinds",
+              "title": "Counting in big blinds",
+              "ready": false
+            },
+            {
+              "slug": "survival-and-accumulation",
+              "title": "Survival against accumulation",
+              "ready": false
+            },
+            {
+              "slug": "the-bubble",
+              "title": "The bubble",
+              "ready": false
+            },
+            {
+              "slug": "chips-are-not-money",
+              "title": "Chips are not money",
+              "ready": false
+            }
           ]
         },
         {
@@ -44,10 +92,30 @@
           "title": "The maths",
           "blurb": "Pot odds, expected value, and the arithmetic that decides whether a call is a call.",
           "lessons": [
-            { "slug": "pot-odds", "title": "Pot odds", "ready": false },
-            { "slug": "expected-value", "title": "Expected value", "ready": false },
-            { "slug": "bluffing-and-mdf", "title": "Bluffing, and how much you must defend", "ready": false }
+            {
+              "slug": "pot-odds",
+              "title": "Pot odds",
+              "ready": false
+            },
+            {
+              "slug": "expected-value",
+              "title": "Expected value",
+              "ready": false
+            },
+            {
+              "slug": "bluffing-and-mdf",
+              "title": "Bluffing, and how much you must defend",
+              "ready": false
+            }
           ]
+        }
+      ],
+      "tools": [
+        {
+          "slug": "odds",
+          "title": "Pot odds & equity",
+          "ready": true,
+          "blurb": "The price, your outs, and how a hand runs against a range."
         }
       ]
     }

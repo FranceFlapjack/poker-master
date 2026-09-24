@@ -4,7 +4,7 @@ import { progress } from './progress.js'
 import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
 import { mountFamily } from './family.js'
-import { visibleParts, groupsOf, flatten, lessonId, lessonPath } from './curriculum.js'
+import { visibleParts, groupsOf, toolsOf, flatten, lessonId, lessonPath } from './curriculum.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -62,7 +62,11 @@ function renderSidebar() {
         <ul class="lessons">${items}</ul>
       </div>`
     }).join('')
-    return `<div class="part"><div class="part-head">${esc(part.title)}</div>${body}</div>`
+    const tools = toolsOf(part)
+    const toolList = tools.length
+      ? `<ul class="lessons tools">${tools.map(t => `<li><a class="lesson-link tool-link${location.hash.startsWith(`#/tools/${t.slug}`) ? ' current' : ''}" href="#/tools/${t.slug}"><span class="tick"></span><span>${esc(t.title)}</span></a></li>`).join('')}</ul>`
+      : ''
+    return `<div class="part"><div class="part-head">${esc(part.title)}</div>${body}${toolList}</div>`
   }).join('')
 
   nav.querySelectorAll('.track-head').forEach(b => b.addEventListener('click', () => {
@@ -92,6 +96,8 @@ function route() {
   toggleSidebar(false)
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
+  const t = hash.match(/^#\/tools\/([\w-]+)/)
+  if (t) return showTool(main, t[1])
   current = null
   renderSidebar()
   showHome(main)
@@ -142,6 +148,23 @@ function partCard(part) {
     ${inner}
     <div class="part-foot"><span class="meta">${meta}</span>${first ? `<a class="btn" href="#/lesson/${first.dir}/${first.slug}">Open</a>` : '<span class="meta">Not written yet</span>'}</div>
   </section>`
+}
+
+/** Tools are loaded on demand: the equity sandbox pulls in the whole engine and most readers never open it. */
+async function showTool(main, slug) {
+  current = null
+  renderSidebar()
+  main.innerHTML = '<div class="page"><p class="small">Loading…</p></div>'
+  try {
+    if (slug === 'odds') {
+      const { mountOdds } = await import('./tools/odds.js')
+      main.innerHTML = ''
+      mountOdds(main)
+    } else { location.hash = '#/'; return }
+  } catch (e) {
+    main.innerHTML = `<div class="page"><p>Could not load this tool.</p><p class="small">${esc(e.message)}</p></div>`
+  }
+  window.scrollTo({ top: 0 })
 }
 
 async function showLesson(main, dir, slug) {

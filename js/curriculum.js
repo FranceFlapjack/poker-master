@@ -43,5 +43,8 @@ export function flatten(curriculum, opts = {}) {
 /** Every lesson, including parts hidden by the current mode — what the checkers walk. */
 export const allLessons = curriculum => flatten(curriculum, { beginner: true })
 
+/** A part's tools — calculators and trainers, which are not lessons and do not belong in a section. */
+export const toolsOf = part => (part.tools || []).filter(t => t.ready)
+
 export const lessonId = (dir, slug) => `${dir}/${slug}`
 export const lessonPath = (dir, slug) => `content/lessons/${dir}/${slug}.md`
