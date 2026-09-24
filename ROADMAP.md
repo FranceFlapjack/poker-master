@@ -26,6 +26,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
 | **6** | Tracks 3–4 written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
+| | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
 
 ## Phase 0 — done 2026-09-24

@@ -193,7 +193,7 @@ export function applyAction(state, action) {
   } else if (action.type === 'check') {
     // nothing to put in
   } else if (action.type === 'call') {
-    put(p, toCall)
+    put(p, match.amount)   // the same number the button showed — never recompute it here
   } else if (action.type === 'bet' || action.type === 'raise') {
     const to = Number(action.amount)
     if (!Number.isFinite(to)) throw new Error(`${action.type} needs an amount`)
@@ -249,6 +249,8 @@ function roundClosed(s) {
 function returnUncalled(s) {
   const live = s.seats.filter(p => !p.folded)
   if (!live.length) return
+  // The spread copies the ARRAY, not the seats: `sorted[0]` is the very object in `s.seats`, and the
+  // refund below mutates it through that reference. Deep-copying here would silently stop refunds.
   const sorted = [...s.seats].sort((a, b) => b.committed - a.committed)
   const top = sorted[0], second = sorted[1]
   if (!second || top.committed <= second.committed) return
