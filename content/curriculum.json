@@ -14,17 +14,17 @@
         {
           "slug": "hand-rankings",
           "title": "What beats what",
-          "ready": false
+          "ready": true
         },
         {
           "slug": "the-table-and-positions",
           "title": "The table, the button, and position",
-          "ready": false
+          "ready": true
         },
         {
           "slug": "blinds-and-antes",
           "title": "Blinds and antes: why anyone bets at all",
-          "ready": false
+          "ready": true
         }
       ]
     },
@@ -36,22 +36,22 @@
         {
           "slug": "the-four-streets",
           "title": "Preflop, flop, turn, river",
-          "ready": false
+          "ready": true
         },
         {
           "slug": "actions-and-betting",
           "title": "Check, bet, call, raise, fold",
-          "ready": false
+          "ready": true
         },
         {
           "slug": "all-in-and-side-pots",
           "title": "All in, and how side pots work",
-          "ready": false
+          "ready": true
         },
         {
           "slug": "showdown",
           "title": "Showdown: reading the winner",
-          "ready": false
+          "ready": true
         }
       ]
     },

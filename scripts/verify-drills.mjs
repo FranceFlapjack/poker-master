@@ -8,6 +8,8 @@
 //
 //   showdown / rank   the engine decides who wins. Nobody authors the answer, so nobody can author it
 //                     wrong. These are VERIFIED.
+//   legal             which of these may you do? legalActions() decides, so a rules drill can never
+//                     drift out of step with the rules the app itself enforces. Also VERIFIED.
 //   action / choice   "should you raise here?" is a judgement. There is no engine that settles it, and
 //                     pretending otherwise would be the exact dishonesty this project is trying to
 //                     avoid. These are checked for being well formed and then reported as UNVERIFIED.
@@ -25,7 +27,7 @@ const VERBOSE = process.argv.includes('-v')
 let fails = 0, verified = 0, unverified = 0, tables = 0
 const bad = (where, msg) => { fails++; console.log(`FAIL  ${where}\n      ${msg}`) }
 
-const ENGINE_DECIDES = new Set(['showdown', 'rank'])
+const ENGINE_DECIDES = new Set(['showdown', 'rank', 'legal'])
 
 /** Pull every fenced block of the given languages out of a markdown body. */
 function fences(md, langs) {
@@ -67,6 +69,7 @@ for (const track of curriculum.tracks) {
         // An authored answer here is silently ignored by solveDrill, so the author would believe a
         // number is being checked that is not. Say so rather than letting it rot.
         if (p.answer) bad(where, `a ${kind} drill's answer comes from the engine; remove \`answer: ${p.answer}\` so it cannot drift out of step`)
+        if (!p.why) bad(where, 'no `why` — a reader who guessed right still needs to know the reason')
         verified++
         if (VERBOSE) console.log(`ok    ${where} — ${kind}, engine says "${solved.options[solved.correct]}"`)
       } else {

@@ -106,15 +106,49 @@ export const parseOptions = text =>
   String(text || '').split('|').map(s => s.trim()).filter(Boolean)
 
 /**
- * Work out the right answer to a `try` block. Returns {options, correct, explain} — `correct` is an index. */
+ * Work out the right answer to a `try` block. Returns {options, correct, explain} — `correct` is an index.
+ *
+ * `showdown`, `rank` and `legal` are decided by the engine and cannot be authored wrong.
+ * `action` and `choice` carry an authored answer, because they are judgements.
+ */
 export function solveDrill(p) {
   const kind = p.type || 'action'
+
+  if (kind === 'legal') {
+    // Which of these may you actually do? legalActions() decides, so a rules drill cannot drift out of
+    // step with the rules the app itself enforces.
+    const { state } = spotFromParams(p)
+    const legal = legalActions(state)
+    const options = parseOptions(p.options)
+    if (options.length < 2) throw new Error('A legal drill needs at least two `options`')
+    const allowed = options.map(o => {
+      let want
+      try { [want] = parseActions(o) } catch { throw new Error(`Option "${o}" is not an action the engine understands`) }
+      const match = legal.find(l => l.type === want.type)
+      if (!match) return false
+      if (want.amount == null) return true
+      // a bet or raise offers a RANGE; a call has one exact amount
+      if (match.min != null) return want.amount >= match.min && want.amount <= match.max
+      if (match.amount != null) return want.amount === match.amount
+      return true
+    })
+    const find = (p.find || 'illegal').toLowerCase()
+    const hits = allowed.map((ok, i) => ((find === 'legal' ? ok : !ok) ? i : -1)).filter(i => i >= 0)
+    if (hits.length !== 1) {
+      throw new Error(`a legal drill needs exactly one ${find} option, but ${hits.length} are ${find}: ` +
+        options.map((o, i) => `${o}=${allowed[i] ? 'legal' : 'illegal'}`).join(', '))
+    }
+    const seat = state.seats[state.toAct]
+    const explain = `${seat.name} may: ${legal.map(a => a.type + (a.min != null ? ` ${a.min}–${a.max}` : a.amount != null ? ` ${a.amount}` : '')).join(', ')}.`
+    return { options, correct: hits[0], explain }
+  }
 
   if (kind === 'showdown' || kind === 'rank') {
     const hands = String(p.hands || '').split('|').map(h => h.trim()).filter(Boolean).map(parseCards)
     if (hands.length < 2) throw new Error(`${kind} needs at least two hands in \`hands\``)
     const board = p.board ? parseCards(p.board) : []
     if (kind === 'showdown' && board.length !== 5) throw new Error('A showdown drill needs a full five-card board')
+    assertDistinct([...hands.flat(), ...board])
 
     const evs = hands.map(h => evaluate([...h, ...board]))
     const best = Math.max(...evs.map(e => e.score))
@@ -135,4 +169,16 @@ export function solveDrill(p) {
   const correct = options.findIndex(o => o.toLowerCase() === String(p.answer).trim().toLowerCase())
   if (correct < 0) throw new Error(`\`answer\` "${p.answer}" is not one of the options: ${options.join(' | ')}`)
   return { options, correct, explain: '' }
+}
+
+/**
+ * No card may appear twice across the hands and the board. One deck — two players cannot both hold the
+ * same queen, and a drill that says they do teaches a position that cannot happen.
+ */
+function assertDistinct(cards) {
+  const seen = new Set()
+  for (const c of cards) {
+    if (seen.has(c)) throw new Error(`the same card appears twice: ${cardsStr([c])}`)
+    seen.add(c)
+  }
 }

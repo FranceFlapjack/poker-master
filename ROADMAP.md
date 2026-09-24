@@ -20,8 +20,8 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 |---|---|---|
 | **0** | Repo skeleton from the sibling pattern; accent chosen; shell boots | ✅ done 2026-09-24 |
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
-| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | in progress — pipeline done, 1 of 8 lessons written |
-| **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | |
+| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | ✅ done 2026-09-24 |
+| **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | next |
 | **4** | `js/bot/` + Play a hand + track 2 written | |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
 | **6** | Tracks 3–4 written, weak-spot report, live MTT utilities, polish | |
@@ -118,7 +118,21 @@ one offline. The last two have no ground truth, and the checker reports them as 
 than implying it has confirmed an opinion. It also rejects an `answer:` written on an engine-decided
 drill, since that number would be silently ignored and the author would never know.
 
-Remaining: seven more lessons across tracks 0 and 1.
+**A third engine-decided type was added while writing:** `legal`, which asks which of several actions is
+(or is not) allowed and gets the answer from `legalActions()`. A rules drill therefore can never drift out
+of step with the rules the app itself enforces — and the rules lessons needed exactly that.
+
+`solveDrill` also refuses a hand set where a card appears twice. Two players cannot both hold the same
+queen, and a drill that says they do teaches a position that cannot happen.
+
+**Tracks 0 and 1 are written — all 8 lessons, 28 drills, 26 tables.** 18 drills are decided by the
+engine; the other 10 are judgement or plain-fact questions the checker reports as unverified.
+
+**One gap worth naming.** The checker verifies that an engine-decided drill's *answer* is right, but it
+cannot check the prose. A `choice` drill that states a number — the side pots in `all-in-and-side-pots`,
+the ante arithmetic in `blinds-and-antes` — could be confidently wrong and pass. Those figures were
+checked by running the spot through the engine and reading `result.pots` (900 / 1,400, and a 525 pot from
+nine 25 antes at 100/200). Any future lesson quoting a number should get the same treatment.
 
 ## Phase 8 — why review does not port from Chess Master
 
