@@ -52,6 +52,13 @@ const H = s => parseCards(s)
 const act = (s, type, amount) => applyAction(s, amount == null ? { type } : { type, amount })
 const named = (n, size, names) => Array.from({ length: n }, (_, i) => ({ stack: size, name: names[i] }))
 
+const TABLE = [
+  { name: 'Hero', stack: 25000 }, { name: 'Ana', stack: 7900 }, { name: 'Bo', stack: 3100 },
+  { name: 'Cy', stack: 48000 }, { name: 'Dee', stack: 12400 }, { name: 'Eli', stack: 1800 },
+  { name: 'Fay', stack: 31000 }, { name: 'Gus', stack: 5600 }, { name: 'Hal', stack: 16500 },
+]   // a real mid-tournament spread, 9bb to 240bb, so the chip stacks have something to show
+
+
 function render(state, opts) {
   const host = new Node('div')
   mountTable(host, { state, ...opts })
@@ -60,7 +67,7 @@ function render(state, opts) {
 
 // 1 — nine handed, the widest layout, with the real portrait set
 const nine = createHand({
-  seats: named(9, 25000, ['Hero', 'Ana', 'Bo', 'Cy', 'Dee', 'Eli', 'Fay', 'Gus', 'Hal']),
+  seats: TABLE,
   button: 6, blinds: { sb: 100, bb: 200, ante: 25 }, anteType: 'each', seed: 11,
   hole: { 0: H('As Kh') },
 })
@@ -74,7 +81,7 @@ let shown = createHand({
 shown = act(shown, 'raise', 300); shown = act(shown, 'raise', 1000); shown = act(shown, 'call')
 
 const panels = [
-  ['Nine-handed, antes posted', 'Every seat is one centred column: illustration, name, stack and big blinds on one line, then cards. The ring marks who is to act.',
+  ['Nine-handed, antes posted', 'Every seat is one centred column: illustration, name, stack and big blinds on one line, then cards. The chips beside each player encode depth — Eli is on 9bb, Cy on 240bb. The ring marks who is to act.',
     render(nine, { hero: 0, avatars: avatarsForSeats(9) })],
   ['Three-way all-in, shown down', 'Three seats, all cards face up, side pots paid. Board cards are drawn larger than hole cards because they belong to everyone.',
     render(shown, { hero: null, reveal: true, avatars: avatarsForSeats(3) })],

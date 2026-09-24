@@ -393,6 +393,12 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .folded { opacity: 0.34; }
 .pk-table .blind-chip { fill: var(--tb-bet-bg); stroke: var(--card-edge); stroke-width: 1; rx: 7px; }
 .pk-table .blind-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; fill: var(--ink-2); }
+.pk-table .chips .chip { stroke: var(--chipstack-edge); stroke-width: 0.8; }
+.pk-table .chips .chip.t0 { fill: var(--chipstack-0); }
+.pk-table .chips .chip.t1 { fill: var(--chipstack-1); }
+.pk-table .chips .chip.t2 { fill: var(--chipstack-2); }
+.pk-table .chips .chip-more { font-size: 11px; font-weight: 700; fill: var(--ink-3); }
+.pk-table .allin .chips, .pk-table .folded .chips { display: none; }
 .pk-table .act-ring { fill: none; stroke: var(--accent); stroke-width: 2.5; }
 
 .pk-table .portrait .av-disc { fill: var(--av-disc); }

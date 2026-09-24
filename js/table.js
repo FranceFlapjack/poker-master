@@ -12,20 +12,32 @@ import { RANKS, SUIT_GLYPH, rankOf, suitOf, isRed } from './engine/cards.js'
 import { legalActions, potTotal, sbSeat, bbSeat } from './engine/rules.js'
 
 const NS = 'http://www.w3.org/2000/svg'
-const W = 960, HGT = 760
-const CX = W / 2, CY = 372
-const FELT_RX = 310, FELT_RY = 138
-const SEAT_RX = 396, SEAT_RY = 248
+// The canvas is sized by the WORST case: nine seats, each a ~200px column, around an ellipse. The
+// binding constraint is the two seats nearest the left and right extremes — they sit only ~202px apart
+// vertically, so the column height is what dictates everything else here.
+const W = 1000, HGT = 880
+const CX = W / 2, CY = 430
+const FELT_RX = 330, FELT_RY = 150
+const SEAT_RX = 420, SEAT_RY = 300
 const CARD_W = 40, CARD_H = 56
-const BOARD_CARD_W = 44, BOARD_CARD_H = 62   // the board reads as the shared hand, so it stays larger
+const BOARD_CARD_W = 46, BOARD_CARD_H = 64   // the board reads as the shared hand, so it stays larger
 
 // A seat is a single centred column: illustration, then name, then stack on one line, then cards.
 // These offsets are from the seat's centre point and are what keeps every seat on the same grid.
-const ILLO = 62                 // illustration box, square
-const Y_ILLO_TOP = -78
-const Y_NAME = 2
-const Y_DETAIL = 19
-const Y_CARDS_TOP = 28
+const ILLO = 84                 // illustration box, square
+const Y_ILLO_TOP = -96
+const Y_NAME = 8
+const Y_DETAIL = 25
+const Y_CARDS_TOP = 34
+
+// Chip stack: height encodes depth in big blinds. The scale is deliberately NOT linear — a linear one
+// spends all its resolution on deep stacks and flattens the short ones, which is exactly backwards for
+// tournament play, where the difference between 8bb and 15bb decides how you play and the difference
+// between 110bb and 125bb decides nothing. Square root gives roughly a chip per 5bb down low and
+// compresses the top: 5bb→3, 10bb→4, 20bb→6, 40bb→8, 60bb→10, 100bb→13.
+const CHIP_RX = 11, CHIP_RY = 3.6, CHIP_PITCH = 5
+const CHIP_PER_COL = 10, CHIP_COL_GAP = 13, CHIP_MAX = 30
+const chipsForBB = bb => Math.max(1, Math.min(CHIP_MAX, Math.round(Math.sqrt(Math.max(bb, 0)) * 1.3)))
 
 const el = (name, attrs = {}, children = []) => {
   const n = document.createElementNS(NS, name)
@@ -51,7 +63,7 @@ const round = n => String(Math.round(n * 10) / 10)
  *        Seats with no entry get the built-in figure, so a table never depends on an outside file.
  */
 export function mountTable(host, opts) {
-  let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, avatars: {}, ...opts }
+  let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, showChips: true, avatars: {}, ...opts }
   const root = document.createElement('div')
   root.className = 'table-wrap'
   host.append(root)
@@ -128,6 +140,12 @@ export function mountTable(host, opts) {
       g.append(el('circle', { class: 'act-ring', cx: pos.x, cy: pos.y + Y_ILLO_TOP + ILLO / 2, r: ILLO / 2 + 3 }))
     }
     g.append(illustration(pos.x, pos.y + Y_ILLO_TOP, k, o.avatars[k], p.name))
+
+    // Chips beside the player, as they would actually sit on a table. This is the one element that
+    // breaks the column's centre line, deliberately: a stack belongs next to its owner, not under them.
+    if (o.showChips && p.stack > 0 && s.blinds.bb) {
+      g.append(chipStack(pos.x + ILLO / 2 + 13, pos.y + Y_ILLO_TOP + ILLO, p.stack / s.blinds.bb))
+    }
 
     g.append(text(p.name, { class: 'seat-name', x: pos.x, y: pos.y + Y_NAME, 'text-anchor': 'middle' }))
 
@@ -236,6 +254,28 @@ function seatPos(k, n, hero, rx, ry, degOffset = 0) {
 }
 
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })
+
+/**
+ * Chips beside a seat, encoding depth in big blinds — the number that actually governs a tournament
+ * decision.
+ *
+ * Past ten chips it starts a SECOND stack rather than growing taller, which is both what a real chip
+ * leader's seat looks like and the only way to tell 125bb from 240bb: a single capped column made every
+ * deep stack identical, which is precisely the comparison a nine-handed table needs to support.
+ */
+function chipStack(cx, bottomY, bb) {
+  const g = el('g', { class: 'chips' })
+  const n = chipsForBB(bb)
+  for (let i = 0; i < n; i++) {
+    const col = Math.floor(i / CHIP_PER_COL), row = i % CHIP_PER_COL
+    const tier = row < 3 ? 0 : row < 7 ? 1 : 2
+    g.append(el('ellipse', {
+      class: `chip t${tier}`, cx: cx + col * CHIP_COL_GAP,
+      cy: bottomY - CHIP_RY - row * CHIP_PITCH, rx: CHIP_RX, ry: CHIP_RY,
+    }))
+  }
+  return g
+}
 
 /**
  * The seat's illustration, standing free — no disc, no crop, no box. The supplied artwork is drawn whole
