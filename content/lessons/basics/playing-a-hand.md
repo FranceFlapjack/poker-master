@@ -37,6 +37,23 @@ caption: The flop is the biggest jump in information in the whole hand — two c
 Most hands never reach the river. Somebody bets, everybody folds, the pot is collected. That is normal
 poker, not an anticlimax.
 
+<aside class="trick">
+<b>Quick trick — the rule of 4 and 2</b>
+<p>Count your <b>outs</b>, the cards that would make your hand. Multiply by <b>4</b> for your chance of
+hitting by the river with two cards still to come, or by <b>2</b> with one card to come. Nine outs for a
+flush is about 36% from the flop, 18% from the turn.</p>
+<p>It is accurate to within a point up to nine outs, which covers nearly every draw you will hold. Three
+caveats matter more than the rule itself:</p>
+<ul>
+<li><b>×4 only counts if you are all in.</b> With betting still to come on the turn you will not see both
+cards for free, so the honest number is ×2. The true figure for nine outs on one card is 19.6%, not 36%.</li>
+<li><b>Discount dirty outs.</b> A flush card that pairs the board can give somebody a full house; the low
+end of a straight can leave you second best. An out is only an out if hitting actually wins.</li>
+<li><b>It tells you nothing about the money.</b> Whether the pot is paying you enough is a separate
+question — that is pot odds, in the Tournament part.</li>
+</ul>
+</aside>
+
 ## The five actions
 
 Which are available depends on one question: **has anyone bet yet this round?**

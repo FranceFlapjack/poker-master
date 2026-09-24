@@ -465,3 +465,12 @@ body[data-mode="grinder"] .beginner-only { display: none; }
 .part-sections span { color: var(--ink-2); display: block; margin-top: 2px; }
 .part-sections em { font-style: normal; color: var(--ink-3); font-size: var(--fs-0); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-top: 4px; }
 .part-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+
+/* A quick trick: a shortcut worth knowing, set apart from the lesson's argument. Visible, not
+   collapsed — unlike `+++ Read more`, which is for depth the reader can skip. */
+.prose .trick { margin: var(--s-5) 0; padding: var(--s-4); background: var(--surface-2); border-left: 2px solid var(--accent); }
+.prose .trick > b:first-child { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-2); }
+.prose .trick p { margin: 0 0 var(--s-2); font-size: var(--fs-1); }
+.prose .trick ul { margin: 0; font-size: var(--fs-1); }
+.prose .trick li { margin-bottom: var(--s-2); }
+.prose .trick li:last-child { margin-bottom: 0; }
