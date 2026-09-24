@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { parseFrontmatter, parseParams } from '../js/frontmatter.js'
 import { spotFromParams, solveDrill } from '../js/spot.js'
+import { allLessons, lessonPath } from '../js/curriculum.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const VERBOSE = process.argv.includes('-v')
@@ -40,15 +41,15 @@ function fences(md, langs) {
 
 const curriculum = JSON.parse(readFileSync(join(ROOT, 'content/curriculum.json'), 'utf8'))
 
-for (const track of curriculum.tracks) {
-  for (const lesson of track.lessons) {
-    if (!lesson.ready) continue
-    const file = join(ROOT, 'content/lessons', track.id, `${lesson.slug}.md`)
+for (const lesson of allLessons(curriculum)) {
+  if (!lesson.ready) continue
+  {
+    const file = join(ROOT, lessonPath(lesson.dir, lesson.slug))
     if (!existsSync(file)) continue          // check-content.mjs reports this one
     const { body } = parseFrontmatter(readFileSync(file, 'utf8'))
 
     fences(body, ['table']).forEach((f, i) => {
-      const where = `${track.id}/${lesson.slug} table#${i}`
+      const where = `${lesson.dir}/${lesson.slug} table#${i}`
       tables++
       try {
         const { state } = spotFromParams(parseParams(f.text))
@@ -57,7 +58,7 @@ for (const track of curriculum.tracks) {
     })
 
     fences(body, ['try']).forEach((f, i) => {
-      const where = `${track.id}/${lesson.slug} try#${i}`
+      const where = `${lesson.dir}/${lesson.slug} try#${i}`
       const p = parseParams(f.text)
       const kind = p.type || 'action'
       let solved

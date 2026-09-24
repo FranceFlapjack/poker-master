@@ -20,11 +20,11 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 |---|---|---|
 | **0** | Repo skeleton from the sibling pattern; accent chosen; shell boots | ✅ done 2026-09-24 |
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
-| **2** | Learn: `lesson.js` + `exercise.js` pipeline, mode switch, tracks 0–1 written | ✅ done 2026-09-24 |
+| **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
 | **3** | `engine/ev.js` → Equity & Odds sandbox + Preflop range trainer | next |
-| **4** | `js/bot/` + Play a hand + track 2 written | |
+| **4** | `js/bot/` + Play a hand + Ranges section written | |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
-| **6** | Tracks 3–4 written, weak-spot report, live MTT utilities, polish | |
+| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
@@ -125,8 +125,23 @@ of step with the rules the app itself enforces — and the rules lessons needed 
 `solveDrill` also refuses a hand set where a card appears twice. Two players cannot both hold the same
 queen, and a drill that says they do teaches a position that cannot happen.
 
-**Tracks 0 and 1 are written — all 8 lessons, 28 drills, 26 tables.** 18 drills are decided by the
-engine; the other 10 are judgement or plain-fact questions the checker reports as unverified.
+### Structure: two parts, not a numbered ladder (owner's call, 2026-09-24)
+
+The first draft was five numbered tracks — Track 0 through Track 4 — and the owner's note was that it
+reads as far too much in the sidebar for someone who has never played. So:
+
+- **Basics** — one flat part, four lessons, no sub-headings and no numbers. Someone learning the game
+  should see a short list, not a syllabus. The eight original lessons were merged in pairs and trimmed
+  (28 drills down to 18), keeping the engine-verified drills and cutting prose.
+- **Tournament** — the large part, grouped into *Ranges*, *Stack depth and ICM* and *The maths*. This one
+  is allowed to be big; it is where the owner's own material lives, and it will keep growing.
+
+`js/curriculum.js` is the single walker for this shape — a part holds either `lessons` directly (flat) or
+`sections` (grouped), and `groupsOf` flattens the difference. The sidebar, the home page and both
+checkers all read through it, so they cannot disagree about what exists.
+
+**Basics is written: 4 lessons, 18 drills, 4 tables.** 13 drills are decided by the engine; the other 5
+are judgement or plain-fact questions the checker reports as unverified.
 
 **One gap worth naming.** The checker verifies that an engine-decided drill's *answer* is right, but it
 cannot check the prose. A `choice` drill that states a number — the side pots in `all-in-and-side-pots`,

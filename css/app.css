@@ -452,3 +452,16 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 /* Beginner mode keeps the arithmetic out of the way; Grinder mode lets it through. */
 body[data-mode="beginner"] .grinder-only { display: none; }
 body[data-mode="grinder"] .beginner-only { display: none; }
+
+/* ---------- two parts, not a numbered ladder ---------- */
+.part { margin-bottom: var(--s-5); }
+.part-head { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); padding: var(--s-2) var(--s-2) var(--s-2); border-bottom: 1px solid var(--line); margin-bottom: var(--s-2); }
+.lessons.flat { display: block; }
+.part-card { display: block; margin-bottom: var(--s-4); }
+.part-card p { margin: var(--s-2) 0 var(--s-3); color: var(--ink-2); font-size: var(--fs-1); }
+.part-sections { list-style: none; padding: 0; margin: 0 0 var(--s-3); border-top: 1px solid var(--line); }
+.part-sections li { border-bottom: 1px solid var(--line); padding: var(--s-3) 0; margin: 0; font-size: var(--fs-1); }
+.part-sections b { font-weight: 600; }
+.part-sections span { color: var(--ink-2); display: block; margin-top: 2px; }
+.part-sections em { font-style: normal; color: var(--ink-3); font-size: var(--fs-0); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-top: 4px; }
+.part-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
