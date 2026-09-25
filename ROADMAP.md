@@ -22,7 +22,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
 | **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
-| **4** | `js/bot/` + Play a hand + Ranges section written | next |
+| **4** | `js/bot/` + Play a hand + Ranges section written | bots and Play done 2026-09-25; Ranges lessons still to write |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
@@ -174,6 +174,28 @@ half outside. A real table would have you folding nine hands in ten under the gu
 nothing per spot; drawing from both sides puts you on the boundary, which is the only part of a range
 anyone has to remember. It means your accuracy in the trainer is not your accuracy at a table, and the
 page says so.
+
+## Phase 4 — bots and Play, done 2026-09-25
+
+`js/bot/` (three rule-based opponents), `js/engine/preflop-strength.js` (generated), `scripts/bot-test.mjs`,
+and **Play a hand** at `#/tools/play` — six-handed, stacks and button carrying over between hands.
+
+**A lesson about tests worth keeping.** `bot-test.mjs` asserts the things that would corrupt a session:
+no illegal action, every hand reaching a conclusion, chips conserved. All of those passed on the first
+run while all three bots played **over 80% of their hands** — because the strength signal was equity
+against ONE random hand, and a median holding is about half, which clears the price of a big blind.
+
+Green assertions, maniac bots. The test caught it only because it also PRINTS behaviour, and a "solid"
+player that plays 81% of hands is obviously mis-tuned however many invariants hold. Any future trainer
+or bot test should print what it did, not only assert what it must not do.
+
+The fix split the signal into two scales that are not interchangeable: `equity` (raw share, the right
+scale against pot odds) and `edge` (that share over an even split, so 1.0 is average whatever the seat
+count). They now play 31% / 20% / 23%.
+
+**The bots are not opponents worth copying**, and both the module and the page say so. A bot that folds
+too much is beaten by betting every hand, and this one can be. They exist so the shape of a hand stops
+needing thought, not to teach strategy.
 
 ## Phase 8 — why review does not port from Chess Master
 

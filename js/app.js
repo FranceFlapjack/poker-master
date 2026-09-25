@@ -160,6 +160,10 @@ async function showTool(main, slug) {
       const { mountOdds } = await import('./tools/odds.js')
       main.innerHTML = ''
       mountOdds(main)
+    } else if (slug === 'play') {
+      const { mountPlay } = await import('./tools/play.js')
+      main.innerHTML = ''
+      mountPlay(main)
     } else if (slug === 'ranges') {
       const { mountRanges } = await import('./tools/ranges.js')
       main.innerHTML = ''

@@ -535,3 +535,8 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .trainer .hand .pc.black { color: var(--suit-black); }
 .trainer .hand .pc + .pc { margin-left: 0.35em; }
 .trainer .actions { display: flex; gap: var(--s-2); margin-bottom: var(--s-3); }
+
+/* the play page: the table, then what just happened, then what to do next */
+.play #say { min-height: 2.6em; margin-bottom: var(--s-3); }
+.play #between { margin-bottom: var(--s-5); }
+.play .part-sections li b { display: inline-block; min-width: 3.5em; }

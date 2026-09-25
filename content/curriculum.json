@@ -112,6 +112,12 @@
       ],
       "tools": [
         {
+          "slug": "play",
+          "title": "Play a hand",
+          "ready": true,
+          "blurb": "Six-handed against rule-based opponents."
+        },
+        {
           "slug": "ranges",
           "title": "Preflop range trainer",
           "ready": true,
