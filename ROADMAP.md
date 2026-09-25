@@ -317,6 +317,21 @@ Two readings of the premium are both true and they confused me before they were 
 chips"** constant and the short stack pays least (they have least to lose). Same fact, different thing
 held still.
 
+**A third error, found after the lessons were committed.** The bubble lesson's fold drill put the 15,000
+stack in the big blind, so the hero had 1,000 already posted and was risking 9,000 more — while the `why:`
+quoted 58.8%, the figure computed for a clean 10,000 at risk. The true threshold there is **60.6%**
+(`risk: 10000, pot: 500`, measured from pre-hand stacks so the posted blind is accounted for). The drill
+was reseated to the button so the quoted figure is the one the spot actually asks, and the `why:` now
+names both numbers, because the difference between them is the lesson.
+
+The class of defect is the one this repo keeps meeting: it passed all five checkers, because no checker
+reads a `why:`. Any drill quoting a threshold must have that threshold recomputed for *that spot's*
+parameterisation, not carried over from the table above it.
+
+**And the heads-up figures were labelled.** Both `survival-and-accumulation` and `chips-are-not-money`
+quoted 58.7% / 36.3% from `pushfold-hu.json` inside lessons whose tables are five-handed. Those are
+heads-up numbers from the one case this app has solved, and they now say so.
+
 **Still to do in Phase 6:** the Maths section (3 lessons — pot odds, expected value, bluffing and MDF),
 the weak-spot report, the live MTT utilities, and polish. The weak-spot report now has
 `pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as

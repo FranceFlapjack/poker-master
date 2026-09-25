@@ -65,8 +65,12 @@ When you *shove*, there is a second way to win: everybody folds and you take the
 chips cost you no equity at all.
 
 That is why a short stack at a final table should be shoving frequently and calling rarely, and why the
-two ranges in the push/fold trainer are such different widths — at 10bb the equilibrium shoves 58.7% of
-hands and calls with 36.3%. The same player, the same depth, the same table.
+two ranges in the push/fold trainer are such different widths. **Heads-up** at 10bb — the only case this
+app has actually solved — the equilibrium shoves 58.7% of hands and calls with 36.3%. The same player,
+the same depth, the same table, and a gap of more than twenty points between the two things they do.
+
+Five-handed the widths will be different, and this app does not claim to know them. What carries over is
+the direction and the reason for it, which is the part you need.
 
 ```table
 seats: 5

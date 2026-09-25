@@ -87,10 +87,10 @@ seats: 4
 stacks: 40000, 25000, 15000, 10000
 blinds: 500/1000
 button: 0
-hero: 2
+hero: 0
 hand: Ah Jd
-names: Leader, Ana, You, Short
-caption: The bubble. Three of these four get paid. The 10,000 stack is first to act.
+names: You, Ana, Bo, Short
+caption: The bubble as the chip leader sees it. Three of these four get paid, and the 10,000 stack is first to act.
 ```
 
 ```try
@@ -114,16 +114,16 @@ why: With one prize there is nothing to ladder into, so chips and money move tog
 ```try
 type: action
 seats: 4
-stacks: 40000, 25000, 15000, 10000
+stacks: 15000, 25000, 40000, 10000
 blinds: 500/1000
 button: 0
-hero: 2
+hero: 0
 hand: Ah Jd
-actions: raise 10000, fold, fold
-ask: You have 15,000 in the big blind. The short stack is all in for 10,000, both other players folded, and you have ace-jack offsuit. You need 9,000 more to call.
+actions: raise 10000
+ask: You have 15,000 on the button. The short stack has opened all in for 10,000 and it is on you, with ace-jack offsuit and a clean 10,000 to call.
 options: Fold | Call all in | Raise
 answer: Fold
-why: Ace-jack is comfortably ahead of a short stack's shoving range in chips — this is a call you would snap in a cash game. It is still a fold, because you need 58.8% and ace-jack offsuit is not that against any range wide enough to be shoving here. Call and lose and you are the short stack on a live bubble; fold and you are still third with the two stacks below you doing the sweating.
+why: Ace-jack is comfortably ahead of a short stack's shoving range in chips — this is a call you would snap in a cash game. It is still a fold, because you need 58.8% and ace-jack offsuit is not that against any range wide enough to be shoving here. Note the seat: risking a clean 10,000 is what the 58.8% was computed for. Facing the same shove from the big blind, where 1,000 of your 10,000 is already posted, the threshold is a different number — 60.6% — which is the kind of detail worth recomputing rather than carrying over. Call and lose and you are the short stack on a live bubble; fold and you are still third with the two stacks below you doing the sweating.
 hint: Work out what you need before you work out what you have.
 ```
 
@@ -136,7 +136,7 @@ button: 0
 hero: 0
 hand: Ah Jd
 actions: raise 10000
-ask: The same cards, but now you are the chip leader with 40,000 and the shove has come to you first.
+ask: The same cards and the same clean 10,000 to call, but now you are the chip leader with 40,000.
 options: Fold | Call all in | Raise
 answer: Call all in
 why: Identical hand, identical pot, opposite answer. You need 52.4% rather than 58.8%, and losing leaves you with 30,000 and the chip lead intact rather than on the rail. This is the asymmetry from the top of the lesson doing its work: the call that is too expensive for the 15,000 stack is a routine one for you.

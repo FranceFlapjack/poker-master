@@ -83,8 +83,10 @@ Two of the tools speak directly to this, and the split between them is deliberat
 
 - **The ICM lab** gives you the numbers above exactly. No sampling, no approximation — enumerate it twice
   and you get the same answer.
-- **The push/fold trainer** is solved for **chip EV only**, and it says so on the page. At 10 big blinds
-  heads-up the equilibrium shoves 58.7% and calls 36.3%. Those are the right widths when chips are money.
+- **The push/fold trainer** is solved for **heads-up, chip EV only**, and it says so on the page. At 10
+  big blinds the equilibrium shoves 58.7% and calls 36.3%. Those are the right widths for two players
+  when chips are money — not for the five-handed table above, which is a different game the app has not
+  solved.
 
 At a final table they are not. The clear adjustment, and the one that follows directly from everything
 above, is that **calls get tighter** — every caller is risking chips worth more to them than the pot is
