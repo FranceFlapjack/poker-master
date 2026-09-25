@@ -169,6 +169,10 @@ async function showTool(main, slug) {
       const { mountPlay } = await import('./tools/play.js')
       main.innerHTML = ''
       view = mountPlay(main)
+    } else if (slug === 'icm') {
+      const { mountIcm } = await import('./tools/icm.js')
+      main.innerHTML = ''
+      view = mountIcm(main)
     } else if (slug === 'ranges') {
       const { mountRanges } = await import('./tools/ranges.js')
       main.innerHTML = ''

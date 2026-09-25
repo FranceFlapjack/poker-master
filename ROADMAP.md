@@ -23,7 +23,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
-| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | next |
+| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ICM done 2026-09-25; push/fold still to build |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
@@ -196,6 +196,32 @@ count). They now play 31% / 20% / 23%.
 **The bots are not opponents worth copying**, and both the module and the page say so. A bot that folds
 too much is beaten by betting every hand, and this one can be. They exist so the shape of a hand stops
 needing thought, not to teach strategy.
+
+## Phase 5 — ICM done 2026-09-25
+
+`js/engine/icm.js` (exact Malmuth–Harville) and the **ICM lab** at `#/tools/icm`.
+
+Exact, not sampled: finishing orders are enumerated only as deep as there are prizes, so nine-handed
+paying three is 504 orders rather than 362,880. The O(n!) warning attached to ICM everywhere assumes you
+enumerate the whole permutation, and there is no reason to.
+
+**The behaviour was checked against what a final table does before any of it became a test:**
+
+| spot | factor |
+|---|---|
+| heads-up for the whole tournament | 1.00 — no ladder left |
+| winner-take-all, any stacks | 1.00 — nothing to ladder into |
+| four left, three paid, big stack | **1.46** — needs 72.9% to call |
+| the same spot as the SHORT stack | 1.15 — less to lose |
+| nine left → four left | 1.11 → 1.35 |
+
+That short-stack row is the one to remember: **ICM pressure is not a property of the bubble, it is a
+property of how much you personally have to lose.** A big stack calling off is paying the premium; the
+short stack shoving into them mostly is not.
+
+**Still to build:** `engine/pushfold.js`. Heads-up push/fold Nash is genuinely solvable by iterated best
+response and would be the app's first *computed* chart rather than an authored one. It needs a 169×169
+preflop equity matrix generated offline first — about 14,000 matchups after exploiting symmetry.
 
 ## Phase 8 — why review does not port from Chess Master
 

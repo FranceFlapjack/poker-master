@@ -540,3 +540,13 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .play #say { min-height: 2.6em; margin-bottom: var(--s-3); }
 .play #between { margin-bottom: var(--s-5); }
 .play .part-sections li b { display: inline-block; min-width: 3.5em; }
+
+/* the ICM lab's equity table */
+.icm-table { width: 100%; border-collapse: collapse; font-size: var(--fs-1); margin-bottom: var(--s-3); }
+.icm-table th { text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); border-bottom: 1px solid var(--line-2); padding: 0 var(--s-3) var(--s-2) 0; }
+.icm-table td { padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.icm-table td.n { text-align: right; }
+.icm-table tr.leader td { font-weight: 600; }
+.icm-table .gap { text-align: right; color: var(--ink-3); white-space: nowrap; }
+.icm-table .gap.up { color: var(--good); }
+.icm-table .gap.down { color: var(--bad); }

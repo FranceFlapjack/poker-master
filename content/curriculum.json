@@ -128,6 +128,12 @@
           "title": "Pot odds & equity",
           "ready": true,
           "blurb": "The price, your outs, and how a hand runs against a range."
+        },
+        {
+          "slug": "icm",
+          "title": "ICM lab",
+          "ready": true,
+          "blurb": "What your chips are worth in money at a final table."
         }
       ]
     }
