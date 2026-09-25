@@ -250,18 +250,27 @@ claims equilibrium. So `pushMixed` / `callMixed` carry the 0.35–0.65 band — 
 depth**, measured before the feature was designed — the grid outlines them, and the trainer does not
 score them.
 
-**The trainer deals 1–15bb only.** The chart carries 16–20bb and the provenance says those rows are "for
-completeness, not as advice"; drilling them would teach a model the file itself disclaims. They stay
-visible in the chart panel and are not dealt. Both seats are drilled — calling off is where the
+**The trainer deals 2–15bb only,** and both ends of that were cut for a reason. The chart carries
+16–20bb and the provenance says those rows are "for completeness, not as advice"; drilling them would
+teach a model the file itself disclaims. At the other end, **1bb is not a decision** — the big blind has
+already posted their whole stack, so the price line reads "0.0 more to call, 0.0% needed" and every
+answer is free. Both ends stay visible in the chart panel and neither is dealt. Both seats are drilled — calling off is where the
 equilibrium actually costs money — and hands are dealt half inside the range and half outside, the same
 deliberate distortion the range trainer states.
 
 Topic keys are banded rather than per-integer: `pushfold.hu.sb.6-10bb`, and the same for `bb`. Six
 buckets instead of thirty, so the Phase 6 weak-spot report has enough samples in each to mean something.
 
-Verified by running it: 200 scripted spots dealt only depths 1–15, split 97/103 between the seats, hit
-the unscored mixed path twice, and produced a verdict every time with no console errors. The progress
-that stress test wrote was backed out of localStorage afterwards.
+**And a third instance of the lesson this repo keeps relearning.** The first stress run asserted that
+every spot produced a verdict, and every spot did — including the 1bb big-blind spots, which produced a
+*meaningless* one. Structure green, behaviour wrong, exactly like the maniac bots. The second run checked
+what the spots actually said rather than that they said something, and that is the check that found it.
+
+Verified by running it: 350 scripted spots across two runs dealt only depths 2–15, split roughly evenly
+between the seats, hit the unscored mixed path, and never once priced a call at zero. Leaving the page
+for another tool and coming back twice produced no console output at all, which is the check the Play
+page's teardown leak would have failed. No horizontal scroll at 375px. The progress both stress runs
+wrote was backed out of localStorage afterwards.
 
 ## Phase 8 — why review does not port from Chess Master
 

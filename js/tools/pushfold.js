@@ -27,7 +27,10 @@ const cardHtml = c => `<span class="pc ${isRed(c) ? 'red' : 'black'}">${RANKS[c 
 // Past this depth the model itself is wrong, not merely approximate — a 20bb stack has folds, calls,
 // limps and raises available and shoving every hand in a 40% range is a caricature of the game.
 const DRILL_MAX = 15
-const band = bb => bb <= 5 ? '1-5bb' : bb <= 10 ? '6-10bb' : '11-15bb'
+// And not below 2bb either: at 1bb effective the big blind has already posted their whole stack, so
+// there is nothing to call and no fold to get wrong. The chart keeps the row; the trainer does not ask it.
+const DRILL_MIN = 2
+const band = bb => bb <= 5 ? '2-5bb' : bb <= 10 ? '6-10bb' : '11-15bb'
 
 export async function mountPushfold(main) {
   document.title = 'Push or fold · Poker Master'
@@ -68,7 +71,7 @@ export async function mountPushfold(main) {
       <section class="panel">
         <h2>The equilibrium</h2>
         <div class="fields">
-          <label>Stack depth <small>16–20bb is chart only; the trainer stops at ${DRILL_MAX}bb</small>
+          <label>Stack depth <small>the trainer deals ${DRILL_MIN}–${DRILL_MAX}bb; the rest is chart only</small>
             <select id="pick">${DEPTHS.map(bb => `<option value="${bb}">${bb} big blinds</option>`).join('')}</select></label>
         </div>
         <div class="two-grids">
@@ -96,7 +99,7 @@ export async function mountPushfold(main) {
   let spot = null, answered = false
 
   function draw() {
-    const bb = 1 + ((rng() * DRILL_MAX) | 0)
+    const bb = DRILL_MIN + ((rng() * (DRILL_MAX - DRILL_MIN + 1)) | 0)
     const d = byDepth.get(bb)
     const seat = rng() < 0.5 ? 'sb' : 'bb'
     const weights = seat === 'sb' ? d.pushR : d.callR
@@ -109,7 +112,7 @@ export async function mountPushfold(main) {
     for (let i = 0; i < GRID; i++) for (let j = 0; j < GRID; j++) {
       if ((weights[idx(i, j)] > 0) === inside) cells.push([i, j])
     }
-    if (!cells.length) return draw()          // 1bb shoves everything: there is no outside
+    if (!cells.length) return draw()          // at 2bb the big blind calls everything: there is no outside
     const [i, j] = cells[(rng() * cells.length) | 0]
     const combos = cellCombos(i, j)
     spot = {
