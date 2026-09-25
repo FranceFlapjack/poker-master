@@ -24,7 +24,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
-| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | Stacks/ICM written 2026-09-25; Maths, weak-spot report and utilities to do |
+| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | both sections written 2026-09-25; weak-spot report and utilities to do |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
@@ -332,8 +332,33 @@ parameterisation, not carried over from the table above it.
 quoted 58.7% / 36.3% from `pushfold-hu.json` inside lessons whose tables are five-handed. Those are
 heads-up numbers from the one case this app has solved, and they now say so.
 
-**Still to do in Phase 6:** the Maths section (3 lessons — pot odds, expected value, bluffing and MDF),
-the weak-spot report, the live MTT utilities, and polish. The weak-spot report now has
+### The Maths section, written 2026-09-25
+
+`pot-odds`, `expected-value`, `bluffing-and-mdf`. 11 drills, 3 tables. **All 15 lessons are now ready** —
+the course is written.
+
+**The risk here was redundancy, not correctness.** `#/tools/odds` already computes pot odds, required
+equity, exact outs, the rule of 4 and 2 and its error, MDF and alpha, all live. So each lesson is *why
+the number is the number*, and each one names the sandbox as the place to put your own figures in —
+the same split `chips-are-not-money` draws between itself and the ICM lab.
+
+Three things these lessons say that the tool cannot:
+
+- **The rule of 4 and 2 fails in one direction only.** Below eight outs it is near exact; above that ×4
+  flatters you, by 3.0 points at twelve outs and 5.9 at fifteen. And it assumes you will *see* both
+  cards — using ×4 to justify a call and then folding the turn is paying for two and taking one. The
+  owner asked for this as a quick trick; this is the honest version of it, computed by `outsError`.
+- **At exactly the required equity a call is worth zero.** "I had the odds" is a reason to be
+  indifferent, not pleased. The money is in the gap, and close calls have no gap.
+- **A break-even fold frequency always exists** when there is dead money — shoving 10,000 into 100 with
+  no equity breaks even at 99% folds. Its existence justifies nothing. With *no* dead money the answer is
+  100%, which is the cleanest proof that bluffs are paid for by the pot.
+
+**MDF is stated as a property of the bet size and never of the hand**, because that is where the idea is
+usually misused, and the drill asks exactly that. The read-more also says plainly that *which* hands to
+defend with is a solver's job and this app has no postflop solver.
+
+**Still to do in Phase 6:** the weak-spot report, the live MTT utilities, and polish. The weak-spot report now has
 `pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as
 separate readouts is an open decision — mixing them may just surface "you are worst at whatever you
 drilled least".

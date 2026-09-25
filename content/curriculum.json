@@ -95,17 +95,17 @@
             {
               "slug": "pot-odds",
               "title": "Pot odds",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "expected-value",
               "title": "Expected value",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "bluffing-and-mdf",
               "title": "Bluffing, and how much you must defend",
-              "ready": false
+              "ready": true
             }
           ]
         }
