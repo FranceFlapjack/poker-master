@@ -18,6 +18,7 @@ import { createHand, legalActions, applyAction, buildPots, potTotal, sbSeat, bbS
 import { newHand, recordFromState, validateHand } from '../js/engine/hand.js'
 import { potOdds, requiredEquity, evCall, outsEquity, ruleOf4And2, outsError, mdf, alpha,
          evShove, breakEvenFoldEquity, impliedOddsNeeded, betSizing, inBB } from '../js/engine/ev.js'
+import { icmEquity, icmRequiredEquity, bubbleFactor, icmTable } from '../js/engine/icm.js'
 
 let fails = 0, passes = 0
 const ok = (cond, msg) => { if (!cond) { fails++; console.log('FAIL', msg) } else { passes++; if (VERBOSE) console.log('ok  ', msg) } }
@@ -531,6 +532,74 @@ section('ev')
   near(sz.fraction, 1, 1e-12, 'a pot-sized bet is one pot')
   near(sz.callerRequires, 1 / 3, 1e-12, 'which lays the caller 2 to 1')
   near(inBB(25000, 200), 125, 1e-12, 'a 25,000 stack at 200 is 125 big blinds')
+}
+
+// ------------------------------------------------------------------ icm
+section('icm')
+{
+  const sum = a => a.reduce((x, y) => x + y, 0)
+  const share = (stacks, payouts) => {
+    const eq = icmEquity(stacks, payouts), tot = sum(stacks), prize = sum(eq)
+    return stacks.map((s, i) => ({ chip: s / tot, money: eq[i] / prize }))
+  }
+
+  // the prize pool is conserved: every seat's share of it adds back up to all of it
+  for (const [stacks, payouts] of [
+    [[50, 50], [60, 40]], [[70, 20, 10], [50, 30, 20]],
+    [[100, 60, 25, 15], [50, 30, 20, 0]], [Array(9).fill(100), [50, 30, 20]],
+  ]) {
+    near(sum(icmEquity(stacks, payouts)), sum(payouts.slice(0, Math.min(payouts.length, stacks.length))), 1e-9,
+      `the whole prize pool is paid out with ${stacks.length} players`)
+  }
+
+  const even = icmEquity([100, 100, 100], [50, 30, 20])
+  ok(even.every(v => Math.abs(v - even[0]) < 1e-9), 'equal stacks are worth equal money')
+  ok(icmEquity([300, 0, 0], [50, 30, 20])[0] === 50, 'one player holding every chip takes first prize')
+
+  // a busted player has PLACED last, not failed to place — the branch that matters for a call
+  eq(icmEquity([100, 0], [60, 40])[1], 40, 'a player with no chips collects the bottom payout, not zero')
+
+  // winner-take-all is the one payout where money tracks chips exactly
+  for (const st of [[70, 20, 10], [50, 50], [90, 5, 3, 2]]) {
+    const sh = share(st, [100, ...Array(st.length - 1).fill(0)])
+    ok(sh.every(x => Math.abs(x.chip - x.money) < 1e-9), `winner-take-all pays exactly chip share (${st.length} players)`)
+  }
+
+  // and the central ICM fact: a ladder makes big stacks worth less per chip and short stacks worth more
+  {
+    const sh = share([70, 20, 10], [50, 30, 20])
+    ok(sh[0].money < sh[0].chip, 'the chip leader owns a smaller share of the money than of the chips')
+    ok(sh[2].money > sh[2].chip, 'and the short stack owns a larger share of the money than of the chips')
+  }
+  {
+    const eqs = icmEquity([100, 60, 25, 15], [50, 30, 20, 0])
+    ok(eqs[0] > eqs[1] && eqs[1] > eqs[2] && eqs[2] > eqs[3], 'more chips is still always worth more money')
+  }
+
+  // risk premium: when there is no ladder there is no premium, and when there is, it bites
+  near(bubbleFactor({ stacks: [50, 50], payouts: [100, 0], hero: 0, risk: 50 }), 1, 1e-9,
+    'winner-take-all heads-up: money and chips agree exactly')
+  near(bubbleFactor({ stacks: [50, 50], payouts: [60, 40], hero: 0, risk: 50 }), 1, 1e-9,
+    'heads-up for the whole tournament: no ladder left, so still no premium')
+  near(bubbleFactor({ stacks: [40, 40, 40, 10], payouts: [100, 0, 0, 0], hero: 0, risk: 40 }), 1, 1e-9,
+    'winner-take-all on the bubble: still no premium, because there is nothing to ladder into')
+
+  {
+    const bubble = { stacks: [40, 40, 40, 10], payouts: [50, 30, 20, 0], hero: 0, risk: 40 }
+    const f = bubbleFactor(bubble)
+    ok(f > 1.3, `on a real bubble the premium bites (factor ${f.toFixed(2)})`)
+    ok(icmRequiredEquity(bubble) > 0.7, 'which means needing far more than a coin flip to call off')
+
+    const asShort = bubbleFactor({ ...bubble, hero: 3, risk: 10 })
+    ok(asShort < f, 'the short stack faces LESS pressure than the big stack — it has less to lose')
+
+    const far = bubbleFactor({ stacks: Array(9).fill(100), payouts: [50, 30, 20], hero: 0, risk: 100 })
+    const near_ = bubbleFactor({ stacks: Array(4).fill(100), payouts: [50, 30, 20], hero: 0, risk: 100 })
+    ok(near_ > far, `pressure grows as the money gets closer (${far.toFixed(2)} with nine left, ${near_.toFixed(2)} with four)`)
+  }
+
+  throws(() => icmEquity([10, 10], []), 'ICM with no payouts throws')
+  throws(() => icmEquity([0, 0], [10]), 'ICM with no chips in play throws')
 }
 
 // ---------------------------------------------------------------- report
