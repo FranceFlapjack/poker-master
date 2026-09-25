@@ -19,6 +19,8 @@ import { newHand, recordFromState, validateHand } from '../js/engine/hand.js'
 import { potOdds, requiredEquity, evCall, outsEquity, ruleOf4And2, outsError, mdf, alpha,
          evShove, breakEvenFoldEquity, impliedOddsNeeded, betSizing, inBB } from '../js/engine/ev.js'
 import { icmEquity, icmRequiredEquity, bubbleFactor, icmTable } from '../js/engine/icm.js'
+import { nashPushFold, widthOf, equityVsRange } from '../js/engine/pushfold.js'
+import { preflopStrength } from '../js/engine/preflop-strength.js'
 
 let fails = 0, passes = 0
 const ok = (cond, msg) => { if (!cond) { fails++; console.log('FAIL', msg) } else { passes++; if (VERBOSE) console.log('ok  ', msg) } }
@@ -600,6 +602,44 @@ section('icm')
 
   throws(() => icmEquity([10, 10], []), 'ICM with no payouts throws')
   throws(() => icmEquity([0, 0], [10]), 'ICM with no chips in play throws')
+}
+
+// ------------------------------------------------------------- pushfold
+section('pushfold')
+{
+  eq(widthOf(newRange()), 0, 'an empty range is none of the hands')
+  near(widthOf(newRange().fill(1)), 1, 1e-12, 'a full range is all of them')
+  near(widthOf(parseRange('AA')), 6 / 1326, 1e-9, 'aces alone are six of 1,326 hands')
+
+  // a symmetric equity function must give every hand the same answer against any range
+  const flat = () => 0.5
+  near(equityVsRange(0, newRange().fill(1), flat), 0.5, 1e-12, 'flat equity against everything is a half')
+
+  // A cheap stand-in for the real matrix: strength against one random hand. Not accurate enough to
+  // publish, accurate enough to assert the SHAPE of the solution.
+  const st = c => preflopStrength(Math.floor(c / 13), c % 13, 1)
+  const equity = (a, b) => Math.max(0.02, Math.min(0.98, 0.5 + (st(a) - st(b)) * 1.25))
+
+  const solved = [2, 5, 10, 15, 20].map(bb => nashPushFold({ effStack: bb, equity }))
+  ok(solved.every(r => r.converged), 'the solver converges at every depth tested')
+  ok(solved.every(r => r.exploitability <= 5e-3 + 1e-9), 'and lands inside its exploitability bound')
+
+  // the shape that makes it poker rather than arithmetic
+  for (let i = 1; i < solved.length; i++) {
+    ok(solved[i].pushPct <= solved[i - 1].pushPct + 1e-9,
+      `a deeper stack shoves no wider (${solved[i - 1].effStack}bb ${(100 * solved[i - 1].pushPct).toFixed(0)}% -> ${solved[i].effStack}bb ${(100 * solved[i].pushPct).toFixed(0)}%)`)
+    ok(solved[i].callPct <= solved[i - 1].callPct + 1e-9, 'and calls no wider either')
+  }
+  ok(solved[0].pushPct > 0.7, 'at two big blinds almost everything is a shove')
+  ok(solved.at(-1).callPct < solved.at(-1).pushPct, 'the caller is always tighter than the shover — they need a hand, not fold equity')
+
+  // an ante makes the pot worth taking, so shoving widens
+  const noAnte = nashPushFold({ effStack: 10, equity })
+  const withAnte = nashPushFold({ effStack: 10, ante: 0.15, equity })
+  ok(withAnte.pushPct > noAnte.pushPct, 'an ante widens the shoving range, because there is more dead money to win')
+
+  throws(() => nashPushFold({ effStack: 0, equity }), 'a zero stack throws')
+  throws(() => nashPushFold({ effStack: 10 }), 'no equity function throws')
 }
 
 // ---------------------------------------------------------------- report

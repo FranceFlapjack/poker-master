@@ -41,6 +41,29 @@ for (const file of readdirSync(DIR).filter(f => f.endsWith('.json'))) {
     if (p.isSolverOutput && !p.source) bad(where, 'a solver-derived chart must name its source — and check the licence before adding one')
   }
 
+  // A solved chart stores rows per stack depth rather than per position. Same guarantee applies: the
+  // stated width must be recomputable from the notation, and the solve must have actually converged.
+  let prevDepth = null
+  for (const d of chart.depths || []) {
+    const w = `${file} ${d.bb}bb`
+    for (const side of ['push', 'call']) {
+      ranges++
+      let weights
+      try { weights = parseRange(d[side]) } catch (e) { bad(w, `${side} range will not parse: ${e.message}`); continue }
+      const pct = 100 * countCombos(weights) / 1326
+      const stated = d[`${side}Pct`]
+      if (typeof stated !== 'number') bad(w, `no ${side}Pct`)
+      else if (Math.abs(pct - stated) > 0.1) bad(w, `${side} says ${stated}% but the range is ${pct.toFixed(1)}%`)
+      if (VERBOSE) console.log(`ok    ${w.padEnd(22)} ${side.padEnd(4)} ${pct.toFixed(1).padStart(5)}%`)
+    }
+    if (d.converged === false) bad(w, 'the solver did not converge at this depth — do not ship an unconverged row')
+    // shorter stacks must shove wider; if they do not, the solve is wrong
+    if (prevDepth && d.pushPct > prevDepth.pushPct + 0.5) {
+      bad(w, `shoves ${d.pushPct}% at ${d.bb}bb but only ${prevDepth.pushPct}% at ${prevDepth.bb}bb — a deeper stack should not shove wider`)
+    }
+    prevDepth = d
+  }
+
   let prev = null
   for (const pos of chart.positions || []) {
     const w = `${file} ${pos.id}`
