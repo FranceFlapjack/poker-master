@@ -68,22 +68,22 @@
             {
               "slug": "counting-in-big-blinds",
               "title": "Counting in big blinds",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "survival-and-accumulation",
               "title": "Survival against accumulation",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "the-bubble",
               "title": "The bubble",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "chips-are-not-money",
               "title": "Chips are not money",
-              "ready": false
+              "ready": true
             }
           ]
         },

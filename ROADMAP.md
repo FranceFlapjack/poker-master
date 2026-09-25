@@ -24,7 +24,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
-| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
+| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | Stacks/ICM written 2026-09-25; Maths, weak-spot report and utilities to do |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
@@ -271,6 +271,57 @@ between the seats, hit the unscored mixed path, and never once priced a call at 
 for another tool and coming back twice produced no console output at all, which is the check the Play
 page's teardown leak would have failed. No horizontal scroll at 375px. The progress both stress runs
 wrote was backed out of localStorage afterwards.
+
+## Phase 6 — Stack depth and ICM written 2026-09-25
+
+Four lessons: `counting-in-big-blinds`, `survival-and-accumulation`, `the-bubble`, `chips-are-not-money`.
+14 new drills (one `legal`, decided by the engine; the rest judgement), 4 new tables.
+
+**Every number in these four lessons was computed before it was written**, because this is the section
+where that rule bites hardest. `check-content` reads frontmatter and `verify-drills` recomputes only
+engine-decided answers — neither reads prose, so an ICM figure stated in a `choice` drill can be
+confidently wrong and pass all five checkers. The figures came from scratch scripts against
+`js/engine/icm.js` and are all reproducible in the ICM lab, which is what the `sources:` blocks say
+instead of citing anybody.
+
+**Writing them caught two errors that had nothing to do with the lessons.**
+
+*A double-counted pot.* The first pass at the bubble factors passed the caller's own risk in as dead money
+as well, so a call of 10,000 into 1,500 was being priced as though 11,500 were already in the middle.
+`icmRequiredEquity` adds the opponent's contribution itself; `pot` is dead money only. The published
+figures use `risk: 10000, pot: 1500`.
+
+*An over-broad claim in shipped text.* `pushfold-hu.json`'s provenance said a chip-EV shoving range "is
+too wide wherever ICM pressure is real", and that renders on the trainer page. It is only half true.
+Under ICM the **calling** range is unambiguously too wide. The **shoving** side pulls both ways: your own
+chips are worth more, but tighter callers fold more often, which is worth something back. This app has
+not solved ICM push/fold, so the note now states the calling direction and declines to size the shoving
+adjustment. The lesson says the same thing, and the drill asks about exactly that.
+
+**The figures, for the record** — all five-handed unless stated, ICM lab reproducible:
+
+| | |
+|---|---|
+| even stacks, flip for it all | break-even **61.1%**, not 50% |
+| blinding 10,000 → 6,000 | costs **21.8%** of your money |
+| first 10,000 chips owned | **$925**; the eighth 10,000 is **$249** |
+| doubling up, anywhere on the curve | money ×**1.4** |
+| 80% of the chips | **38%** of the money |
+| bubble, short shoves 10,000 into 1,500 | leader needs 52.4%, the 15k needs **58.8%** |
+| calling off everything | 25k **1.48**, 15k 1.39, short 1.28 |
+| nine left → six → four | 1.06 → 1.10 → 1.13 |
+| winner takes all | **1.00** |
+
+Two readings of the premium are both true and they confused me before they were computed: hold the
+**amount at risk** constant and the big stack pays least (that is bubble pressure); hold **"all my
+chips"** constant and the short stack pays least (they have least to lose). Same fact, different thing
+held still.
+
+**Still to do in Phase 6:** the Maths section (3 lessons — pot odds, expected value, bluffing and MDF),
+the weak-spot report, the live MTT utilities, and polish. The weak-spot report now has
+`pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as
+separate readouts is an open decision — mixing them may just surface "you are worst at whatever you
+drilled least".
 
 ## Phase 8 — why review does not port from Chess Master
 
