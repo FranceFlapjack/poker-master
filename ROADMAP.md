@@ -358,7 +358,25 @@ Three things these lessons say that the tool cannot:
 usually misused, and the drill asks exactly that. The read-more also says plainly that *which* hands to
 defend with is a solver's job and this app has no postflop solver.
 
-**Still to do in Phase 6:** the weak-spot report, the live MTT utilities, and polish. The weak-spot report now has
+### The weak-spot report, done 2026-09-25
+
+`js/weak-spots.js`, on the home page. It reads the per-topic accuracy every drill in the app has been
+recording since Phase 2 and turns three shapes of dotted key back into English: `basics/the-cards.rank`,
+`preflop.rfi.BTN`, `pushfold.hu.sb.6-10bb`.
+
+**The open ranking question is answered: one list, worst first, with the area labelled and the sample
+size shown on every row.** The risk with a single list was that it would just say "you are worst at
+whatever you drilled least" — which is why a topic needs **8 attempts before it can be ranked at all**,
+and why `12` and `9/12` sit next to each percentage. A reader can see what a number is based on.
+
+**It does not go quiet when there is no data.** With nothing over the bar it names the closest topic and
+how many more attempts it needs — "Pot odds — recall is closest, 3 more to go" — which is a next action
+rather than an apology. With nothing recorded at all it renders nothing, because someone who has not
+drilled anything should see the course, not an empty widget.
+
+Verified by running it in all three states, with progress backed up and restored afterwards.
+
+**Still to do in Phase 6:** the live MTT utilities (shape decision outstanding) and polish. The weak-spot report now has
 `pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as
 separate readouts is an open decision — mixing them may just surface "you are worst at whatever you
 drilled least".

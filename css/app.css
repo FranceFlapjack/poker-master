@@ -542,6 +542,18 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .trainer .hand .pc + .pc { margin-left: 0.35em; }
 .trainer .actions { display: flex; gap: var(--s-2); margin-bottom: var(--s-3); }
 
+/* the weak-spot report: worst first, with the sample size always visible next to the percentage */
+.report .wlist { list-style: none; margin: var(--s-3) 0 0; padding: 0; }
+.report .wrow a { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label area" "bar bar" "pct n"; gap: 2px var(--s-3);
+  align-items: center; padding: var(--s-3) 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; }
+.report .wlabel { grid-area: label; font-size: var(--fs-2); }
+.report .warea { grid-area: area; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.report .wbar { grid-area: bar; display: block; height: 4px; background: var(--rg-fold); margin: 4px 0 2px; }
+.report .wbar i { display: block; height: 100%; background: var(--accent); }
+.report .wpct { grid-area: pct; font-size: var(--fs-1); font-variant-numeric: tabular-nums; }
+.report .wn { grid-area: n; font-size: var(--fs-1); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.report .wrow a:hover .wlabel { text-decoration: underline; }
+
 /* the play page: the table, then what just happened, then what to do next */
 .play #say { min-height: 2.6em; margin-bottom: var(--s-3); }
 .play #between { margin-bottom: var(--s-5); }

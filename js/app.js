@@ -5,6 +5,7 @@ import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
 import { mountFamily } from './family.js'
 import { visibleParts, groupsOf, toolsOf, flatten, lessonId, lessonPath } from './curriculum.js'
+import { weakSpotReport } from './weak-spots.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -122,6 +123,7 @@ function showHome(main) {
         <p>No-limit hold'em, from the first deal through to the maths a tournament actually asks of you. Every lesson puts a table in the text so you act on the spot rather than read about it, and every drill is checked against the app's own engine before it ships.</p>
       </section>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.part)}</div></div><a class="btn primary" href="#/lesson/${cont.dir}/${cont.slug}">Open lesson</a></div>` : ''}
+      ${weakSpotReport(curriculum)}
       ${parts().map(part => partCard(part)).join('')}
       <div class="switch-row">
         <button class="switch" id="beginner" role="switch" aria-checked="${progress.beginner}" aria-label="Beginner mode"></button>
