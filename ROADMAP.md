@@ -22,8 +22,8 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **1** | `js/engine/`: `cards`, `evaluator`, `rules`, `hand`, `ranges`, `equity`; `js/table.js`; `scripts/engine-test.mjs` | ✅ done 2026-09-24 |
 | **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
-| **4** | `js/bot/` + Play a hand + Ranges section written | bots and Play done 2026-09-25; Ranges lessons still to write |
-| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | |
+| **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
+| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | next |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |

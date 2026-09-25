@@ -10,6 +10,9 @@ const $ = s => document.querySelector(s)
 let curriculum = null
 let current = null // {dir, slug}
 let unsubLesson = null
+// Whatever the last page mounted. A tool can hold timers and an async loop — the play page drives bots
+// with awaits — so leaving a page has to stop it, not merely overwrite its HTML.
+let unmountPage = null
 
 const ICON_SOUND_ON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 7a4 4 0 010 6M15.5 4.5a7.5 7.5 0 010 11"/></svg>'
 const ICON_SOUND_OFF = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 8l4 4M17 8l-4 4"/></svg>'
@@ -94,6 +97,7 @@ function route() {
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
+  if (unmountPage) { try { unmountPage() } catch (_) {} ; unmountPage = null }
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
   const t = hash.match(/^#\/tools\/([\w-]+)/)
@@ -156,19 +160,21 @@ async function showTool(main, slug) {
   renderSidebar()
   main.innerHTML = '<div class="page"><p class="small">Loading…</p></div>'
   try {
+    let view = null
     if (slug === 'odds') {
       const { mountOdds } = await import('./tools/odds.js')
       main.innerHTML = ''
-      mountOdds(main)
+      view = mountOdds(main)
     } else if (slug === 'play') {
       const { mountPlay } = await import('./tools/play.js')
       main.innerHTML = ''
-      mountPlay(main)
+      view = mountPlay(main)
     } else if (slug === 'ranges') {
       const { mountRanges } = await import('./tools/ranges.js')
       main.innerHTML = ''
-      await mountRanges(main)
+      view = await mountRanges(main)
     } else { location.hash = '#/'; return }
+    if (view && view.destroy) unmountPage = () => view.destroy()
   } catch (e) {
     main.innerHTML = `<div class="page"><p>Could not load this tool.</p><p class="small">${esc(e.message)}</p></div>`
   }

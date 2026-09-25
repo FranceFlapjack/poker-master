@@ -41,22 +41,22 @@
             {
               "slug": "the-169-grid",
               "title": "The 169 hands, on one grid",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "position-and-ranges",
               "title": "Why position changes the answer",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "opening-charts",
               "title": "Opening charts, and where they come from",
-              "ready": false
+              "ready": true
             },
             {
               "slug": "defending-the-blinds",
               "title": "Defending the blinds",
-              "ready": false
+              "ready": true
             }
           ]
         },

@@ -44,12 +44,13 @@ export function mountPlay(main) {
   const levels = seatLevels(SEATS, { hero: HERO, rng })
   let stacks = Array.from({ length: SEATS }, () => START)
   let button = (rng() * SEATS) | 0
-  let state = null, view = null, busy = false, handNo = 0
+  let state = null, view = null, busy = false, handNo = 0, alive = true
 
   $('#who').innerHTML = Object.entries(levels).map(([seat, lvl]) =>
     `<li><b>${esc(NAMES[seat])}</b> <span>${esc(LEVELS[lvl].blurb)}</span></li>`).join('')
 
   function render() {
+    if (gone()) return
     const done = state.street === 'complete'
     const heroTurn = !done && state.toAct === HERO
     const opts = {
@@ -63,7 +64,10 @@ export function mountPlay(main) {
     else view = mountTable($('#table'), opts)
   }
 
-  function say(html) { $('#say').innerHTML = html }
+  // The bot loop awaits between actions, so the reader can leave mid-hand. Everything that touches the
+  // DOM after an await has to cope with the page already being gone.
+  const gone = () => !alive || !main.isConnected
+  function say(html) { const el = $('#say'); if (el) el.innerHTML = html }
 
   function act(a) {
     if (busy) return
@@ -76,15 +80,18 @@ export function mountPlay(main) {
     if (busy) return
     busy = true
     while (state.street !== 'complete' && state.toAct !== HERO) {
+      if (gone()) { busy = false; return }
       render()
       say(`<p class="note">${esc(state.seats[state.toAct].name)} is thinking…</p>`)
       await wait(420)
+      if (gone()) { busy = false; return }
       const a = decide(state, { level: levels[state.toAct], rng })
       state = applyAction(state, a)
       const amt = a.amount != null ? ` ${a.amount}` : ''
       say(`<p class="note">${esc(state.actions.at(-1) ? state.seats[state.actions.at(-1).seat].name : '')} ${esc(a.type)}${amt}.</p>`)
     }
     busy = false
+    if (gone()) return
     render()
     if (state.street === 'complete') finish()
     else say(`<p class="note">Your turn. Pot ${potTotal(state)}.</p>`)
@@ -104,7 +111,9 @@ export function mountPlay(main) {
     if (won) sound.play('success')
 
     const broke = stacks.filter(s => s > 0).length < 2
-    $('#between').innerHTML = broke
+    const between = $('#between')
+    if (!between) return
+    between.innerHTML = broke
       ? `<button class="btn primary" data-go="reset">Everyone back to ${START.toLocaleString()}</button>`
       : `<button class="btn primary" data-go="next">Next hand</button>`
   }
@@ -121,7 +130,7 @@ export function mountPlay(main) {
       seats: stacks.map((s, i) => ({ stack: s, name: NAMES[i] })),
       button, blinds: BLINDS, seed: (rng() * 1e9) | 0,
     })
-    $('#between').innerHTML = ''
+    const between = $('#between'); if (between) between.innerHTML = ''
     say(`<p class="note">Hand ${handNo}. Blinds ${BLINDS.sb}/${BLINDS.bb}.</p>`)
     render()
     run()
@@ -141,5 +150,5 @@ export function mountPlay(main) {
   })
 
   deal()
-  return { destroy() { view && view.destroy() } }
+  return { destroy() { alive = false; view && view.destroy() } }
 }
