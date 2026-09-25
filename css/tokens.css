@@ -106,6 +106,7 @@
   --rg-fold: #eeeeee;
   --rg-line: #ffffff;
   --rg-hero: #b3141a;
+  --rg-mix: #b3141a;           /* a hand the solver plays both ways — outlined, never filled in */
 
   --board-anim: 160ms;
   --board-max: 660px;   /* was 560px — a table needs room to be read */

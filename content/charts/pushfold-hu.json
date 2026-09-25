@@ -11,7 +11,8 @@
     "basis": "Solved, not authored. When both players are short enough that the only sensible actions are shove or fold, the game is small enough to solve exactly: 169 hands each side and no streets afterwards. Equity came from a 169x169 matrix measured at 3,000 trials per matchup.",
     "note": "HEADS-UP and CHIP EV only. Multiway push/fold is a different game and is not solved here. At a final table the money is not the chips — see the ICM lab — and a chip-EV shoving range is too wide wherever ICM pressure is real. Past about 15 big blinds shoving stops being the right model at all; those rows are included for completeness, not as advice.",
     "copied": "Nothing is copied. This is the output of this repository solving the game itself, which is why it is the one chart here that may fairly be called an equilibrium.",
-    "accuracy": "Each depth is solved to within 0.00499 big blinds of exploitability, a bound chosen to sit under the sampling error of the equity matrix rather than below it."
+    "accuracy": "Each depth is solved to within 0.00499 big blinds of exploitability, a bound chosen to sit under the sampling error of the equity matrix rather than below it.",
+    "mixed": "Some hands are MIXED: the solve leaves them between 0.35 and 0.65, meaning the equilibrium plays them some of the time and folds them the rest. They are listed separately rather than rounded into the range, because a hand played half the time is a coin flip and marking either answer wrong would invent a certainty the solve does not have."
   },
   "depths": [
     {
@@ -20,6 +21,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s+, A2o+, K2o+, Q2o+, J2o+, T2o+, 92o+, 82o+, 72o+, 62o+, 52o+, 42o+, 32o+",
       "pushPct": 100,
       "callPct": 100,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -29,6 +32,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s+, A2o+, K2o+, Q2o+, J2o+, T2o+, 92o+, 82o+, 72o+, 62o+, 52o+, 42o+, 32o+",
       "pushPct": 90.3,
       "callPct": 100,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -38,6 +43,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s+, A2o+, K2o+, Q2o+, J2o+, T2o+, 92o+, 84o+, 74o+, 64o+, 53o+, 43o+",
       "pushPct": 78.6,
       "callPct": 91.9,
+      "pushMixed": "",
+      "callMixed": "63o",
       "exploitability": 0.00498,
       "converged": true
     },
@@ -47,6 +54,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J2s+, T2s+, 93s+, 84s+, 74s+, 64s+, 54s+, A2o+, K2o+, Q2o+, J2o+, T6o+, 96o+, 86o+, 76o+",
       "pushPct": 74.1,
       "callPct": 72.9,
+      "pushMixed": "53s",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -56,6 +65,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J2s+, T4s+, 96s+, 86s+, 76s+, A2o+, K2o+, Q2o+, J5o+, T7o+, 97o+",
       "pushPct": 72.9,
       "callPct": 62,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -65,6 +76,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J4s+, T6s+, 96s+, 87s+, A2o+, K2o+, Q4o+, J7o+, T8o+",
       "pushPct": 69.5,
       "callPct": 53.8,
+      "pushMixed": "93s",
+      "callMixed": "96s, 98o+",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -74,6 +87,8 @@
       "call": "22+, A2s+, K2s+, Q2s+, J6s+, T7s+, 98s+, A2o+, K2o+, Q6o+, J8o+, T9o+",
       "pushPct": 67.1,
       "callPct": 48.4,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -83,6 +98,8 @@
       "call": "22+, A2s+, K2s+, Q4s+, J7s+, T8s+, 98s+, A2o+, K3o+, Q7o+, J9o+, T9o+",
       "pushPct": 62.9,
       "callPct": 44.5,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -92,6 +109,8 @@
       "call": "22+, A2s+, K2s+, Q5s+, J8s+, T8s+, A2o+, K4o+, Q8o+, J9o+",
       "pushPct": 61.1,
       "callPct": 40.9,
+      "pushMixed": "86o",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -101,6 +120,8 @@
       "call": "22+, A2s+, K2s+, Q7s+, J8s+, T9s+, A2o+, K6o+, Q9o+, JTo+",
       "pushPct": 58.7,
       "callPct": 36.3,
+      "pushMixed": "86o, 65o+",
+      "callMixed": "K5o",
       "exploitability": 0.005,
       "converged": true
     },
@@ -110,6 +131,8 @@
       "call": "22+, A2s+, K4s+, Q8s+, J9s+, T9s+, A2o+, K6o+, Q9o+, JTo+",
       "pushPct": 55.1,
       "callPct": 35.1,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -119,6 +142,8 @@
       "call": "22+, A2s+, K5s+, Q8s+, J9s+, A2o+, K7o+, QTo+, JTo+",
       "pushPct": 52.3,
       "callPct": 32.7,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -128,6 +153,8 @@
       "call": "22+, A2s+, K6s+, Q9s+, J9s+, A2o+, K8o+, QTo+",
       "pushPct": 49,
       "callPct": 30.3,
+      "pushMixed": "43s+",
+      "callMixed": "Q8s",
       "exploitability": 0.00499,
       "converged": true
     },
@@ -137,6 +164,8 @@
       "call": "22+, A2s+, K7s+, Q9s+, JTs+, A2o+, K9o+, QTo+",
       "pushPct": 48.7,
       "callPct": 28.8,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -146,6 +175,8 @@
       "call": "22+, A2s+, K7s+, Q9s+, JTs+, A3o+, K9o+, QTo+",
       "pushPct": 45.7,
       "callPct": 27.9,
+      "pushMixed": "J5s, K7o",
+      "callMixed": "A3o",
       "exploitability": 0.005,
       "converged": true
     },
@@ -155,6 +186,8 @@
       "call": "33+, A2s+, K8s+, Q9s+, JTs+, A4o+, K9o+, QJo+",
       "pushPct": 43,
       "callPct": 25.3,
+      "pushMixed": "",
+      "callMixed": "Q9s",
       "exploitability": 0.005,
       "converged": true
     },
@@ -164,6 +197,8 @@
       "call": "33+, A2s+, K8s+, QTs+, JTs+, A5o+, K9o+, QJo+",
       "pushPct": 43.3,
       "callPct": 24.1,
+      "pushMixed": "87o+",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -173,6 +208,8 @@
       "call": "33+, A2s+, K9s+, QTs+, JTs+, A5o+, KTo+, QJo+",
       "pushPct": 42.4,
       "callPct": 22.9,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -182,6 +219,8 @@
       "call": "33+, A2s+, K9s+, QTs+, A6o+, KTo+, QJo+",
       "pushPct": 40.6,
       "callPct": 21.7,
+      "pushMixed": "K2s",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     },
@@ -191,6 +230,8 @@
       "call": "33+, A2s+, K9s+, QTs+, A6o+, KTo+",
       "pushPct": 40,
       "callPct": 20.8,
+      "pushMixed": "",
+      "callMixed": "",
       "exploitability": 0.005,
       "converged": true
     }

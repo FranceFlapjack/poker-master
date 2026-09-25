@@ -177,6 +177,10 @@ async function showTool(main, slug) {
       const { mountRanges } = await import('./tools/ranges.js')
       main.innerHTML = ''
       view = await mountRanges(main)
+    } else if (slug === 'pushfold') {
+      const { mountPushfold } = await import('./tools/pushfold.js')
+      main.innerHTML = ''
+      view = await mountPushfold(main)
     } else { location.hash = '#/'; return }
     if (view && view.destroy) unmountPage = () => view.destroy()
   } catch (e) {

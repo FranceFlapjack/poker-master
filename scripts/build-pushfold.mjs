@@ -52,19 +52,37 @@ console.log(`  antisymmetry error ${worstSym.toExponential(1)}; aces beat every 
 if (!aaBeatsAll) { console.log('  ABORT: the matrix is wrong'); process.exit(1) }
 
 // --- stage 2: solve each depth ---------------------------------------------
+//
+// MIXED CELLS are shipped alongside the pure ranges, and that is not a detail. The solver returns
+// frequencies; a chart needs a decision, so cells above 0.5 are written in and the rest out. But a hand
+// the equilibrium plays 48% of the time is not a fold, and a trainer that marks you wrong for shoving it
+// would be inventing a certainty the solve does not have. So the band around a half is recorded
+// separately and the trainer refuses to score it.
+const MIXED_LO = 0.35, MIXED_HI = 0.65
+const mixedRange = freq => {
+  const r = newRange()
+  for (let c = 0; c < 169; c++) r[c] = (freq[c] >= MIXED_LO && freq[c] <= MIXED_HI) ? 1 : 0
+  return r
+}
+const countCells = r => { let n = 0; for (let c = 0; c < 169; c++) if (r[c]) n++; return n }
+
 const depths = []
 for (const S of DEPTHS) {
   const r = nashPushFold({ effStack: S, equity })
+  const pushMixed = mixedRange(r.pushFreq), callMixed = mixedRange(r.callFreq)
   depths.push({
     bb: S,
     push: serializeRange(r.push),
     call: serializeRange(r.call),
     pushPct: Math.round(r.pushPct * 1000) / 10,
     callPct: Math.round(r.callPct * 1000) / 10,
+    pushMixed: serializeRange(pushMixed),
+    callMixed: serializeRange(callMixed),
     exploitability: Math.round(r.exploitability * 1e5) / 1e5,
     converged: r.converged,
   })
-  console.log(`  ${String(S).padStart(2)}bb  push ${(100 * r.pushPct).toFixed(1).padStart(5)}%  call ${(100 * r.callPct).toFixed(1).padStart(5)}%  ${r.converged ? 'converged' : 'NOT CONVERGED'}`)
+  const mix = countCells(pushMixed) + countCells(callMixed)
+  console.log(`  ${String(S).padStart(2)}bb  push ${(100 * r.pushPct).toFixed(1).padStart(5)}%  call ${(100 * r.callPct).toFixed(1).padStart(5)}%  ${String(mix).padStart(2)} mixed  ${r.converged ? 'converged' : 'NOT CONVERGED'}`)
 }
 
 writeFileSync(join(ROOT, 'content/charts/pushfold-hu.json'), JSON.stringify({
@@ -81,6 +99,7 @@ writeFileSync(join(ROOT, 'content/charts/pushfold-hu.json'), JSON.stringify({
     note: 'HEADS-UP and CHIP EV only. Multiway push/fold is a different game and is not solved here. At a final table the money is not the chips — see the ICM lab — and a chip-EV shoving range is too wide wherever ICM pressure is real. Past about 15 big blinds shoving stops being the right model at all; those rows are included for completeness, not as advice.',
     copied: 'Nothing is copied. This is the output of this repository solving the game itself, which is why it is the one chart here that may fairly be called an equilibrium.',
     accuracy: `Each depth is solved to within ${depths[0] ? depths[0].exploitability : '0.005'} big blinds of exploitability, a bound chosen to sit under the sampling error of the equity matrix rather than below it.`,
+    mixed: `Some hands are MIXED: the solve leaves them between ${MIXED_LO} and ${MIXED_HI}, meaning the equilibrium plays them some of the time and folds them the rest. They are listed separately rather than rounded into the range, because a hand played half the time is a coin flip and marking either answer wrong would invent a certainty the solve does not have.`,
   },
   depths,
 }, null, 2) + '\n')

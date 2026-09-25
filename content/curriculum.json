@@ -124,6 +124,12 @@
           "blurb": "Open or fold, scored against the chart."
         },
         {
+          "slug": "pushfold",
+          "title": "Push or fold",
+          "ready": true,
+          "blurb": "Heads-up shove-or-fold, scored against a solved equilibrium."
+        },
+        {
           "slug": "odds",
           "title": "Pot odds & equity",
           "ready": true,

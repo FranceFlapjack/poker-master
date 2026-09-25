@@ -523,7 +523,13 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .grid169 .c.on.pair { background: var(--rg-raise); }
 .grid169 .c.here { outline: 2px solid var(--rg-hero); outline-offset: -2px; z-index: 1; color: #fff; font-weight: 700; }
 .grid169 .c.off.here { background: var(--ink-3); }
+.grid169 .c.mix { box-shadow: inset 0 0 0 1px var(--rg-mix); }
 @media (max-width: 560px) { .grid169 .c { font-size: 0; } .grid169 .c.here { font-size: 8px; } }
+
+/* the push/fold trainer shows both sides of the same spot, so the two ranges sit side by side */
+.two-grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-5); margin-bottom: var(--s-3); }
+.two-grids h3 { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 var(--s-2); }
+.two-grids .grid169 { max-width: none; }
 
 .trainer .spot-head { display: flex; flex-wrap: wrap; gap: var(--s-6); margin-bottom: var(--s-4); }
 .trainer .spot-head > div { display: flex; flex-direction: column; gap: 2px; }

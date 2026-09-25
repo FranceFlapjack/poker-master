@@ -56,6 +56,16 @@ for (const file of readdirSync(DIR).filter(f => f.endsWith('.json'))) {
       else if (Math.abs(pct - stated) > 0.1) bad(w, `${side} says ${stated}% but the range is ${pct.toFixed(1)}%`)
       if (VERBOSE) console.log(`ok    ${w.padEnd(22)} ${side.padEnd(4)} ${pct.toFixed(1).padStart(5)}%`)
     }
+    // The mixed cells are optional. Where they exist they must parse and survive a round trip, or the
+    // trainer outlines the wrong squares — and an outline in the wrong place says "the solver is unsure
+    // about this hand" about a hand it was certain of, which is worse than showing nothing.
+    for (const key of ['pushMixed', 'callMixed']) {
+      if (d[key] == null) continue
+      let m
+      try { m = parseRange(d[key]) } catch (e) { bad(w, `${key} will not parse: ${e.message}`); continue }
+      if (countCombos(parseRange(serializeRange(m))) !== countCombos(m)) bad(w, `${key} does not survive a round trip`)
+      if (VERBOSE) console.log(`ok    ${w.padEnd(22)} ${key.padEnd(10)} ${countCombos(m)} combos`)
+    }
     if (d.converged === false) bad(w, 'the solver did not converge at this depth — do not ship an unconverged row')
     // shorter stacks must shove wider; if they do not, the solve is wrong
     if (prevDepth && d.pushPct > prevDepth.pushPct + 0.5) {

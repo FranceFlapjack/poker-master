@@ -23,7 +23,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **2** | Learn: pipeline, mode switch, **Basics part** written (4 lessons) | ✅ done 2026-09-24 |
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
-| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ICM done 2026-09-25; push/fold still to build |
+| **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
@@ -219,9 +219,49 @@ That short-stack row is the one to remember: **ICM pressure is not a property of
 property of how much you personally have to lose.** A big stack calling off is paying the premium; the
 short stack shoving into them mostly is not.
 
-**Still to build:** `engine/pushfold.js`. Heads-up push/fold Nash is genuinely solvable by iterated best
-response and would be the app's first *computed* chart rather than an authored one. It needs a 169×169
-preflop equity matrix generated offline first — about 14,000 matchups after exploiting symmetry.
+### Push/fold — the first computed chart, done 2026-09-25
+
+`js/engine/pushfold.js`, `scripts/build-pushfold.mjs`, `content/charts/pushfold-hu.json` and the
+**push/fold trainer** at `#/tools/pushfold`. 1–20bb: **shoving 90.3% at 2bb falling to 40.0% at 20bb**,
+the caller 100% → 20.8%. Every depth converged.
+
+This is the one chart in the app that is an *answer* rather than a baseline, which is why it is the only
+file here whose provenance says `isGTO: true` and names this repository as the source.
+
+**Two defects, both found by watching the solver rather than trusting it.**
+
+Raw best response never converged — it hit the iteration cap at 8, 13, 20 and 30bb. Not a bug in the
+maths: both sides' responses are hard 0/1 thresholds, so they flip past each other forever. That needed
+fictitious play, where each side answers the other's running average with a decaying step.
+
+It *still* reported failure, and this time the **test was wrong, not the algorithm**. A 1/t step cannot
+move less than about 1/t however settled the answer is, so a movement-based tolerance can never be
+satisfied. Convergence is now judged by **exploitability** — how much either side gains by deviating —
+at 0.005bb, a bound chosen to sit *under* the sampling error of the equity matrix rather than below it.
+Solving to 1e-5 against inputs carrying ±0.8% noise would be inventing precision the data cannot support.
+
+The generator is seeded, and that has been checked rather than assumed: regenerating the chart twice
+reproduced all 40 range strings byte for byte, so the shipped file can always be re-derived.
+
+**Mixed hands are shipped, not rounded away.** The solver returns frequencies; a chart needs a decision,
+so cells above 0.5 are written in. But a hand the equilibrium plays 48% of the time is not a fold, and a
+trainer marking you wrong for shoving it would break the app's own honesty rule in the one place it
+claims equilibrium. So `pushMixed` / `callMixed` carry the 0.35–0.65 band — **at most three cells per
+depth**, measured before the feature was designed — the grid outlines them, and the trainer does not
+score them.
+
+**The trainer deals 1–15bb only.** The chart carries 16–20bb and the provenance says those rows are "for
+completeness, not as advice"; drilling them would teach a model the file itself disclaims. They stay
+visible in the chart panel and are not dealt. Both seats are drilled — calling off is where the
+equilibrium actually costs money — and hands are dealt half inside the range and half outside, the same
+deliberate distortion the range trainer states.
+
+Topic keys are banded rather than per-integer: `pushfold.hu.sb.6-10bb`, and the same for `bb`. Six
+buckets instead of thirty, so the Phase 6 weak-spot report has enough samples in each to mean something.
+
+Verified by running it: 200 scripted spots dealt only depths 1–15, split 97/103 between the seats, hit
+the unscored mixed path twice, and produced a verdict every time with no console errors. The progress
+that stress test wrote was backed out of localStorage afterwards.
 
 ## Phase 8 — why review does not port from Chess Master
 
