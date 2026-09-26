@@ -135,7 +135,7 @@ function mountTip(blk, raw) {
   el.querySelector('.tip-text').innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
   blk.replaceWith(el)
 
-  const msg = { kind: 'tip', text, title: title || 'Tip', owner: el }
+  const msg = { kind: 'tip', text, title: title || 'Meow tip', owner: el }
   // clicking the label in the text is asking, so the bubble opens; with the cat off, it opens inline
   el.querySelector('.tip-cue').addEventListener('click', () => {
     if (!mascot.say(msg)) { const t = el.querySelector('.tip-text'); t.hidden = !t.hidden }

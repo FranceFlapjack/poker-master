@@ -169,7 +169,7 @@ function setState(state) {
 }
 
 function fill() {
-  labelEl.textContent = message.title || (message.kind === 'hint' ? 'Hint' : 'Tip')
+  labelEl.textContent = message.title || (message.kind === 'hint' ? 'Hint' : 'Meow tip')
   textEl.innerHTML = inline(message.text)
 }
 
