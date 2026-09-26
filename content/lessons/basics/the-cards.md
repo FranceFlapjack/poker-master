@@ -40,23 +40,25 @@ caption: Your best five here are the ace, the king, and the ten, nine and seven 
 
 Nine kinds, strongest first:
 
-1. **Straight flush** — five in a row, one suit. Ace-high is a royal flush.
-2. **Four of a kind**
-3. **Full house** — three of one rank, two of another
-4. **Flush** — five of a suit, not in a row
-5. **Straight** — five in a row, mixed suits
-6. **Three of a kind**
-7. **Two pair**
-8. **One pair**
-9. **High card** — none of the above
+```rankings
+Straight flush | Five in a row, one suit. Ace-high is a royal flush. | 9h 8h 7h 6h 5h
+Four of a kind | Four cards of the same rank. | Qs Qh Qd Qc 7s
+Full house | Three of one rank, two of another. | Kd Ks Kh 4c 4d
+Flush | Five of one suit, not in a row. | Kc Tc 7c 4c 2c
+Straight | Five in a row, mixed suits. | Ts 9d 8c 7h 6s
+Three of a kind | Three cards of the same rank. | 7c 7d 7s Kh 2c
+Two pair | Two pairs of different ranks. | Jh Jc 4s 4d Ac
+One pair | Two cards of the same rank. | Td Ts Kc 6h 3s
+High card | None of the above. The top card names it. | As Jd 8c 5h 2s
+```
 
 Each is harder to make than the one below, which is the whole logic. Two consequences trip up every
 beginner:
 
 **A category always beats the one below it, however big the cards.** Three deuces beat aces-and-kings.
 
-**Inside a category, compare from the top card down.** Two players with a pair of kings? The unused
-cards — the **kickers** — decide it.
+**Inside a category, compare from the top card down.** Two players with a pair of kings? The other three
+cards of the five — the **kickers** — decide it.
 
 ```try
 type: rank

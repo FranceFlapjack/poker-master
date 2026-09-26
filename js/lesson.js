@@ -1,14 +1,18 @@
 // Lesson renderer: Markdown (+ frontmatter) → HTML, with `table` and `try` fences mounted as components.
 //
-// Two fences:
-//   ```table   a spot to look at    — the parameters of js/spot.js, plus `caption`
-//   ```try     a spot to answer     — see js/exercise.js for the four kinds
+// Four fences:
+//   ```table     a spot to look at    — the parameters of js/spot.js, plus `caption`
+//   ```try       a spot to answer     — see js/exercise.js for the four kinds
+//   ```tip       a tip the cat in the corner can say — see mountTip
+//   ```rankings  hands drawn as cards, strongest first — see mountRankings
 //
 // `+++ Title` opens a collapsible section and a bare `+++` closes it, which is how a lesson keeps its
 // long explanations out of the way of its drills.
 
 import { marked } from '../vendor/marked/marked.esm.js'
-import { mountTable } from './table.js'
+import { mountTable, cardRowSVG } from './table.js'
+import { parseCards, cardGlyph, rankOf } from './engine/cards.js'
+import { evaluate, describe, HIGH_CARD, PAIR, TWO_PAIR, TRIPS, QUADS } from './engine/evaluator.js'
 import { mountExercise } from './exercise.js'
 import { spotFromParams } from './spot.js'
 import { avatarsForSeats } from './avatars.js'
@@ -16,7 +20,7 @@ import { parseFrontmatter, parseParams } from './frontmatter.js'
 import { mascot, catHeadHTML } from './mascot.js'
 export { parseFrontmatter, parseParams }
 
-const BLOCKS = new Set(['table', 'try', 'tip'])
+const BLOCKS = new Set(['table', 'try', 'tip', 'rankings'])
 marked.use({
   renderer: {
     code({ text, lang }) {
@@ -72,6 +76,7 @@ export async function renderLesson(container, md, { lessonId, onSolved = null } 
   for (const blk of container.querySelectorAll('.blk')) {
     const kind = blk.dataset.kind
     if (kind === 'tip') { mounted.push(mountTip(blk, decodeURIComponent(blk.dataset.src))); continue }
+    if (kind === 'rankings') { mounted.push(mountRankings(blk, decodeURIComponent(blk.dataset.src))); continue }
     const p = parseParams(decodeURIComponent(blk.dataset.src))
     const fig = document.createElement('figure')
     blk.replaceWith(fig)
@@ -157,6 +162,58 @@ function mountTip(blk, raw) {
     io.observe(el.querySelector('.tip-cue'))
   }, 700)
   return { destroy() { dead = true; clearTimeout(arm); if (io) io.disconnect(); mascot.hide(el) } }
+}
+
+/**
+ * The hand rankings with every hand drawn as cards: ```rankings fences, one row per line,
+ *
+ *     Name | a short note | five cards
+ *
+ * strongest first. A beginner reads "full house" and learns nothing; five cards with the three and the
+ * two visible teach it at a glance. The cards that MAKE the hand are drawn full and the kickers pale —
+ * and which is which is the engine's call (it evaluates each example), so the chart cannot mark the
+ * wrong card. scripts/verify-drills.mjs checks that every example is the hand its row names and beats
+ * the row below.
+ */
+function mountRankings(blk, raw) {
+  const root = document.createElement('div')
+  root.className = 'rankings'
+  const list = document.createElement('ol')
+  let anyKicker = false, bad = null
+  for (const line of raw.split('\n')) {
+    if (!line.trim()) continue
+    const [name, note, spec] = line.split('|').map(s => (s || '').trim())
+    let cards, ev
+    try { cards = parseCards(spec); ev = evaluate(cards) } catch (e) { bad = `${name}: ${e.message}`; break }
+    const made = madeRanks(ev)
+    const faded = made ? cards.map((c, i) => made.includes(rankOf(c)) ? -1 : i).filter(i => i >= 0) : []
+    if (faded.length) anyKicker = true
+    const li = document.createElement('li')
+    li.innerHTML = `<div class="rk-name"><b>${esc(name)}</b>${note ? `<span>${esc(note)}</span>` : ''}</div>`
+    li.append(cardRowSVG(cards, { faded, label: `${describe(ev)}: ${cards.map(cardGlyph).join(' ')}` }))
+    list.append(li)
+  }
+  if (bad) root.innerHTML = `<p class="status bad">Could not draw this chart: ${esc(bad)}</p>`
+  else {
+    root.append(list)
+    if (anyKicker) {
+      const legend = document.createElement('p')
+      legend.className = 'rk-legend'
+      legend.innerHTML = 'Pale cards are <b>kickers</b>: still part of the five, but they only count when two hands tie on the rest.'
+      root.append(legend)
+    }
+  }
+  blk.replaceWith(root)
+  return { destroy() { root.remove() } }
+}
+
+/** The ranks that make the hand, or null when all five do (straight, flush, full house, straight flush). */
+function madeRanks(ev) {
+  switch (ev.cat) {
+    case HIGH_CARD: case PAIR: case TRIPS: case QUADS: return [ev.tb[0]]
+    case TWO_PAIR: return [ev.tb[0], ev.tb[1]]
+    default: return null
+  }
 }
 
 function linkify(s) { return s.replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>') }

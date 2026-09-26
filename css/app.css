@@ -419,14 +419,14 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .dealer-t { font-size: 13px; font-weight: 700; fill: var(--ink); }
 
 /* Cards are drawn by one function in js/table.js into more than one kind of picture — the table, and the
-   hand comparison in showdown and ranking drills. EVERY picture that holds cards belongs in this list:
+   hand comparison in showdown and ranking drills, and the hand rankings chart. EVERY picture that holds cards belongs in this list:
    SVG fills black by default, and the hand comparison shipped that way, a row of black rectangles, from
    the day it was added until someone looked. scripts/render-table.mjs checks the list. */
-:is(.pk-table, .pk-hands) .card rect { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 1; rx: var(--card-radius); }
-:is(.pk-table, .pk-hands) .card.back rect { fill: var(--card-back); stroke: var(--card-back-edge); }
-:is(.pk-table, .pk-hands) .card .rank { font-weight: 600; }
-:is(.pk-table, .pk-hands) .card :is(.rank, .pip).red { fill: var(--suit-red); }
-:is(.pk-table, .pk-hands) .card :is(.rank, .pip).black { fill: var(--suit-black); }
+:is(.pk-table, .pk-hands, .pk-cards) .card rect { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 1; rx: var(--card-radius); }
+:is(.pk-table, .pk-hands, .pk-cards) .card.back rect { fill: var(--card-back); stroke: var(--card-back-edge); }
+:is(.pk-table, .pk-hands, .pk-cards) .card .rank { font-weight: 600; }
+:is(.pk-table, .pk-hands, .pk-cards) .card :is(.rank, .pip).red { fill: var(--suit-red); }
+:is(.pk-table, .pk-hands, .pk-cards) .card :is(.rank, .pip).black { fill: var(--suit-black); }
 
 .pk-table .card.deal { animation: card-deal var(--board-anim) ease-out; }
 @keyframes card-deal { from { transform: scale(0.82); opacity: 0.3 } to { transform: scale(1); opacity: 1 } }
@@ -517,6 +517,26 @@ body[data-mode="grinder"] .beginner-only { display: none; }
 svg.pk-hands { display: block; width: 100%; height: auto; }
 .pk-hands .hand-label { font-size: 17px; font-weight: 700; letter-spacing: 0.06em; fill: var(--ink-2); }
 .hands-caption { font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--s-2); }
+
+/* the hand rankings drawn as cards — a ```rankings fence. A list between hairlines: name and note on the
+   left, the five cards on the right; on a phone the cards drop under the name. */
+.rankings { margin: 0 0 var(--s-5); }
+.rankings ol { list-style: none; margin: 0; padding: 0; counter-reset: rk; border-top: 1px solid var(--line); }
+.rankings li {
+  counter-increment: rk; margin: 0;
+  display: grid; grid-template-columns: 1.75em 1fr auto; align-items: center; column-gap: var(--s-3);
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.rankings li::before { content: counter(rk); font-size: var(--fs-1); font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.rk-name b { display: block; }
+.rk-name span { display: block; font-size: var(--fs-1); color: var(--ink-2); line-height: 1.4; margin-top: 2px; }
+svg.pk-cards { display: block; }
+.pk-cards .card.kicker { opacity: var(--card-kicker); }
+.rk-legend { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-2) 0 0; }
+@media (max-width: 560px) {
+  .rankings li { grid-template-columns: 1.75em 1fr; row-gap: var(--s-2); align-items: baseline; }   /* number level with the name */
+  .rankings li > svg { grid-column: 2; }
+}
 
 /* On a PHONE the table is scaled down hard, so the type inside the SVG must be larger in user units to
    survive it. 560px, not the layout's 760px breakpoint: at 700px the scale is already ~0.9 and this bump

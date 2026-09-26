@@ -92,6 +92,7 @@
   --card-back-edge: #345072;
   --card-shadow: rgba(60, 50, 40, 0.18);
   --card-radius: 8px;          /* Draft 1: 4px */
+  --card-kicker: 0.4;          /* how pale a kicker is in the hand rankings chart */
   --suit-red: #d1615b;         /* Draft 1: #b3141a */
   --suit-black: #3d4348;       /* Draft 1: #161616 */
 

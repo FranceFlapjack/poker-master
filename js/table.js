@@ -609,6 +609,25 @@ export function mountHands(host, { board = [], hands = [], caption = null } = {}
   return { destroy() { root.remove() } }
 }
 
+/**
+ * One row of cards as a small SVG, in rendered pixels — the hand rankings chart. Drawn by the same
+ * card() as every table and drill, so a card in the chart is the card the reader meets later.
+ * `faded` holds the indexes drawn pale (the chart's kickers).
+ */
+export function cardRowSVG(cards, { height = 48, gap = 4, faded = [], label = null } = {}) {
+  const w = Math.round(height * 0.72)
+  const W = cards.length * w + (cards.length - 1) * gap
+  // a pixel of room all round, or the card edges' outer half is clipped
+  const svg = el('svg', { class: 'pk-cards', width: W + 2, height: height + 2, viewBox: `-1 -1 ${W + 2} ${height + 2}`,
+    role: 'img', 'aria-label': label || cards.map(cardGlyph).join(' ') })
+  cards.forEach((c, i) => {
+    const g = card(c, i * (w + gap), 0, false, w, height)
+    if (faded.includes(i)) g.setAttribute('class', 'card kicker')
+    svg.append(g)
+  })
+  return svg
+}
+
 function describeHands(board, hands) {
   const say = cs => cs.map(cardGlyph).join(' ')
   const parts = board.length ? [`board ${say(board)}`] : []

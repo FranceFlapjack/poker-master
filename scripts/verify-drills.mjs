@@ -15,6 +15,9 @@
 //                     avoid. These are checked for being well formed and then reported as UNVERIFIED.
 //
 // Every `table` fence is also built, because a spot that throws renders as an error box in the lesson.
+// Every `rankings` fence — the hand rankings drawn as cards — is evaluated: each example must BE the
+// hand its row names, and beat the row below. A "flush" that happens to be a straight flush would
+// teach the wrong picture under the right word.
 
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -22,6 +25,8 @@ import { dirname, join } from 'node:path'
 import { parseFrontmatter, parseParams } from '../js/frontmatter.js'
 import { spotFromParams, solveDrill } from '../js/spot.js'
 import { allLessons, lessonPath } from '../js/curriculum.js'
+import { parseCards, cardStr } from '../js/engine/cards.js'
+import { evaluate, describe, CATEGORY_NAMES, STRAIGHT_FLUSH } from '../js/engine/evaluator.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -51,7 +56,7 @@ function anteProblem(p) {
   return null
 }
 const VERBOSE = process.argv.includes('-v')
-let fails = 0, verified = 0, unverified = 0, tables = 0
+let fails = 0, verified = 0, unverified = 0, tables = 0, charted = 0
 const bad = (where, msg) => { fails++; console.log(`FAIL  ${where}\n      ${msg}`) }
 
 const ENGINE_DECIDES = new Set(['showdown', 'rank', 'legal'])
@@ -84,6 +89,27 @@ for (const lesson of allLessons(curriculum)) {
         const { state } = spotFromParams(params)
         if (VERBOSE) console.log(`ok    ${where} — ${state.seats.length}-handed, ${state.street}`)
       } catch (e) { bad(where, e.message) }
+    })
+
+    fences(body, ['rankings']).forEach((f, i) => {
+      const where = `${lesson.dir}/${lesson.slug} rankings#${i}`
+      let prev = null
+      for (const line of f.text.split('\n')) {
+        if (!line.trim()) continue
+        const [name, , spec] = line.split('|').map(s => (s || '').trim())
+        let cards
+        try { cards = parseCards(spec || '') } catch (e) { bad(where, `${name}: ${e.message}`); continue }
+        if (cards.length !== 5) { bad(where, `${name}: ${cards.length} cards — a poker hand is exactly five`); continue }
+        if (new Set(cards).size !== 5) { bad(where, `${name}: the same card twice in ${spec}`); continue }
+        const ev = evaluate(cards)
+        const want = /^royal flush$/i.test(name) ? STRAIGHT_FLUSH : CATEGORY_NAMES.findIndex(n => n.toLowerCase() === name.toLowerCase())
+        if (want < 0) bad(where, `"${name}" is not a hand category (${CATEGORY_NAMES.join(', ')})`)
+        else if (ev.cat !== want) bad(where, `the row says ${name} but ${spec} is ${describe(ev)}`)
+        if (prev && !(prev.ev.score > ev.score)) bad(where, `${prev.name} (${prev.spec}) does not beat ${name} (${spec}) — rows go strongest first`)
+        prev = { name, spec, ev }
+        charted++
+        if (VERBOSE) console.log(`ok    ${where} — ${name}: ${cards.map(cardStr).join(' ')} is ${describe(ev)}`)
+      }
     })
 
     fences(body, ['try']).forEach((f, i) => {
@@ -141,6 +167,7 @@ for (const lesson of allLessons(curriculum)) {
 
 console.log(`\n${fails ? `${fails} FAILED, ` : ''}${tables} table${tables === 1 ? '' : 's'} built, ` +
   `${verified} drill${verified === 1 ? '' : 's'} verified against the engine, ` +
+  (charted ? `${charted} charted hand${charted === 1 ? '' : 's'} evaluated, ` : '') +
   `${unverified} judgement drill${unverified === 1 ? '' : 's'} checked but NOT verified`)
 if (unverified && !fails) console.log('(a judgement drill has no ground truth — its answer is the author\'s opinion)')
 process.exit(fails ? 1 : 0)
