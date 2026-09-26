@@ -12,59 +12,101 @@ import { RANKS, SUIT_GLYPH, rankOf, suitOf, isRed, cardGlyph } from './engine/ca
 import { legalActions, potTotal, sbSeat, bbSeat } from './engine/rules.js'
 
 const NS = 'http://www.w3.org/2000/svg'
-// The layout origin. The CANVAS is not fixed: the viewBox is cropped to whatever the seats actually
-// occupy, which is what keeps text legible. A fixed 1000-wide viewBox meant a two-handed lesson spot was
-// scaled down exactly as hard as a nine-handed one — at 560px on screen that is 56%, so a 12-unit label
-// rendered under 7 real pixels and nothing could be read on a phone at all.
-const CX = 500, CY = 430
+
+// ---------------------------------------------------------------------------------------------------
+// SIZES ARE IN RENDERED PIXELS.
+//
+// The first versions of this component sized everything in SVG units and let each table scale to fit
+// its column. That made the same name render anywhere from 19.5px (heads-up, desktop) down to 7.8px
+// (six- or nine-handed on a phone), with bets as small as 6.4px — measured, at every seat count, not
+// guessed. The scale factor depended on seat count and screen, so no single unit size could be right.
+//
+// So the table is now laid out at 1 unit = 1 rendered pixel, for the width it actually has. Text, cards
+// and figures come out the same size at every table; what changes with seat count is only the felt and
+// where the seats go. The numbers themselves live in css/tokens.css (--tb-size-*) so they can be tuned
+// by comment like every other visual decision; these are the fallbacks, and what the Node renderer uses.
+// ---------------------------------------------------------------------------------------------------
+const SIZE_DEFAULTS = {
+  name: 13, stack: 12, bet: 12.5, pot: 14, street: 11, tag: 9.5, dealer: 11,
+  card: 42, board: 48, figure: 58, hero: 70,
+}
+
+function readSizes(node) {
+  const z = { ...SIZE_DEFAULTS }
+  try {
+    const cs = getComputedStyle(node)
+    for (const k of Object.keys(z)) {
+      const v = parseFloat(cs.getPropertyValue(`--tb-size-${k}`))
+      if (Number.isFinite(v) && v > 0) z[k] = v
+    }
+  } catch { /* no layout engine (the Node renderer): the defaults are the design */ }
+  return z
+}
+
+/** Everything derived from the sizes — the column's vertical rhythm comes from its own type. */
+function metrics(z) {
+  return {
+    ...z,
+    cardH: z.card, cardW: Math.round(z.card * 0.72), cardGap: 4,
+    boardH: z.board, boardW: Math.round(z.board * 0.72), boardGap: 6,
+    gapFigName: Math.round(z.name * 0.5),     // figure → name
+    gapLines: Math.round(z.stack * 0.35),     // name → stack
+    gapCards: Math.round(z.stack * 0.6),      // stack → cards
+    railOffset: 7,       // the rail is drawn this far outside the felt edge
+    railStroke: 5,
+    railGap: 12,         // no seat furniture comes closer than this to the rail
+    seatPad: 8,          // nor closer than this to its neighbour
+    viewPad: 8,
+  }
+}
+const cap = f => f * 0.72      // cap height of the sans face, as a share of its size
+const desc = f => f * 0.22     // descender
 
 /**
- * Table size by seat count. Two players do not need the ellipse nine players need, and shrinking it for
- * them is most of what makes a lesson spot readable — a smaller viewBox at the same display width is a
- * larger scale factor.
+ * Felt size by seat count, in pixels. The only hand-tuned geometry left: seats are placed from it.
+ *
+ * `portrait` is the phone layout for dense tables — a tall oval. A phone has height to spare and no
+ * width, and nine seats around a landscape oval need about 600px to keep 12px type legible. Upright,
+ * the same seats stack down the two sides instead of across.
  */
-function geometry(n) {
-  if (n <= 2) return { FELT_RX: 200, FELT_RY: 105, SEAT_RX: 235, SEAT_RY: 212 }
-  if (n <= 4) return { FELT_RX: 245, FELT_RY: 125, SEAT_RX: 305, SEAT_RY: 248 }
-  if (n <= 6) return { FELT_RX: 275, FELT_RY: 135, SEAT_RX: 345, SEAT_RY: 268 }
-  // Seven or more: the ellipse gets NARROWER and taller, not wider. Width is what pushes a table off a
-  // phone screen, and for a dense table it is set by the seats nearest the left and right extremes; the
-  // vertical spread is what keeps their columns from colliding. Trading one for the other fits nine
-  // seats on a 375px screen without scrolling and without shrinking the type.
-  return { FELT_RX: 240, FELT_RY: 150, SEAT_RX: 309, SEAT_RY: 320 }
+function feltFor(n, portrait) {
+  if (portrait) return n <= 4 ? { rx: 118, ry: 118 } : n <= 6 ? { rx: 118, ry: 150 } : { rx: 116, ry: 176 }
+  if (n <= 2) return { rx: 150, ry: 80 }
+  if (n <= 4) return { rx: 172, ry: 94 }
+  if (n <= 6) return { rx: 192, ry: 104 }
+  return { rx: 186, ry: 112 }
 }
 
-const COL_HALF = 58          // half the width of a seat column: the hero's picture is the widest thing in it
-const VIEW_PAD = 12
-
-/** The box the drawing actually occupies, so the viewBox can hug it instead of padding empty canvas. */
-function contentBox(n, g, hero) {
-  let x1 = CX - g.FELT_RX - 12, y1 = CY - g.FELT_RY - 12
-  let x2 = CX + g.FELT_RX + 12, y2 = CY + g.FELT_RY + 12
-  for (let k = 0; k < n; k++) {
-    const p = seatPos(k, n, hero, g.SEAT_RX, g.SEAT_RY)
-    x1 = Math.min(x1, p.x - COL_HALF); x2 = Math.max(x2, p.x + COL_HALF)
-    // the hero's picture is 20% taller and grows upwards, so its seat needs that much more headroom
-    const head = Y_ILLO_TOP - 17 - (k === hero ? Math.round(ILLO * 0.2) + 4 : 0)
-    y1 = Math.min(y1, p.y + head); y2 = Math.max(y2, p.y + Y_CARDS_TOP + CARD_H)
+/**
+ * The middle of the table: board, pot and street as one centred stack, with its own box so the wagers
+ * can keep off it. An upright table's board cards are drawn a little smaller — its felt is narrow, and
+ * at full size five cards all but filled it.
+ */
+function middleLayout(s, m, portrait) {
+  const cardH = portrait ? Math.round(m.boardH * 0.86) : m.boardH
+  const cardW = Math.round(cardH * 0.72)
+  const pot = potTotal(s)
+  const potText = pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
+  const hasBoard = s.board.length > 0
+  const lines = []
+  let w = 0
+  if (hasBoard) {
+    const bw = s.board.length * cardW + (s.board.length - 1) * m.boardGap
+    lines.push({ kind: 'board', h: cardH, w: bw }); w = Math.max(w, bw)
   }
-  return { x: x1 - VIEW_PAD, y: y1 - VIEW_PAD, w: x2 - x1 + VIEW_PAD * 2, h: y2 - y1 + VIEW_PAD * 2 }
+  if (potText) { lines.push({ kind: 'pot', text: potText, size: m.pot, h: cap(m.pot) }); w = Math.max(w, measure(potText, m.pot, 600, 0.1)) }
+  if (!hasBoard) { const t = streetLabel(s); lines.push({ kind: 'street', text: t, size: m.street, h: cap(m.street) }); w = Math.max(w, measure(t, m.street, 400, 0.1)) }
+  const gap = 9
+  const h = lines.reduce((a, l) => a + l.h, 0) + gap * (lines.length - 1)
+  let y = -h / 2
+  for (const l of lines) { l.y = y; y += l.h + gap }
+  return { lines, w, h, cardW, cardH }
 }
-const CARD_W = 40, CARD_H = 56
-const BOARD_CARD_W = 46, BOARD_CARD_H = 64   // the board reads as the shared hand, so it stays larger
 
-// A seat is a single centred column: illustration, then name, then stack on one line, then cards.
-// These offsets are from the seat's centre point and are what keeps every seat on the same grid.
-const ILLO = 92                 // illustration box, square
-// How far inside the felt a wager sits. Proportional rather than fixed: a heads-up felt is two thirds
-// the height of a nine-handed one, and a constant inset there pushed the bet in far enough to crowd the
-// pot label now sitting in the middle. Same look at every seat count, same clearance from both edges.
-const betInset = geo => Math.min(44, Math.round(geo.FELT_RY * 0.3))
-const Y_ILLO_TOP = -100        // the picture hangs above the name; ILLO must fit in this gap
-const Y_NAME = 8
-const Y_DETAIL = 25
-const Y_CARDS_TOP = 34
+/** Seat k's direction, with the hero pinned to the bottom and the rest running clockwise. */
+const seatAngle = (k, n, hero, offset = 0) => (90 - ((k - hero + n) % n) * 360 / n + offset) * Math.PI / 180
 
+// ---------------------------------------------------------------------------------------------------
 
 const el = (name, attrs = {}, children = []) => {
   const n = document.createElementNS(NS, name)
@@ -73,8 +115,27 @@ const el = (name, attrs = {}, children = []) => {
   return n
 }
 const text = (s, attrs) => { const t = el('text', attrs); t.textContent = s; return t }
+const px = v => `font-size:${Math.round(v * 10) / 10}px`
 const chips = n => n >= 1000000 ? `${round(n / 1000000)}M` : n >= 10000 ? `${round(n / 1000)}k` : String(n)
 const round = n => String(Math.round(n * 10) / 10)
+/** Big blinds to a sensible precision: a decimal only matters when you are short. */
+const inBigBlinds = (stack, bb) => { const v = stack / bb; return v >= 20 ? String(Math.round(v)) : round(v) }
+
+let measureCtx
+/** Text width in pixels. Canvas where there is one; a per-character estimate under the Node shim. */
+function measure(str, size, weight = 400, spacingEm = 0) {
+  try {
+    if (measureCtx === undefined) {
+      const c = document.createElement('canvas')
+      measureCtx = typeof c.getContext === 'function' ? c.getContext('2d') : null
+    }
+    if (measureCtx) {
+      measureCtx.font = `${weight} ${size}px -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif`
+      return measureCtx.measureText(str).width + spacingEm * size * str.length
+    }
+  } catch { measureCtx = null }
+  return str.length * size * (weight >= 600 ? 0.62 : 0.56) + spacingEm * size * str.length
+}
 
 /**
  * @param {Element} host
@@ -85,9 +146,10 @@ const round = n => String(Math.round(n * 10) / 10)
  * @param {(action:{type:string, amount?:number}) => void} [opts.onAction]
  * @param {boolean} [opts.reveal]      show every hole card (a finished hand, or a teaching spot)
  * @param {boolean} [opts.showBB]      label stacks in big blinds as well as chips
- * @param {Record<number, string>} [opts.avatars]  seat → image url. Presentation only, deliberately not
- *        part of the engine's seat record: `rules.js` should never carry anything a renderer invented.
- *        Seats with no entry get the built-in figure, so a table never depends on an outside file.
+ * @param {Record<number, string|{src:string, ink?:number[], size?:number[]}>} [opts.avatars]  seat →
+ *        artwork. Presentation only, deliberately not part of the engine's seat record: `rules.js` should
+ *        never carry anything a renderer invented. Seats with no entry get the built-in figure, so a
+ *        table never depends on an outside file.
  */
 export function mountTable(host, opts) {
   let o = { hero: 0, interactive: false, onAction: null, reveal: false, showBB: true, avatars: {}, ...opts }
@@ -95,143 +157,260 @@ export function mountTable(host, opts) {
   root.className = 'table-wrap'
   host.append(root)
 
+  // The layout depends on the width available, so a change of width is a re-layout — not a rescale.
+  let lastWidth = -1, observer = null
+  const available = () => {
+    const w = root.clientWidth
+    return Number.isFinite(w) && w > 0 ? w : 640
+  }
+  if (typeof ResizeObserver === 'function') {
+    observer = new ResizeObserver(() => { if (Math.abs(available() - lastWidth) >= 2) render() })
+    observer.observe(root)
+  }
+
   function render() {
     root.innerHTML = ''
     const s = o.state
     const n = s.seats.length
-    const g = geometry(n)
-    const box = contentBox(n, g, o.hero ?? 0)
-    const svg = el('svg', { class: 'pk-table', viewBox: `${box.x} ${box.y} ${box.w} ${box.h}`, role: 'img', 'aria-label': describeTable(s, o) })
+    const hero = o.hero ?? 0
+    const m = metrics(readSizes(root))
+    const W = available()
+    lastWidth = W
 
-    svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: g.FELT_RX, ry: g.FELT_RY }))
-    svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: g.FELT_RX + 10, ry: g.FELT_RY + 10 }))
-
-    // The middle of the table, as one centred stack: board, then the pot, then the street.
-    //
-    // The pot used to sit up against the top rail while "PREFLOP" held the middle, which put the least
-    // important label in the most important place — and left the pot competing with whichever seat was
-    // directly above it. The pot is the number everyone at a real table looks at, so it takes the centre;
-    // the board sits above it, and the street name drops underneath in the quieter weight it deserves.
-    const pot = potTotal(s)
-    const potText = pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
-    const hasBoard = s.board.length > 0
-
-    // With cards out the stack is board + pot; without them it is pot + street. Either way the group is
-    // centred on CY rather than anchored to an edge.
-    const stackH = (hasBoard ? BOARD_CARD_H + 10 : 0) + (potText ? 20 : 0) + (hasBoard ? 0 : 20)
-    let y = CY - stackH / 2
-
-    if (hasBoard) {
-      const boardW = s.board.length * BOARD_CARD_W + (s.board.length - 1) * 8
-      s.board.forEach((c, i) => {
-        svg.append(card(c, CX - boardW / 2 + i * (BOARD_CARD_W + 8), y, false, BOARD_CARD_W, BOARD_CARD_H))
-      })
-      y += BOARD_CARD_H + 10
+    // Landscape is the natural shape of a poker table and is used whenever it fits. A dense table that
+    // does not fit is laid out upright instead of being shrunk — shrinking is what made the type
+    // unreadable. Only if neither fits does the drawing scale down, and then by as little as possible.
+    // Wide is kept whenever it renders at 85% or better — the type still lands at 11px — because it is
+    // the shape a reader expects. Below that the upright layout is used if it does better.
+    let L = layout(s, n, hero, m, false)
+    const sW = Math.min(1, W / L.box.w)
+    if (n >= 3 && sW < 0.85) {
+      const P = layout(s, n, hero, m, true)
+      if (Math.min(1, W / P.box.w) > sW) L = P
     }
-    if (potText) {
-      svg.append(text(potText, { class: 'pot', x: CX, y: y + 14, 'text-anchor': 'middle' }))
-      y += 20
+    const { box, felt, seats, bets } = L
+
+    const svg = el('svg', {
+      class: 'pk-table' + (L.portrait ? ' portrait-table' : ''),
+      viewBox: `${box.x} ${box.y} ${box.w} ${box.h}`, role: 'img', 'aria-label': describeTable(s, o),
+    })
+    // natural size, and never wider than the column
+    svg.style.width = `${Math.round(box.w)}px`
+    svg.style.maxWidth = '100%'
+
+    svg.append(el('ellipse', { class: 'felt', cx: 0, cy: 0, rx: felt.rx, ry: felt.ry }))
+    svg.append(el('ellipse', { class: 'rail', cx: 0, cy: 0, rx: felt.rx + m.railOffset, ry: felt.ry + m.railOffset }))
+
+    middle(svg, s, m, L.mid)
+    for (const st of seats) svg.append(drawSeat(s, st, m))
+    for (const b of bets) {
+      svg.append(text(b.label, { class: 'bet-t', x: b.x, y: b.y + cap(m.bet) / 2, 'text-anchor': 'middle', style: px(m.bet) }))
+      svg.append(el('line', { class: 'bet-rule', x1: b.x - b.w / 2 - 3, x2: b.x + b.w / 2 + 3, y1: b.y + cap(m.bet) / 2 + 4, y2: b.y + cap(m.bet) / 2 + 4 }))
     }
-    if (!hasBoard) {
-      svg.append(text(streetLabel(s), { class: 'street', x: CX, y: y + 14, 'text-anchor': 'middle' }))
-    }
-
-    const sb = sbSeat(s), bb = bbSeat(s)
-    for (let k = 0; k < n; k++) svg.append(seat(s, k, n, sb, bb, g))
-
-    // The button sits just inside the felt, offset around the rim rather than straight in towards the
-    // middle — directly in line it lands on top of that seat's hole cards.
-    const bpos = seatPos(s.button, n, o.hero ?? 0, g.FELT_RX - 26, g.FELT_RY - 22, 360 / n * 0.42)
-    svg.append(el('circle', { class: 'dealer', cx: bpos.x, cy: bpos.y, r: 15 }))
-    svg.append(text('D', { class: 'dealer-t', x: bpos.x, y: bpos.y + 5, 'text-anchor': 'middle' }))
-
-    // Cap the drawn width near the content's own size. A two-handed spot stretched to the full column
-    // width renders at a scale where the type is comically large; the cap keeps every table at roughly
-    // the same apparent size whatever its seat count, and --board-max still limits the big ones.
-    svg.style.maxWidth = `${Math.round(box.w * 1.15)}px`
 
     root.append(svg)
     if (o.interactive && s.toAct != null) root.append(controls(s))
   }
 
   /**
-   * A seat is one centred column on the seat's own axis, in a fixed order every time:
+   * The middle of the table, as one centred stack: board, then the pot, then the street. Laid out in
+   * `middleLayout` so the wagers can be kept off it.
+   */
+  function middle(svg, s, m, mid) {
+    for (const l of mid.lines) {
+      if (l.kind === 'board') {
+        s.board.forEach((c, i) => svg.append(card(c, -l.w / 2 + i * (mid.cardW + m.boardGap), l.y, false, mid.cardW, mid.cardH)))
+      } else {
+        svg.append(text(l.text, { class: l.kind, x: 0, y: l.y + l.h, 'text-anchor': 'middle', style: px(l.size) }))
+      }
+    }
+  }
+
+  /**
+   * A seat is one centred column, the same shape at every seat:
    *
-   *      blind tag
-   *      illustration      standing free — no plate behind it
-   *      name
-   *      stack · big blinds     one line
+   *      figure         bottom-aligned in its slot, ringed when it is that seat's turn
+   *      SB  name       the position tag rides on the name line — it used to be a chip above the
+   *                     figure, which made every column taller and put it nearest the rail
+   *      stack · bb
    *      cards
    *
-   * The order does not flip by hemisphere. Consistency is the point: the reader learns one shape and
-   * then reads all nine seats the same way, which they cannot do if the top half is upside down.
+   * Every row is placed from the SLOT and the type sizes, never from the artwork or the state. A
+   * figure that happens to be short, a seat that comes to act, a player who folds — none of them move
+   * anything, because a table whose seats shift between hands has to be re-read every hand.
    */
-  function seat(s, k, n, sb, bb, geo) {   // `geo`, not `g`: `g` is this function's <g> element
+  function drawSeat(s, st, m) {
+    const { k, x, y, col } = st
     const p = s.seats[k]
-    const pos = seatPos(k, n, o.hero ?? 0, geo.SEAT_RX, geo.SEAT_RY)
     const isHero = k === o.hero
     const toAct = s.toAct === k
     const g = el('g', {
       class: ['seat', p.folded ? 'folded' : '', p.allIn ? 'allin' : '', toAct ? 'to-act' : '', isHero ? 'hero' : ''].filter(Boolean).join(' '),
     })
+    const slotMid = y - col.figH / 2
+    if (isHero) g.append(el('circle', { class: 'hero-ring', cx: x, cy: slotMid, r: col.ringR }))
+    if (toAct) g.append(el('circle', { class: 'act-ring', cx: x, cy: slotMid, r: col.ringR }))
+    g.append(illustration(x, y, col.figH, k, o.avatars[k], p.name))
 
-    // The blind marker needs its own chip: depending on the seat it lands on felt or on white, and no
-    // single ink colour is legible on both.
-    const blind = k === sb ? 'SB' : k === bb ? 'BB' : null
-    if (blind) {
-      const by = pos.y + Y_ILLO_TOP - 14
-      g.append(el('rect', { class: 'blind-chip', x: pos.x - 13, y: by, width: 26, height: 14 }))
-      g.append(text(blind, { class: 'blind-tag', x: pos.x, y: by + 10.5, 'text-anchor': 'middle' }))
+    // The name row carries the seat's position: the dealer disc, then SB or BB, then the name, centred
+    // as one group. The button used to be a chip on the felt, and a chip on the felt can only ever be
+    // NEAR its owner — measured across every seat count, it sat nearer a neighbour in a quarter of cases.
+    // On the name line it cannot belong to anyone else.
+    const row = col.row
+    let rx = x - row.w / 2
+    const base = y + col.nameBase
+    if (row.dealer) {
+      const r = row.dealerR
+      g.append(el('circle', { class: 'dealer', cx: rx + r, cy: base - cap(m.name) / 2, r }))
+      g.append(text('D', { class: 'dealer-t', x: rx + r, y: base - cap(m.name) / 2 + cap(m.dealer) / 2, 'text-anchor': 'middle', style: px(m.dealer) }))
+      rx += 2 * r + row.gap
     }
-
-    // The hero is drawn LARGER than the other seats, and always ringed.
-    //
-    // Nine seats share one illustration style, so seat identity cannot rest on the artwork alone — and
-    // the one seat that must never be hunted for is your own. Size and a standing ring say "this is you"
-    // before you have read a single name. The extra height is taken upwards so every seat's name, stack
-    // and cards stay on the same baseline; only the picture grows.
-    const size = isHero ? Math.round(ILLO * 1.2) : ILLO
-    const illoTop = pos.y + Y_ILLO_TOP - (size - ILLO)
-    const illoMid = illoTop + size / 2
-    if (isHero) g.append(el('circle', { class: 'hero-ring', cx: pos.x, cy: illoMid, r: size / 2 + 4 }))
-    if (toAct) {
-      g.append(el('circle', { class: 'act-ring', cx: pos.x, cy: illoMid, r: size / 2 + (isHero ? 4 : 3) }))
+    if (row.tag) {
+      g.append(text(row.tag, { class: 'seat-tag', x: rx, y: base, style: px(m.tag) }))
+      rx += row.tagW + row.gap
     }
-    g.append(illustration(pos.x, illoTop, k, o.avatars[k], p.name, size))
+    g.append(text(p.name, { class: 'seat-name', x: rx, y: base, style: px(m.name) }))
 
-
-    g.append(text(p.name, { class: 'seat-name', x: pos.x, y: pos.y + Y_NAME, 'text-anchor': 'middle' }))
-
-    const bbCount = o.showBB && s.blinds.bb ? ` · ${round(p.stack / s.blinds.bb)} bb` : ''
-    g.append(text(p.stack > 0 ? chips(p.stack) + bbCount : 'ALL IN',
-      { class: 'seat-detail', x: pos.x, y: pos.y + Y_DETAIL, 'text-anchor': 'middle' }))
+    const bbText = o.showBB && s.blinds.bb ? `${inBigBlinds(p.stack, s.blinds.bb)} bb` : ''
+    if (p.stack <= 0) {
+      g.append(text('ALL IN', { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
+    } else if (col.twoLine && bbText) {
+      g.append(text(chips(p.stack), { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
+      g.append(text(bbText, { class: 'seat-detail bb', x, y: y + col.bbBase, 'text-anchor': 'middle', style: px(m.stack) }))
+    } else {
+      g.append(text(chips(p.stack) + (bbText ? ` · ${bbText}` : ''), { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
+    }
 
     const shown = o.reveal || isHero || o.hero == null
     if (p.hole && !p.folded) {
-      g.append(card(p.hole[0], pos.x - CARD_W - 3, pos.y + Y_CARDS_TOP, !shown))
-      g.append(card(p.hole[1], pos.x + 3, pos.y + Y_CARDS_TOP, !shown))
-    }
-
-    // Chips wagered, on the felt in front of the player.
-    //
-    // This used to be a fixed pill placed 46% of the way along a straight line from the seat to the
-    // middle, and that is wrong on an OVAL: the same fraction crosses a 240x150 ellipse at a different
-    // depth depending on the angle, so two bets at the same table sat at 0.71 and 0.99 of the way to the
-    // rail — one adrift on the felt, the other jammed against it. Measured, not guessed.
-    //
-    // Now every bet sits on its own ellipse, inset a constant distance from the felt, at the seat's own
-    // angle. Same depth from the rail for all nine seats, and still on the line between that player and
-    // the pot. The pill is gone with it: an amount is a number, so it is set bold with a rule under it
-    // rather than boxed — the box had a fixed width that "25" rattled around in and "23.7k" filled.
-    if (p.committed > 0) {
-      const inset = betInset(geo)
-      const b = seatPos(k, n, o.hero ?? 0, geo.FELT_RX - inset, geo.FELT_RY - inset)
-      const label = chips(p.committed)
-      const w = textWidth(label, 13)
-      g.append(text(label, { class: 'bet-t', x: b.x, y: b.y, 'text-anchor': 'middle' }))
-      g.append(el('line', { class: 'bet-rule', x1: b.x - w / 2 - 3, x2: b.x + w / 2 + 3, y1: b.y + 6, y2: b.y + 6 }))
+      g.append(card(p.hole[0], x - m.cardW - m.cardGap / 2, y + col.cardsTop, !shown, m.cardW, m.cardH))
+      g.append(card(p.hole[1], x + m.cardGap / 2, y + col.cardsTop, !shown, m.cardW, m.cardH))
     }
     return g
+  }
+
+  /**
+   * Where everything goes, for one orientation.
+   *
+   * Seats are PLACED, not looked up. Each starts on the rail in its own direction and is pushed straight
+   * out along that line until nothing of it is within `railGap` of the rail; then any two seats closer
+   * than `seatPad` are pushed apart the same way until none are. The old version put seats on a fixed
+   * ellipse per seat count, and measured against drawn pixels that ellipse had cards 27px into the rail
+   * at three-handed, 17px at six-handed, and the hero's figure sitting on the felt heads-up. A placement
+   * that is computed cannot drift out of step with the column it is placing.
+   */
+  function layout(s, n, hero, m, portrait) {
+    const felt = feltFor(n, portrait)
+    const sb = sbSeat(s), bb = bbSeat(s)
+
+    // the name row of each seat — dealer disc, position tag, name — measured once
+    const rowFor = (p, k) => {
+      const tag = k === sb ? 'SB' : k === bb ? 'BB' : null
+      const dealer = k === s.button
+      const gap = Math.round(m.name * 0.35), dealerR = Math.round(m.dealer * 0.72)
+      const tagW = tag ? measure(tag, m.tag, 700, 0.08) : 0
+      const nameW = measure(p.name, m.name, 600, 0.06)
+      const w = (dealer ? 2 * dealerR + gap : 0) + (tag ? tagW + gap : 0) + nameW
+      return { tag, dealer, gap, dealerR, tagW, w }
+    }
+    const rows = s.seats.map(rowFor)
+    // one nominal column width for every seat, from the widest thing any seat could show — so a stack
+    // growing from 9,800 to 24,800 mid-hand, or the button moving on, never shifts a seat sideways
+    const nameW = Math.max(...s.seats.map((p, k) => measure(p.name, m.name, 600, 0.06)
+      + 2 * Math.round(m.dealer * 0.72) + measure('BB', m.tag, 700, 0.08) + 2 * Math.round(m.name * 0.35)))
+    const twoLine = portrait && o.showBB
+    const stackW = twoLine ? measure('188.8 bb', m.stack, 400, 0.04) : measure('88.8k · 188 bb', m.stack, 400, 0.04)
+    const textW = Math.max(nameW, stackW)
+
+    const cols = s.seats.map((p, k) => {
+      const isHero = k === hero && o.hero != null
+      const figH = isHero ? m.hero : m.figure
+      const ringR = figH / 2 + (isHero ? 5 : 3)
+      const dip = ringR - figH / 2                          // how far the ring reaches below the slot
+      const nameBase = dip + m.gapFigName + cap(m.name)
+      const stackBase = nameBase + desc(m.name) + m.gapLines + cap(m.stack)
+      const bbBase = stackBase + desc(m.stack) + Math.round(m.gapLines * 0.7) + cap(m.stack)
+      const cardsTop = (twoLine ? bbBase : stackBase) + desc(m.stack) + m.gapCards
+      return {
+        figH, ringR, nameBase, stackBase, bbBase, cardsTop, twoLine,
+        row: rows[k],
+        top: figH / 2 + ringR,                              // above the anchor (the slot floor)
+        bottom: cardsTop + m.cardH,                         // below it — cards are always reserved
+        half: Math.max(ringR, m.cardW + m.cardGap / 2, textW / 2),
+        blockTop: dip,                                      // where the rectangular part begins
+      }
+    })
+
+    // the clearance ellipse: the rail's outer edge plus the gap
+    const clear = { rx: felt.rx + m.railOffset + m.railStroke / 2 + m.railGap, ry: felt.ry + m.railOffset + m.railStroke / 2 + m.railGap }
+    const inside = (x, y) => (x / clear.rx) ** 2 + (y / clear.ry) ** 2 < 1
+    const intrudes = (c, ax, ay) => {
+      // the ring as a circle, and the text-and-cards block as a rectangle
+      for (let i = 0; i < 32; i++) {
+        const a = i * Math.PI / 16
+        if (inside(ax + c.ringR * Math.cos(a), ay - c.figH / 2 + c.ringR * Math.sin(a))) return true
+      }
+      const x1 = ax - c.half, x2 = ax + c.half, y1 = ay + c.blockTop, y2 = ay + c.bottom
+      for (let i = 0; i <= 10; i++) {
+        const fx = x1 + (x2 - x1) * i / 10, fy = y1 + (y2 - y1) * i / 10
+        if (inside(fx, y1) || inside(fx, y2) || inside(x1, fy) || inside(x2, fy)) return true
+      }
+      return false
+    }
+    const rail = { rx: felt.rx + m.railOffset, ry: felt.ry + m.railOffset }
+    const seats = cols.map((col, k) => {
+      const th = seatAngle(k, n, hero)
+      const dir = { x: rail.rx * Math.cos(th), y: rail.ry * Math.sin(th) }
+      let t = 1
+      while (t < 6 && intrudes(col, t * dir.x, t * dir.y)) t += 0.004
+      return { k, col, dir, t }
+    })
+    const rect = st => {
+      const x = st.t * st.dir.x, y = st.t * st.dir.y
+      return { x1: x - st.col.half, x2: x + st.col.half, y1: y - st.col.top, y2: y + st.col.bottom }
+    }
+    const overlap = (a, b) => a.x1 < b.x2 + m.seatPad && b.x1 < a.x2 + m.seatPad && a.y1 < b.y2 + m.seatPad && b.y1 < a.y2 + m.seatPad
+    for (let it = 0; it < 2000; it++) {
+      let moved = false
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+        if (overlap(rect(seats[i]), rect(seats[j]))) { seats[i].t += 0.004; seats[j].t += 0.004; moved = true }
+      }
+      if (!moved) break
+    }
+    for (const st of seats) { st.x = st.t * st.dir.x; st.y = st.t * st.dir.y }
+
+    const mid = middleLayout(s, m, portrait)
+
+    // Wagers sit on an ellipse inset from the felt edge, at each seat's own angle — in front of the
+    // player, the same depth from the rail at every seat. Where that spot is on the board (an upright
+    // table's felt is narrow, and five cards nearly fill it) or on another wager, the wager slides round
+    // its ring, away from the middle, by the smallest step that clears. It stays in front of its player.
+    const inset = Math.round(Math.min(felt.rx, felt.ry) * 0.3)
+    const bets = []
+    const midBox = { x1: -mid.w / 2 - 6, x2: mid.w / 2 + 6, y1: -mid.h / 2 - 6, y2: mid.h / 2 + 6 }
+    const betBox = (b, x, y) => ({ x1: x - b.w / 2 - 4, x2: x + b.w / 2 + 4, y1: y - cap(m.bet) / 2 - 3, y2: y + cap(m.bet) / 2 + 7 })
+    const clash = (A, B) => A.x1 < B.x2 && B.x1 < A.x2 && A.y1 < B.y2 && B.y1 < A.y2
+    s.seats.forEach((p, k) => {
+      if (!(p.committed > 0)) return
+      const label = chips(p.committed)
+      const b = { k, label, w: measure(label, m.bet, 700, 0.02) }
+      const base = seatAngle(k, n, hero)
+      // slide away from the horizontal axis first: that is the direction that leaves the board behind
+      const away = Math.sin(base) >= 0 ? 1 : -1
+      for (const deg of [0, 4, 8, 12, 16, 20, 25, 30, 36, -4, -8, -12]) {
+        const th = base + away * deg * Math.PI / 180
+        const x = (felt.rx - inset) * Math.cos(th), y = (felt.ry - inset) * Math.sin(th)
+        const box = betBox(b, x, y)
+        if (!clash(box, midBox) && !bets.some(o => clash(box, betBox(o, o.x, o.y)))) { b.x = x; b.y = y; break }
+      }
+      if (b.x == null) { b.x = (felt.rx - inset) * Math.cos(base); b.y = (felt.ry - inset) * Math.sin(base) }
+      bets.push(b)
+    })
+
+    let x1 = -rail.rx - m.railStroke, x2 = rail.rx + m.railStroke, y1 = -rail.ry - m.railStroke, y2 = rail.ry + m.railStroke
+    for (const st of seats) { const r = rect(st); x1 = Math.min(x1, r.x1); x2 = Math.max(x2, r.x2); y1 = Math.min(y1, r.y1); y2 = Math.max(y2, r.y2) }
+    const box = { x: x1 - m.viewPad, y: y1 - m.viewPad, w: x2 - x1 + 2 * m.viewPad, h: y2 - y1 + 2 * m.viewPad }
+    return { portrait, felt, seats, bets, box, mid }
   }
 
   function controls(s) {
@@ -286,7 +465,7 @@ export function mountTable(host, opts) {
   return {
     update(next) { o = { ...o, ...next }; render() },
     get options() { return o },
-    destroy() { root.remove() },
+    destroy() { if (observer) observer.disconnect(); root.remove() },
   }
 }
 
@@ -309,54 +488,42 @@ function streetLabel(s) {
 }
 
 /**
- * Seat k's position, with the hero pinned to the bottom and the rest running clockwise.
- * `degOffset` nudges around the rim, for markers that should sit beside a seat rather than on it.
- */
-function seatPos(k, n, hero, rx, ry, degOffset = 0) {
-  const step = 360 / n
-  const deg = 90 - ((k - hero + n) % n) * step + degOffset
-  const rad = deg * Math.PI / 180
-  return { x: CX + rx * Math.cos(rad), y: CY + ry * Math.sin(rad) }
-}
-
-const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })
-
-/**
- * Roughly how wide a short numeric label draws, so a rule can be sized to sit under it.
+ * The seat's figure, bottom-aligned in its slot so every seat stands on the same line.
  *
- * Measuring properly means getBBox, which needs the node in a live document — and this module also runs
- * under the DOM shim in scripts/render-table.mjs, where there is no layout at all. These are digits in
- * one known face at one known size, so the estimate is good to a pixel or two and costs nothing.
- */
-function textWidth(str, size) {
-  let em = 0
-  for (const c of str) em += c === '.' || c === ',' ? 0.28 : 0.556
-  return em * size
-}
-
-
-/**
- * The seat's illustration, standing free — no disc, no crop, no box. The supplied artwork is drawn whole
- * at its own aspect ratio, which is why it needs a transparent background to sit on the felt.
+ * The artwork is CROPPED TO ITS INK before it is fitted. Every shigureni file is a 1000px square that is
+ * 70–86% transparent, and the drawing sits somewhere different in each: the blanket is wide and short,
+ * the runner tall and narrow. Fitted as whole squares, the blanket drew nearly twice the width of the
+ * runner in the same slot, so the seats looked randomly sized. Cropping to the measured ink box (stored
+ * beside each file in js/avatars.js) makes every figure fill its slot the same way. Cropping is
+ * permitted by the licence; redrawing is not, and none is done.
  *
  * Any artwork passed in here belongs to whoever made it. `content/images/avatars/manifest.json` is where
  * each file's source and licence are recorded — see the README there before adding any.
  */
-function illustration(cx, top, k, url, name, size = ILLO) {
+function illustration(cx, floor, figH, k, art, name) {
   const g = el('g', { class: `portrait tint-${k % 9}` })
-  if (url) {
-    const img = el('image', {
-      href: url, x: cx - size / 2, y: top, width: size, height: size,
-      preserveAspectRatio: 'xMidYMid meet',   // whole illustration, never cropped
+  const src = typeof art === 'string' ? art : art && art.src
+  if (src) {
+    const size = (art && art.size) || [1000, 1000]
+    const [ix, iy, iw, ih] = (art && art.ink) || [0, 0, size[0], size[1]]
+    const slotW = figH * 0.95
+    // an inner svg whose viewBox is the ink box: the image inside it is drawn at its own pixel size, and
+    // the viewBox does the crop and the fit — bottom-aligned, centred
+    const frame = el('svg', {
+      x: cx - slotW / 2, y: floor - figH, width: slotW, height: figH,
+      viewBox: `${ix} ${iy} ${iw} ${ih}`, preserveAspectRatio: 'xMidYMax meet', overflow: 'hidden',
     })
+    const img = el('image', { href: src, x: 0, y: 0, width: size[0], height: size[1] })
     const t = el('title'); t.textContent = name
     img.append(t)
-    g.append(img)
+    frame.append(img)
+    g.append(frame)
   } else {
     // No artwork: our own marker gets a disc, because unlike an illustration it has no silhouette of
-    // its own and would read as a smudge floating on the felt.
-    g.append(el('circle', { class: 'av-disc', cx, cy: top + size / 2, r: size / 2 - 3 }))
-    g.append(builtInFigure(cx, top + size / 2, size / 2 - 3))
+    // its own and would read as a smudge.
+    const r = figH / 2 - 3
+    g.append(el('circle', { class: 'av-disc', cx, cy: floor - figH / 2, r }))
+    g.append(builtInFigure(cx, floor - figH / 2, r))
   }
   return g
 }
@@ -373,7 +540,7 @@ function builtInFigure(cx, cy, r) {
   return g
 }
 
-function card(c, x, y, faceDown, w = CARD_W, h = CARD_H) {
+function card(c, x, y, faceDown, w, h) {
   const g = el('g', { class: 'card' + (faceDown ? ' back' : '') })
   g.append(el('rect', { x, y, width: w, height: h }))   // corner radius comes from --card-radius
   if (faceDown || c == null) return g
@@ -408,11 +575,13 @@ export function describeTable(s, o = {}) {
  *
  * Row labels are A, B, C… to match the option buttons the reader is choosing between.
  */
+const HAND_CARD_W = 46, HAND_CARD_H = 64
+
 export function mountHands(host, { board = [], hands = [], caption = null } = {}) {
   const LBL = 26, GAP = 8, PAD = 10
   const widest = Math.max(board.length, ...hands.map(h => h.length), 1)
-  const W2 = PAD * 2 + LBL + widest * BOARD_CARD_W + (widest - 1) * GAP
-  const rowH = BOARD_CARD_H + 16
+  const W2 = PAD * 2 + LBL + widest * HAND_CARD_W + (widest - 1) * GAP
+  const rowH = HAND_CARD_H + 16
   const rows = (board.length ? 1 : 0) + hands.length
   const H2 = PAD * 2 + rows * rowH - 16
 
@@ -422,8 +591,8 @@ export function mountHands(host, { board = [], hands = [], caption = null } = {}
 
   let y = PAD
   const row = (label, cards, cls) => {
-    svg.append(text(label, { class: `hand-label ${cls}`, x: PAD + LBL - 8, y: y + BOARD_CARD_H / 2 + 5, 'text-anchor': 'end' }))
-    cards.forEach((c, i) => svg.append(card(c, PAD + LBL + i * (BOARD_CARD_W + GAP), y, false, BOARD_CARD_W, BOARD_CARD_H)))
+    svg.append(text(label, { class: `hand-label ${cls}`, x: PAD + LBL - 8, y: y + HAND_CARD_H / 2 + 5, 'text-anchor': 'end' }))
+    cards.forEach((c, i) => svg.append(card(c, PAD + LBL + i * (HAND_CARD_W + GAP), y, false, HAND_CARD_W, HAND_CARD_H)))
     y += rowH
   }
   if (board.length) row('', board, 'board')

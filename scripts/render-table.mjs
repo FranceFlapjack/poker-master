@@ -103,7 +103,7 @@ let html = panels.map(([title, note, svg]) =>
 // artwork → data uris, so nothing depends on a path
 html = html.replace(/href="(content\/images\/avatars\/[^"]+)"/g, (_, rel) => {
   const buf = readFileSync(join(ROOT, rel))
-  const mime = rel.endsWith('.svg') ? 'image/svg+xml' : 'image/png'
+  const mime = rel.endsWith('.svg') ? 'image/svg+xml' : rel.endsWith('.webp') ? 'image/webp' : 'image/png'
   return `href="data:${mime};base64,${buf.toString('base64')}"`
 })
 

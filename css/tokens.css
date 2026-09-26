@@ -21,6 +21,14 @@
    from the rail. The old straight-line placement put two bets at the same table at 0.71 and 0.99 of the
    way out, which is what the comment was seeing.
 
+   Draft 4 (2026-09-26, owner's comment: "look carefully with sizing and positioning … also text around,
+   spacing between row"): the table is laid out in RENDERED PIXELS for the width it has (the --tb-size-*
+   tokens below) instead of in SVG units scaled to fit. Measured before: the same name rendered from
+   19.5px down to 7.8px depending on seat count and screen, bets at 6.4px, and the old fixed seat ellipse
+   put cards 27px into the rail at three-handed. Seats are now placed by pushing each one out until it
+   clears the rail; a table too wide for its column goes upright instead of shrinking; the dealer button
+   rides on its owner's name line with SB and BB; and every row in a seat is spaced from its type size.
+
    Comment on any line here and it becomes a small diff. */
 :root {
   /* ground & ink */
@@ -115,6 +123,22 @@
   --rg-line: #ffffff;
   --rg-hero: #b3141a;
   --rg-mix: #b3141a;           /* a hand the solver plays both ways — outlined, never filled in */
+
+  /* table sizes, in RENDERED PIXELS (Draft 4). The table is laid out at one unit per pixel for the width
+     it has, so these come out the same at every seat count and on every screen — they used to be SVG
+     units, and a nine-handed table on a phone rendered a 17-unit name at 7.8px. js/table.js reads these;
+     its fallbacks match. */
+  --tb-size-name: 13;
+  --tb-size-stack: 12;
+  --tb-size-bet: 12.5;
+  --tb-size-pot: 14;
+  --tb-size-street: 11;
+  --tb-size-tag: 9.5;
+  --tb-size-dealer: 11;
+  --tb-size-card: 42;          /* hole-card height; width is 0.72 of it */
+  --tb-size-board: 48;         /* board-card height */
+  --tb-size-figure: 58;        /* an opponent's figure slot */
+  --tb-size-hero: 70;          /* yours — the main character is drawn bigger */
 
   --board-anim: 160ms;
   --board-max: 660px;   /* was 560px — a table needs room to be read */

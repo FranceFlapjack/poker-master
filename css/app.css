@@ -395,8 +395,8 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .hero .seat-name { fill: var(--accent); }
 .pk-table .allin .seat-detail { fill: var(--bad); font-weight: 600; }
 .pk-table .folded { opacity: 0.34; }
-.pk-table .blind-chip { fill: var(--tb-bet-bg); stroke: var(--card-edge); stroke-width: 1; rx: 7px; }
-.pk-table .blind-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; fill: var(--ink-2); }
+/* the position tag rides on the name line, set small and quiet */
+.pk-table .seat-tag { font-weight: 700; letter-spacing: 0.08em; fill: var(--ink-3); }
 .pk-table .act-ring { fill: none; stroke: var(--accent); stroke-width: 2.5; }
 /* the hero is always ringed, quietly, so your own seat is found by shape and not by reading names */
 .pk-table .hero-ring { fill: var(--tb-seat-hero); stroke: var(--accent); stroke-width: 1.5; opacity: 0.9; }
@@ -415,7 +415,7 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 
 .pk-table .bet-t { font-size: 14px; font-weight: 700; letter-spacing: 0.02em; fill: var(--tb-bet-ink); }
 .pk-table .bet-rule { stroke: var(--tb-bet-rule); stroke-width: 1.5; }
-.pk-table .dealer { fill: var(--tb-dealer); stroke: var(--ink-3); stroke-width: 1; }
+.pk-table .dealer { fill: var(--tb-dealer); stroke: var(--ink-2); stroke-width: 1.2; }
 .pk-table .dealer-t { font-size: 13px; font-weight: 700; fill: var(--ink); }
 
 .pk-table .card rect { fill: var(--card-face); stroke: var(--card-edge); stroke-width: 1; rx: var(--card-radius); }
@@ -517,13 +517,10 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 /* On a PHONE the table is scaled down hard, so the type inside the SVG must be larger in user units to
    survive it. 560px, not the layout's 760px breakpoint: at 700px the scale is already ~0.9 and this bump
    made the names bigger than the cards. */
+/* The poker table needs no phone bump any more: it lays itself out in real pixels for the width it
+   has (see js/table.js), so its type is the same size here as on a desktop. The hand comparison still
+   scales, so it keeps its own. */
 @media (max-width: 560px) {
-  .pk-table .seat-name { font-size: 22px; }
-  .pk-table .seat-detail { font-size: 19px; }
-  .pk-table .pot { font-size: 24px; }
-  .pk-table .street { font-size: 20px; }
-  .pk-table .blind-tag { font-size: 15px; }
-  .pk-table .dealer-t { font-size: 17px; }
   .pk-hands .hand-label { font-size: 22px; }
   .hands-wrap { max-width: 100%; }
 }

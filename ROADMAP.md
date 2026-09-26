@@ -516,6 +516,45 @@ the decision stays auditable. The portrait box grew 84 → 92px, since a full-bo
 smaller than a head-and-shoulders icon, and the wager inset is now proportional to the felt so a
 heads-up bet does not crowd the newly centred pot.
 
+### Design draft 4 — the table, measured, 2026-09-26
+
+The owner asked for a careful look at sizing and positioning, and at the text and row spacing in each
+seat. Nothing here was eyeballed: every change came from an audit that renders every seat count 2–9, at
+every button position, in four states (preflop, a raise, a flop bet, a full river board), at 343px,
+522px and 660px, and measures every element — **528 spots, all clear** at the end.
+
+What the audit found first:
+
+- **Type swung from 19.5px to 7.8px** for the same name. Sizes were SVG units, and each table was scaled
+  by a factor set by seat count and screen, so no unit size could be right. Bets reached 6.4px on a phone.
+- **Seats hit the rail**, measured against drawn pixels: cards 27px into it at three-handed, 17px at
+  six-handed, and the enlarged hero sitting on the felt heads-up. (The portrait "intrusions" at five to
+  seven seats were transparent padding — checked against the ink, not the image squares, and dismissed.)
+- **Figures varied ~1.9× in drawn width** in identical slots, because each file is 70–86% transparent
+  with the drawing placed differently.
+
+What changed:
+
+- **Laid out in real pixels** (`--tb-size-*` in tokens.css) for the width actually available, re-laid out
+  on resize. Names 13px, stacks 12, bets 12.5, cards 42 — the same at every table.
+- **Seats are placed, not looked up**: each is pushed out along its own ray until nothing of it is within
+  12px of the rail, then neighbours are pushed apart. Rows never depend on the artwork or the state, so a
+  fold or a change of turn moves nothing.
+- **Too wide goes upright, not smaller.** A dense table that would render below 85% is laid out as a tall
+  oval with the stack on two lines. On a 343px phone that takes names from 7.8px to ~10.5px and cards
+  from 26px to 34px; in a 412px column, nine-handed renders at full size.
+- **Figures cropped to their ink** (boxes measured per file, stored in `js/avatars.js`) and bottom-aligned,
+  so every seat stands on the same line at the same size.
+- **The dealer button rides the name line**, with SB and BB. As a chip on the felt it could only ever be
+  near its owner; measured, it was nearer a neighbour in about a quarter of spots. On the name line it
+  cannot be anyone else's.
+- **Wagers keep off the board**: on an upright felt five cards nearly fill the width, so a wager that
+  would land on them slides round its ring — still in front of its player — until it clears.
+
+Two harness bugs were found on the way and are worth remembering: `getBBox` on a nested `<svg>` reports
+in that svg's own viewBox, and a board passed to a preflop spot is not on the table yet. Both made
+checks pass or fail for reasons that had nothing to do with the layout.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages
