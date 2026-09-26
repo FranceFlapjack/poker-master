@@ -23,7 +23,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 export function mountPlay(main) {
   document.title = 'Play a hand · Poker Master'
   main.innerHTML = `
-    <div class="page tool play">
+    <div class="page tool play-page">
       <header class="hero">
         <span class="eyebrow">Tournament · play</span>
         <h1>Play a hand</h1>
