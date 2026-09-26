@@ -26,7 +26,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | ✅ done 2026-09-26 |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
-| | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
+| | ↳ `dev-table.html` and the nine unused first-draft icons were removed 2026-09-26, so nothing un-linked goes live. | ✅ |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
 
 ## Phase 0 — done 2026-09-24
@@ -604,8 +604,8 @@ that ever changes, five licences are needed.
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages
   first, *then* copy `js/family.js` into `chess-master` and `go-master`, or the Poker link 404s on the
-  live siblings. Decide `dev-table.html` before that — it is committed, so it goes live at
-  `/poker-master/dev-table.html` with no nav path to it.
+  live siblings. (`dev-table.html` is gone: the table is checked by `scripts/render-table.mjs` and by
+  the layout audit recorded under Draft 4, not by a page that would ship with no link to it.)
 - **Phase 8** — the manual hand builder and per-decision review, deferred by the owner.
 - **The branch.** Everything is on `phase-1-engine`, ~30 commits, never merged. The name stopped
   describing the contents around Phase 3, and that branch is now the whole app. Merging is
