@@ -62,6 +62,9 @@ export const mascot = {
   notify({ kind = 'tip', text, title, owner = null }) {
     if (!text || !this.enabled) return false
     if (kind === 'tip' && message && message.kind === 'hint') return false
+    // Never collapse a bubble someone is reading. A tip that arrives while one is open is dropped; a
+    // hint is a new event (you just answered), so it still takes over.
+    if (root && root.dataset.state === 'open' && kind === 'tip') return false
     build(); root.hidden = false
     message = { kind, text, title, owner }
     fill()
@@ -201,7 +204,8 @@ function hearts() {
 /**
  * The bubble's outline, drawn to the bubble's actual size: a rounded rectangle whose bottom edge runs
  * out into a tail aimed at the cat's head, as ONE continuous line — with one short break left in it near
- * the top-left corner, the way the artwork's own lines are drawn.
+ * the top-left corner, the way the artwork's own lines are drawn. The break is deliberate: the owner
+ * asked for it closed, heard why it was there, and kept it.
  */
 function drawOutline() {
   if (!bubble || !root || root.hidden) return
@@ -223,7 +227,7 @@ function drawOutline() {
     `V ${B - r}`, `A ${r} ${r} 0 0 1 ${R - r} ${B}`,
     `H ${tx + tailW / 2}`, `L ${tipX} ${tipY}`, `L ${tx - tailW / 2} ${B}`,
     `H ${L + r}`, `A ${r} ${r} 0 0 1 ${L} ${B - r}`,
-    `V ${T + r}`, `A ${r} ${r} 0 0 1 ${L + r} ${T}`,
+    `V ${T + r}`, `A ${r} ${r} 0 0 1 ${L + r} ${T}`, 'Z',
   ].join(' ')
   outline.setAttribute('viewBox', `0 0 ${w} ${h + tailH}`)
   outline.setAttribute('width', w); outline.setAttribute('height', h + tailH)

@@ -138,6 +138,8 @@ function mountTip(blk, raw) {
   const msg = { kind: 'tip', text, title: title || 'Meow tip', owner: el }
   // clicking the label in the text is asking, so the bubble opens; with the cat off, it opens inline
   el.querySelector('.tip-cue').addEventListener('click', () => {
+    seen = true                     // read now: it should not meow about itself afterwards
+    if (io) { io.disconnect(); io = null }
     if (!mascot.say(msg)) { const t = el.querySelector('.tip-text'); t.hidden = !t.hidden }
   })
 
@@ -145,9 +147,9 @@ function mountTip(blk, raw) {
   // is). Armed only after the page has settled: a new lesson is built while the previous page's scroll
   // position still stands, and an observer that looks during that moment can spend a tip on a cue the
   // reader never scrolled to.
-  let io = null, dead = false
+  let io = null, dead = false, seen = false
   const arm = setTimeout(() => {
-    if (dead || typeof IntersectionObserver !== 'function') return
+    if (dead || seen || typeof IntersectionObserver !== 'function') return
     io = new IntersectionObserver(entries => {
       // reaching it only makes the cat meow — nothing opens over what you are reading
       if (entries.some(e => e.isIntersecting)) { io.disconnect(); io = null; mascot.notify(msg) }

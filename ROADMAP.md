@@ -570,7 +570,8 @@ in the same line as the cat.
 - **The bubble is ours**, a generic speech bubble drawn to match: pure black like the artwork's lines,
   the stroke weight those lines have at the size the cat is shown, rounded ends, and one short break in
   the outline near the top-left — the broken-line habit of shigureni's drawings. It is sized to its text
-  and its tail is aimed at the cat's head.
+  and its tail is aimed at the cat's head. (The owner asked for the break to be closed, then kept it once
+  its reason was explained: it is a style, not a gap.)
 - **Hints** come on the FIRST wrong answer (inline, they used to wait for the second, by which time half
   the options were struck out). A correct answer or a reset sends the cat back into the box.
 - **Tips** are ```tip fences, one per lesson, placed at the END of a section as a recap — never before
