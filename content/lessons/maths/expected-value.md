@@ -62,13 +62,13 @@ cards to be any good at all.
 ```table
 seats: 6
 stacks: 12000
-blinds: 400/800
+blinds: 400/800/100
 ante: each
-button: 3
+button: 5
 hero: 0
 hand: 9h 9d
 names: You, Ana, Bo, Cy, Dee, Eli
-caption: Fifteen big blinds, six-handed with antes. Roughly 1,400 is already in the middle before anybody acts — which is most of why shoving works here.
+caption: Fifteen big blinds, six-handed with a 100 ante. That puts 1,800 in the middle before anybody acts — more than two big blinds — which is most of why shoving works here.
 ```
 
 ## Counting in the right unit
@@ -111,16 +111,16 @@ why: A shortfall of 20 chips at 20% equity needs about 100 more chips won on the
 type: action
 seats: 6
 stacks: 12000
-blinds: 400/800
+blinds: 400/800/100
 ante: each
-button: 3
+button: 5
 hero: 0
 hand: 9h 9d
 actions: fold, fold, fold, fold
-ask: Fifteen big blinds, folded to you in the small blind with pocket nines. About 1,400 is already in the middle.
+ask: Fifteen big blinds, folded to you in the small blind with pocket nines. There is 1,800 in the middle already.
 options: Fold | Call 400 | Raise all in
 answer: Raise all in
-why: Two ways to win against one. The big blind folds often enough on its own to make this profitable, and when they do call, nines are rarely in terrible shape against a calling range. Calling 400 gets you the worst of it: no chance of winning immediately, and a flop played first-to-act with fourteen big blinds behind. The dead money from the antes is what tips it — 1,400 to win for free is nearly two big blinds before a card is dealt.
+why: Two ways to win against one. The big blind folds often enough on its own to make this profitable, and when they do call, nines are rarely in terrible shape against a calling range. Calling 400 gets you the worst of it: no chance of winning immediately, and a flop played first-to-act with fourteen big blinds behind. The dead money from the antes is what tips it: 1,800 sitting there, and 1,300 of it is not yours — over a big blind and a half, won without a showdown every time everyone passes.
 success: Right. And notice the EV came from the folds, not from the nines.
 ```
 

@@ -47,7 +47,7 @@ while your stack does not.
 ```table
 seats: 9
 stacks: 24000, 96000, 41000, 12000, 63000, 28000, 51000, 19000, 37000
-blinds: 1500/3000
+blinds: 1500/3000/300
 ante: each
 hero: 0
 hand: Ah Td
@@ -93,8 +93,8 @@ why: 500 + 1,000 + (9 × 100) = 2,400. The blinds you pay twice a lap; the ante 
 type: legal
 seats: 9
 stacks: 24000
-blinds: 1500/3000
-ante: 300
+blinds: 1500/3000/300
+ante: each
 hero: 3
 hand: As Kh
 button: 0

@@ -53,7 +53,7 @@ way to see why a 50/50 for your stack is a losing bet: you are risking one unit 
 ```table
 seats: 5
 stacks: 48000, 31000, 25000, 16000, 9000
-blinds: 1000/2000
+blinds: 1000/2000/200
 ante: each
 hero: 0
 hand: Qh Qd

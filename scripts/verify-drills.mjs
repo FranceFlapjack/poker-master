@@ -24,6 +24,32 @@ import { spotFromParams, solveDrill } from '../js/spot.js'
 import { allLessons, lessonPath } from '../js/curriculum.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+
+/**
+ * An ante that does not post.
+ *
+ * `ante:` is the STYLE — 'each', 'bb' or 'none'. The AMOUNT is the third number in `blinds`. Declaring a
+ * style without an amount is silently a no-ante table, which is the worst kind of wrong: the spot builds,
+ * the drill passes, the caption says "with antes", and the table quietly shows a pot that is short by
+ * every ante in it. Eight fences shipped that way in one session, and one lesson's arithmetic — "23,700
+ * behind" after a 300 ante — depended on chips that were never posted.
+ *
+ * Writing `ante: 300` is the same mistake from the other end: it sets the style to the string "300".
+ */
+function anteProblem(p) {
+  if (p.ante == null || p.ante === '') return null
+  const style = String(p.ante).trim()
+  const amount = Number(String(p.blinds || '').split('/')[2] || 0)
+  if (/^[0-9]+$/.test(style)) {
+    const [sb, bb] = String(p.blinds || '').split('/')
+    return `\`ante: ${style}\` sets the ante STYLE to "${style}". The amount belongs in \`blinds\` as a third number — \`blinds: ${sb}/${bb}/${style}\` with \`ante: each\`.`
+  }
+  if (!['each', 'bb', 'none'].includes(style)) return `unknown ante style "${style}" — use each, bb or none`
+  if (style !== 'none' && !(amount > 0)) {
+    return `\`ante: ${style}\` but \`blinds: ${p.blinds}\` carries no ante amount, so nothing is posted. Write the amount as a third number, e.g. \`blinds: ${p.blinds}/100\`.`
+  }
+  return null
+}
 const VERBOSE = process.argv.includes('-v')
 let fails = 0, verified = 0, unverified = 0, tables = 0
 const bad = (where, msg) => { fails++; console.log(`FAIL  ${where}\n      ${msg}`) }
@@ -52,7 +78,10 @@ for (const lesson of allLessons(curriculum)) {
       const where = `${lesson.dir}/${lesson.slug} table#${i}`
       tables++
       try {
-        const { state } = spotFromParams(parseParams(f.text))
+        const params = parseParams(f.text)
+        const ante = anteProblem(params)
+        if (ante) bad(where, ante)
+        const { state } = spotFromParams(params)
         if (VERBOSE) console.log(`ok    ${where} — ${state.seats.length}-handed, ${state.street}`)
       } catch (e) { bad(where, e.message) }
     })
@@ -60,6 +89,8 @@ for (const lesson of allLessons(curriculum)) {
     fences(body, ['try']).forEach((f, i) => {
       const where = `${lesson.dir}/${lesson.slug} try#${i}`
       const p = parseParams(f.text)
+      const anteBad = anteProblem(p)
+      if (anteBad) bad(where, anteBad)
       const kind = p.type || 'action'
       let solved
       try { solved = solveDrill(p) } catch (e) { return bad(where, e.message) }
@@ -76,7 +107,25 @@ for (const lesson of allLessons(curriculum)) {
       } else {
         // The spot still has to be buildable even though the answer is a judgement.
         if (kind !== 'choice') {
-          try { spotFromParams(p) } catch (e) { return bad(where, `spot will not build: ${e.message}`) }
+          let built
+          try { built = spotFromParams(p) } catch (e) { return bad(where, `spot will not build: ${e.message}`) }
+          // AND, for an action drill, the hero must be the player to act.
+          //
+          // The answer is a judgement, but WHOSE TURN IT IS never is — the engine knows, and if it
+          // disagrees with the question the drill is showing a table that does not match the words above
+          // it. Three drills shipped in one session with the button in the wrong seat, two of them
+          // asking "what do you do?" of a hero who had already folded. Every checker passed, because
+          // none of them had ever asked this.
+          if (kind === 'action') {
+            const { state, hero } = built
+            if (hero == null) bad(where, 'an action drill needs a `hero` — somebody has to be the one deciding')
+            else if (state.result) bad(where, 'the hand is already over in this spot, so there is nothing to decide')
+            else if (state.seats[hero] && state.seats[hero].folded) {
+              bad(where, `the hero (seat ${hero}) has already folded in this spot — check the \`button\` seat and the \`actions\` list`)
+            } else if (state.toAct !== hero) {
+              bad(where, `it is seat ${state.toAct}'s turn, not the hero's (seat ${hero}). The table shown will not match the question — check the \`button\` seat against the \`actions\` list.`)
+            }
+          }
         }
         if (!p.why) bad(where, 'a judgement drill must say `why`, or the reader learns nothing from being right')
         unverified++

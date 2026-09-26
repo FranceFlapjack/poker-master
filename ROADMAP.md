@@ -424,6 +424,39 @@ Two of the three judgement calls recorded in Phase 0 are now decided rather than
 3. **Activity-grid thresholds stay at 5/15/40 hands a day** — still the one open item, and still waiting
    on real data rather than another guess.
 
+### Two defects the 22-route pass could not see, 2026-09-26
+
+The route sweep proved every page *renders*. It cannot see a wrong number, and both of these were wrong
+numbers on pages that rendered perfectly.
+
+**1. Three action drills asked the question of a player who was not to act** — two of them of a hero who
+had already folded. The cause was the `button` seat not matching the `actions` list: with six seats and
+`button: 3`, the small blind is seat 4, so four folds fold the hero rather than reaching them. Every
+checker passed, because none of them had ever asked whose turn it was.
+
+`verify-drills.mjs` now asserts, for every `action` drill, that **the hero is the player to act** and has
+not folded, and that the hand is not already over. The answer to an action drill is a judgement; *whose
+turn it is* never was — the engine knows, and if it disagrees with the question then the table shown does
+not match the words above it. Checked by reintroducing the bug and watching it fail.
+
+**2. Every ante in the new lessons was inert.** `ante:` is the STYLE — `each`, `bb`, `none` — and the
+AMOUNT is the third number in `blinds`. Eight fences declared `ante: each` with `blinds: 400/800`, which
+is silently a no-ante table: the spot builds, the drill passes, the caption says "with antes", and the
+pot is short by every ante in it. One lesson's arithmetic depended on it — the `legal` drill's "23,700
+behind" is a 24,000 stack minus a 300 ante that was never posted. A ninth fence had `ante: 300`, which
+sets the style to the string `"300"`.
+
+`verify-drills.mjs` now rejects both forms and names the fix. The corrected tables show **1,800** at
+400/800/100 six-handed, **1,400** at 300/600/100 five-handed, and **7,200** at 1,500/3,000/300
+nine-handed — which is also, exactly, the orbit cost `counting-in-big-blinds` teaches. The prose and the
+table now agree because the engine posts what the text claims.
+
+**The pattern, for the fourth time.** Maniac bots passed every invariant; the solver "converged" against
+a test that could not fail; a drill scored a 1bb spot that was not a decision; and now three drills asked
+a folded player what they would do. In each case the assertions were green and the *behaviour* was wrong.
+Both checks added here follow the same rule: if the engine can decide something, the checker should ask
+it, rather than trusting prose.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages

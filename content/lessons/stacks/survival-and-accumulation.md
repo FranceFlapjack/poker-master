@@ -75,13 +75,13 @@ the direction and the reason for it, which is the part you need.
 ```table
 seats: 5
 stacks: 10000
-blinds: 300/600
+blinds: 300/600/100
 ante: each
 hero: 0
 hand: Ad Jc
-button: 2
+button: 0
 names: You, Ana, Bo, Cy, Dee
-caption: Five left, everyone level, sixteen big blinds each. Every decision below is made at this table.
+caption: Five left, everyone level, sixteen big blinds each, with a 100 ante. Every decision below is made at this table.
 ```
 
 ```try
@@ -106,29 +106,29 @@ why: $2,400 down to $1,876 — you have lost 21.8% of your equity without playin
 type: action
 seats: 5
 stacks: 7200, 10000, 10000, 10000, 10000
-blinds: 300/600
+blinds: 300/600/100
 ante: each
-button: 2
+button: 0
 hero: 0
 hand: Kc 9d
 actions: fold, fold
-ask: Twelve big blinds, five left, folded to you in the cutoff. King-nine offsuit.
+ask: Twelve big blinds, five left, folded to you on the button. King-nine offsuit.
 options: Fold | Call 600 | Raise all in
 answer: Raise all in
-why: Two players behind and a pot already worth more than a big blind before anybody has acted. King-nine is not a strong hand, but you are not asking it to win a showdown — you are asking it to be good enough for the times you get called, which is a minority of the time. Calling 600 is the worst of the three: it puts in chips without the chance of winning immediately, and leaves you playing a flop out of position with eleven big blinds.
+why: Two players behind and 1,400 already in the middle — more than two big blinds before anybody has acted. King-nine is not a strong hand, but you are not asking it to win a showdown — you are asking it to be good enough for the times you get called, which is a minority of the time. Calling 600 is the worst of the three: it puts in chips with no chance of winning the pot immediately, and leaves you playing a flop with eleven big blinds and no way to win without showing the best hand.
 ```
 
 ```try
 type: action
 seats: 5
 stacks: 7200, 22000, 10000, 10000, 10000
-blinds: 300/600
+blinds: 300/600/100
 ante: each
 button: 3
 hero: 0
 hand: Kc 9d
-actions: raise 10000, fold
-ask: Same hand, same depth. This time the chip leader has moved all in ahead of you and you are covered.
+actions: raise 10000, fold, fold, fold
+ask: Same hand, same depth. This time the chip leader has moved all in ahead of you, it folded round, and you are covered in the big blind.
 options: Fold | Call all in | Raise
 answer: Fold
 why: Identical cards, opposite answer, and the difference is that nobody can fold any more. Shoving king-nine was fine because most of its value came from everyone passing; calling with it wins only when it holds up at showdown against a range that beats it. And busting costs you far more than doubling gains — this is precisely the call the premium is there to stop you making.
