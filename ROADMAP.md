@@ -612,8 +612,11 @@ enter.* **Draft 2** is exactly that, and the scene module was deleted rather tha
 - **Shared, like `family.js`.** `js/welcome.js` and `css/welcome.css` know nothing about poker: the app
   passes its id and word, and the colour is the app's own `--accent`. Every class and state class is
   `wl-` prefixed — Draft 1's `.play` state collided with each app's Play page rule.
-- **The word is measured, not guessed.** It is set at a probe size, measured, and scaled so it runs
-  edge to edge at `--wl-margin` — "GO" and "POKER" need very different sizes to fill the same width.
+- **The word is measured, not guessed.** It is set at a probe size, its INK measured from the glyphs,
+  and scaled so the letters themselves run edge to edge at `--wl-margin` — "GO" and "POKER" need very
+  different sizes to fill the same width. Fitting the text box instead left the letters off-centre: the
+  P's side bearing and the tight tracking put them 21px from the left edge and 14px from the right at
+  phone width, a gap that grows with the size. The difference is taken up with `translate`.
   On a short screen height wins: the word is held to the room the title has once the scroll cue has
   taken its place in the column (the cue used to be laid over the bottom, and on a phone turned
   sideways MASTER landed on it).
@@ -626,8 +629,10 @@ enter.* **Draft 2** is exactly that, and the scene module was deleted rather tha
 - **Reduced motion** gets the final frame with a plain fade.
 
 Verified by running it at 360×740, 375×812, 430×932, 667×375, 812×375, 768×1024, 1024×768 and 1440×900:
-the word's ink sits exactly at the margin on both sides at every size, and word, MASTER and cue never
-overlap. Keyboard, the cue button, a slow drag (settles back) and a flick (enters) each checked; the
+the ink of the P and the R sits at the margin on both sides at every size (within 0.2px), and word,
+MASTER and cue never overlap. The ink measure itself was checked against a pixel scan of the rendered
+word (within 0.6px at 410px type), and its fallback for browsers whose canvas cannot letter-space
+against the native one (identical). Keyboard, the cue button, a slow drag (settles back) and a flick (enters) each checked; the
 reduced-motion rules checked by applying them directly, since the Browser pane cannot emulate the query.
 
 ## What is left after Phase 6

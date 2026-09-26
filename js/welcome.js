@@ -171,11 +171,44 @@ function fitWord(root) {
   }
   const probe = 200
   word.style.fontSize = `${probe}px`
-  const w = word.scrollWidth                          // layout width, unaffected by the arrival's scale
-  if (!w) return
-  const byWidth = probe * (W - 2 * margin) / w
+  word.style.translate = ''
+  // Fit the INK, not the text box: the P's side bearing and the tight tracking leave the letters inset
+  // from their box unevenly (at phone width 21px from the left edge against 14px from the right), and
+  // the gap grows with the size. Measured from the glyphs themselves, then centred by the difference.
+  const ink = inkOf(word, probe)
+  const inkW = ink ? ink.end - ink.start : word.scrollWidth
+  if (!inkW) return
+  const byWidth = probe * (W - 2 * margin) / inkW
   const byHeight = maxH / 0.86                         // the word's line box is 0.86em tall
-  word.style.fontSize = `${Math.floor(Math.min(byWidth, byHeight) * 10) / 10}px`
+  const size = Math.floor(Math.min(byWidth, byHeight) * 10) / 10
+  word.style.fontSize = `${size}px`
+  // `translate`, not `transform`: the arrival animates transform, and the two compose
+  if (ink) word.style.translate = `${(size / probe) * (ink.advance - ink.start - ink.end) / 2}px 0`
+}
+
+/**
+ * Where the word's ink starts and ends, measured from the glyphs at `px`, relative to the start of its
+ * text box, with the box's own advance width. Canvas draws the same face as the page; where it cannot
+ * apply letter-spacing itself, the spacing is added by hand. Null when there is no canvas to ask.
+ */
+let inkCtx = null
+function inkOf(word, px) {
+  try {
+    const cs = getComputedStyle(word)
+    inkCtx = inkCtx || document.createElement('canvas').getContext('2d')
+    if (!inkCtx) return null
+    inkCtx.font = `${cs.fontStyle} ${cs.fontWeight} ${px}px ${cs.fontFamily}`
+    const text = word.textContent, ls = parseFloat(cs.letterSpacing) || 0
+    const native = 'letterSpacing' in inkCtx
+    if (native) inkCtx.letterSpacing = `${ls}px`
+    const m = inkCtx.measureText(text)
+    const gaps = native ? 0 : ls * ([...text].length - 1)   // the spacing between the letters
+    return {
+      start: -m.actualBoundingBoxLeft,
+      end: m.actualBoundingBoxRight + gaps,
+      advance: native ? m.width : word.scrollWidth,
+    }
+  } catch { return null }
 }
 
 /** Resolve a CSS length token (e.g. "max(14px, 3.2vw)") to pixels by letting the browser compute it. */
