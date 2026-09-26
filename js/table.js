@@ -26,7 +26,7 @@ const NS = 'http://www.w3.org/2000/svg'
 // where the seats go. The numbers themselves live in css/tokens.css (--tb-size-*) so they can be tuned
 // by comment like every other visual decision; these are the fallbacks, and what the Node renderer uses.
 // ---------------------------------------------------------------------------------------------------
-const SIZE_DEFAULTS = {
+export const SIZE_DEFAULTS = {
   name: 13, stack: 12, bet: 12.5, pot: 14, street: 11, tag: 9.5, dealer: 11,
   card: 42, board: 48, figure: 58, hero: 70,
 }

@@ -48,7 +48,21 @@ globalThis.document = {
 // --- render -----------------------------------------------------------------
 const { parseCards } = await import('../js/engine/cards.js')
 const { createHand, applyAction } = await import('../js/engine/rules.js')
-const { mountTable } = await import('../js/table.js')
+const { mountTable, SIZE_DEFAULTS } = await import('../js/table.js')
+
+// This renderer has no layout engine, so the table cannot read the --tb-size-* tokens and uses its
+// built-in fallbacks. The snapshot is the file that gets sent to people — so if the fallbacks and the
+// tokens ever disagree, stop here rather than quietly draw a table the site does not look like.
+{
+  const tokens = readFileSync(join(ROOT, 'css/tokens.css'), 'utf8')
+  const drift = []
+  for (const [k, v] of Object.entries(SIZE_DEFAULTS)) {
+    const m = tokens.match(new RegExp(`--tb-size-${k}:\\s*([\\d.]+)`))
+    if (!m) drift.push(`--tb-size-${k} is missing from tokens.css`)
+    else if (Number(m[1]) !== v) drift.push(`--tb-size-${k} is ${m[1]} in tokens.css but ${v} in js/table.js`)
+  }
+  if (drift.length) { console.error('Table sizes have drifted:\n  ' + drift.join('\n  ')); process.exit(1) }
+}
 const { avatarsForSeats } = await import('../js/avatars.js')
 
 const H = s => parseCards(s)
