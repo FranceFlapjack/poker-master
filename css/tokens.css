@@ -29,6 +29,12 @@
    clears the rail; a table too wide for its column goes upright instead of shrinking; the dealer button
    rides on its owner's name line with SB and BB; and every row in a seat is spaced from its type size.
 
+   Draft 5 (2026-09-27, owner's comment: "desktop a normal table, and mobile a circle"): the shape follows
+   the device, not the fit. Wide oval on a desktop, a circle on a phone (the app's 760px switch). The
+   desktop tables had gone upright because they were capped at --board-max, 660px, against the 815 nine
+   seats need; the table now has --table-max, and a drill puts its question under a table that will not
+   fit beside it.
+
    Comment on any line here and it becomes a small diff. */
 :root {
   /* ground & ink */
@@ -156,6 +162,8 @@
 
   --board-anim: 160ms;
   --board-max: 660px;   /* was 560px — a table needs room to be read */
+  --table-max: 820px;   /* the poker table's own cap: nine seats round the wide oval need 815px at full size.
+                           It was --board-max, and 660px is what stood desktop tables upright */
 
   /* type */
   --font-sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;

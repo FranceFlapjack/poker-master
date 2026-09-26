@@ -555,6 +555,39 @@ Two harness bugs were found on the way and are worth remembering: `getBBox` on a
 in that svg's own viewBox, and a board passed to a preflop spot is not on the table yet. Both made
 checks pass or fail for reasons that had nothing to do with the layout.
 
+### Design draft 5 — wide on a desktop, round on a phone, 2026-09-27
+
+The owner's comment: on a desktop the table "still shrinks to a vertical oval like mobile" — make it a
+normal table there, and make the phone table a circle, which looks nicer than a tall oval.
+
+- **Why the desktop went upright.** Not the shape rule: the room. Every table was capped at
+  `--board-max`, 660px, and the wide oval needs 340px heads-up rising to 815px nine-handed. Drills gave it
+  less — min(660px, 58%) beside the question, 379px on a 1024px screen — so six- and nine-seat tables
+  fell below the 85% line and stood up. The Play page was worse by accident: its page carried the class
+  `.play`, which the stylesheet ported from the siblings makes a two-column grid, so since Phase 4 the
+  table had been sitting in a 346px right-hand column. That class is now `play-page`.
+- **The shape now follows the device.** A phone (the app's own 760px switch, where the sidebar becomes a
+  menu button) gets a circle; a desktop gets the wide oval. Crossing the switch redraws the table.
+  One exception, stated in `js/table.js`: a desktop-mode window so narrow that the wide oval would render
+  below 70% — a tablet held upright, a window dragged thin — gets the circle too. At 1024px and wider no
+  table in the app comes near it; at 800px it takes the nine-seat tables only.
+- **The desktop table has its room.** `--table-max: 820px`. A drill puts its table beside the question
+  only when the table fits at full size with at least 260px left for the options; otherwise the question
+  goes underneath. Measured on every table in every lesson and on Play: at 1280 and 1440px everything is
+  wide at full size; at 1024px everything is full size except nine-handed, at 0.80.
+- **The circle.** One radius, 110px, at every seat count — measured from 90 to 160 on a 343px column.
+  Evenly spaced angles do not work on a circle: seats are tall columns, so the ones down the sides stack
+  and push each other out (nine-handed fell to 0.58). Each gap round the rim is now sized to what its
+  two seats take up at that point — width across the top and bottom, height down the sides. Against the
+  tall oval on the same lessons at 375px: three to six seats render larger (e.g. six-handed 0.80 → 0.84),
+  and the circle is about a quarter shorter; nine-handed is a little smaller (0.76 → 0.74, drills 0.71 →
+  0.67), and eight-handed, which no lesson uses, loses most (0.79 → 0.71).
+- **Audited again** in both shapes: every seat count 2–9 at every button position in four states, at
+  328, 343 and 398px on a phone and 522, 660 and 820px on a desktop — 1,056 spots, none with a seat on
+  the rail or a neighbour, a wager on the board or another wager, or anything outside the picture.
+  Illustrations are measured by the box their drawing fills inside the slot, not by the slot, as in
+  Draft 4.
+
 ### The cat in the box — hints and tips, 2026-09-26
 
 The owner's request: tips in some lessons, and a hint when you answer wrong, delivered by a mascot — the

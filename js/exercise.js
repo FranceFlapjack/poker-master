@@ -55,6 +55,7 @@ export function mountExercise(container, p, ctx = {}) {
   // cards; an action drill is a spot at a table. Using a table for both was wrong in two ways: it drew
   // blinds, a pot and a button that have nothing to do with "who wins", and it draws exactly two hole
   // cards per seat, so a five-card ranking hand silently lost three of them.
+  let view = null, placement = null
   if (hasPicture) {
     try {
       const wrap = container.querySelector('.exercise-table')
@@ -65,7 +66,8 @@ export function mountExercise(container, p, ctx = {}) {
         })
       } else {
         const { state, hero } = spotFromParams(p)
-        mountTable(wrap, { state, hero, avatars: avatarsForSeats(state.seats.length, { hero: hero ?? 0 }) })
+        view = mountTable(wrap, { state, hero, avatars: avatarsForSeats(state.seats.length, { hero: hero ?? 0 }) })
+        placement = placeTable(container, view)
       }
     } catch (e) {
       container.querySelector('.exercise-table').innerHTML =
@@ -163,7 +165,40 @@ export function mountExercise(container, p, ctx = {}) {
     statusEl.className = 'status good'
     optionsEl.querySelectorAll('button').forEach(b => { b.disabled = true })
   }
-  return { id, topic, reset }
+  return {
+    id, topic, reset,
+    destroy() { if (placement) placement.disconnect(); if (view) view.destroy() },
+  }
+}
+
+/**
+ * Beside the question, or above it? A drill's table sits beside its question only when there is room
+ * for the table at its full size AND a readable column of options (SIDE_MIN); otherwise the question
+ * goes underneath and the table takes the whole width. The side-by-side column used to be a fixed 58%,
+ * which on a desktop gave a six-seat table 379 to 522px of the 611 it needs — it was shrunk, and then
+ * stood upright to cope. Decided from the exercise's own width, which the decision cannot change, so
+ * watching it cannot loop. Below 900px every drill is one column anyway (app.css).
+ */
+const SIDE_MIN = 260
+function placeTable(container, view) {
+  const decide = () => {
+    const W = container.clientWidth, need = Math.ceil(view.naturalWidth || 0)
+    if (!(W > 0) || !need) return
+    const gap = parseFloat(getComputedStyle(container).columnGap) || 24
+    const beside = W - need - gap >= SIDE_MIN
+    const was = container.classList.contains('has-table') ? !container.classList.contains('table-below') : null
+    container.classList.add('has-table')
+    container.classList.toggle('table-below', !beside)
+    container.style.setProperty('--ex-table-w', `${need}px`)
+    // the table's column just changed width: lay it out for the new one now, rather than trusting a
+    // resize notification to arrive (a background tab delivers none, and the first layout was made
+    // for the old column — for a nine-seat table, too narrow for the wide oval)
+    if (was !== beside) view.update({})
+  }
+  decide()
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(decide) : null
+  if (ro) ro.observe(container)
+  return { disconnect() { if (ro) ro.disconnect() } }
 }
 
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }

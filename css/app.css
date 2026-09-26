@@ -340,6 +340,13 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 
 
 /* ---------- responsive ---------- */
+/* a drill with a poker table: the table at its full width beside the question, or the question under it
+   when both will not fit — js/exercise.js decides, from the table's natural width */
+@media (min-width: 901px) {
+  .exercise.has-table { grid-template-columns: var(--ex-table-w) minmax(0, 1fr); }
+  .exercise.has-table.table-below { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 900px) {
   .game, .exercise, .play { grid-template-columns: minmax(0, 1fr); }
   .moves { max-height: 260px; }
@@ -383,7 +390,7 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 }
 
 /* the poker table — js/table.js draws it as SVG; everything visual is here, tokens in tokens.css */
-.table-wrap { max-width: var(--board-max); margin: 0 0 var(--s-5); }
+.table-wrap { max-width: var(--table-max); margin: 0 0 var(--s-5); }
 svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 .pk-table .felt { fill: var(--tb-felt); }
 .pk-table .rail { fill: none; stroke: var(--tb-rail); stroke-width: var(--tb-rail-w); }

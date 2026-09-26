@@ -63,14 +63,36 @@ const cap = f => f * 0.72      // cap height of the sans face, as a share of its
 const desc = f => f * 0.22     // descender
 
 /**
+ * The two shapes, and which one a table gets.
+ *
+ * Owner's rule (2026-09-26): on a desktop a table is the ordinary wide oval; on a phone it is ROUND.
+ * "Phone" is the app's own switch — the width at which the sidebar becomes a menu button — so the table
+ * changes shape exactly when the rest of the page does. The wide oval used to be dropped for a tall one
+ * whenever it rendered below 85% of its size, and on a desktop that was most dense tables: they were
+ * capped at 660px, and nine seats need 815. The cap is now --table-max, and drills put the question
+ * under a table that will not fit beside it (js/exercise.js), so the desktop table has its room.
+ *
+ * One exception, kept deliberately: a desktop window narrow enough that the wide oval would render
+ * below ROUND_FLOOR — a tablet held upright, a window dragged thin — gets the round table too, since at
+ * that scale the wide one's type is under 9px. At 1024px and wider no table in the app comes near it.
+ */
+const PHONE = '(max-width: 760px)'
+const ROUND_FLOOR = 0.7
+const isPhone = () => { try { return typeof matchMedia === 'function' && matchMedia(PHONE).matches } catch { return false } }
+
+/**
  * Felt size by seat count, in pixels. The only hand-tuned geometry left: seats are placed from it.
  *
- * `portrait` is the phone layout for dense tables — a tall oval. A phone has height to spare and no
- * width, and nine seats around a landscape oval need about 600px to keep 12px type legible. Upright,
- * the same seats stack down the two sides instead of across.
+ * `round` is the phone table — a circle, one size at every seat count. A phone has no width to spare,
+ * and nine seats round a wide oval need 815px to keep 12px type. The radius was measured, radii 90–160
+ * at every seat count on a 343px column (a 375px phone): 110 renders 3–7 seats at 0.81–0.86 of full
+ * size, better than the tall oval it replaced (0.78–0.81), and nine at 0.73 against 0.75, with the
+ * circle a quarter shorter. Eight seats lose most, 0.71 against 0.79; no lesson seats eight. Below 110
+ * the five board cards come within a few pixels of the rail.
  */
-function feltFor(n, portrait) {
-  if (portrait) return n <= 4 ? { rx: 118, ry: 118 } : n <= 6 ? { rx: 118, ry: 150 } : { rx: 116, ry: 176 }
+const ROUND_R = 110
+function feltFor(n, round) {
+  if (round) return { rx: ROUND_R, ry: ROUND_R }
   if (n <= 2) return { rx: 150, ry: 80 }
   if (n <= 4) return { rx: 172, ry: 94 }
   if (n <= 6) return { rx: 192, ry: 104 }
@@ -79,11 +101,11 @@ function feltFor(n, portrait) {
 
 /**
  * The middle of the table: board, pot and street as one centred stack, with its own box so the wagers
- * can keep off it. An upright table's board cards are drawn a little smaller — its felt is narrow, and
- * at full size five cards all but filled it.
+ * can keep off it. A round table's board cards are drawn a little smaller — its felt is small, and at
+ * full size five cards all but fill it.
  */
-function middleLayout(s, m, portrait) {
-  const cardH = portrait ? Math.round(m.boardH * 0.86) : m.boardH
+function middleLayout(s, m, round) {
+  const cardH = round ? Math.round(m.boardH * 0.86) : m.boardH
   const cardW = Math.round(cardH * 0.72)
   const pot = potTotal(s)
   const potText = pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
@@ -105,6 +127,36 @@ function middleLayout(s, m, portrait) {
 
 /** Seat k's direction, with the hero pinned to the bottom and the rest running clockwise. */
 const seatAngle = (k, n, hero, offset = 0) => (90 - ((k - hero + n) % n) * 360 / n + offset) * Math.PI / 180
+
+/**
+ * Seat directions round a CIRCLE. Evenly spaced angles suit an oval, not a circle: a seat is a tall,
+ * narrow column (figure, name, stack, cards), so the seats on the left and right of a circle stack on
+ * top of one another and need far more arc than the ones across the top and bottom, which sit side by
+ * side. Spaced evenly, nine seats pushed each other out until the table was 0.58 of its size on a phone.
+ * So each gap is sized to what its two seats take up along the rim at that point — width across the top
+ * and bottom, height down the sides — and the angles are solved for that. The hero stays at the bottom.
+ */
+function roundAngles(cols, n, hero) {
+  const order = Array.from({ length: n }, (_, i) => (hero + i) % n)       // the hero, then round the table
+  let th = order.map((_, i) => 90 - i * 360 / n)
+  const along = (c, deg) => {
+    const a = deg * Math.PI / 180
+    return 2 * c.half * Math.abs(Math.sin(a)) + (c.top + c.bottom) * Math.abs(Math.cos(a))
+  }
+  for (let it = 0; it < 24; it++) {
+    const gaps = order.map((k, i) => {
+      const j = (i + 1) % n
+      return (along(cols[k], th[i]) + along(cols[order[j]], th[j])) / 2 + 8
+    })
+    const total = gaps.reduce((a, b) => a + b, 0)
+    const next = [90]
+    for (let i = 1; i < n; i++) next.push(next[i - 1] - gaps[i - 1] / total * 360)
+    th = next
+  }
+  const out = []
+  order.forEach((k, i) => { out[k] = th[i] * Math.PI / 180 })
+  return out
+}
 
 // ---------------------------------------------------------------------------------------------------
 
@@ -158,7 +210,7 @@ export function mountTable(host, opts) {
   host.append(root)
 
   // The layout depends on the width available, so a change of width is a re-layout — not a rescale.
-  let lastWidth = -1, observer = null
+  let lastWidth = -1, observer = null, naturalWidth = 0
   const available = () => {
     const w = root.clientWidth
     return Number.isFinite(w) && w > 0 ? w : 640
@@ -167,6 +219,10 @@ export function mountTable(host, opts) {
     observer = new ResizeObserver(() => { if (Math.abs(available() - lastWidth) >= 2) render() })
     observer.observe(root)
   }
+  // Crossing the phone switch changes the SHAPE, so it redraws on the switch itself rather than waiting
+  // for the column's width to be reported changed — a notification a background tab may never deliver.
+  let phoneQuery = null
+  try { if (typeof matchMedia === 'function') { phoneQuery = matchMedia(PHONE); phoneQuery.addEventListener('change', render) } } catch { phoneQuery = null }
 
   function render() {
     root.innerHTML = ''
@@ -177,21 +233,20 @@ export function mountTable(host, opts) {
     const W = available()
     lastWidth = W
 
-    // Landscape is the natural shape of a poker table and is used whenever it fits. A dense table that
-    // does not fit is laid out upright instead of being shrunk — shrinking is what made the type
-    // unreadable. Only if neither fits does the drawing scale down, and then by as little as possible.
-    // Wide is kept whenever it renders at 85% or better — the type still lands at 11px — because it is
-    // the shape a reader expects. Below that the upright layout is used if it does better.
-    let L = layout(s, n, hero, m, false)
-    const sW = Math.min(1, W / L.box.w)
-    if (n >= 3 && sW < 0.85) {
-      const P = layout(s, n, hero, m, true)
-      if (Math.min(1, W / P.box.w) > sW) L = P
+    // Wide on a desktop, round on a phone — see ROUND_FLOOR for the one exception. Whichever it is, the
+    // drawing is shown at its natural size, and scaled down only as far as the column makes it.
+    const wide = layout(s, n, hero, m, false)
+    naturalWidth = wide.box.w
+    let L = wide
+    if (isPhone()) L = layout(s, n, hero, m, true)
+    else if (W / wide.box.w < ROUND_FLOOR) {
+      const R = layout(s, n, hero, m, true)
+      if (W / R.box.w > W / wide.box.w) L = R
     }
     const { box, felt, seats, bets } = L
 
     const svg = el('svg', {
-      class: 'pk-table' + (L.portrait ? ' portrait-table' : ''),
+      class: 'pk-table' + (L.round ? ' round-table' : ''),
       viewBox: `${box.x} ${box.y} ${box.w} ${box.h}`, role: 'img', 'aria-label': describeTable(s, o),
     })
     // natural size, and never wider than the column
@@ -299,8 +354,8 @@ export function mountTable(host, opts) {
    * at three-handed, 17px at six-handed, and the hero's figure sitting on the felt heads-up. A placement
    * that is computed cannot drift out of step with the column it is placing.
    */
-  function layout(s, n, hero, m, portrait) {
-    const felt = feltFor(n, portrait)
+  function layout(s, n, hero, m, round) {
+    const felt = feltFor(n, round)
     const sb = sbSeat(s), bb = bbSeat(s)
 
     // the name row of each seat — dealer disc, position tag, name — measured once
@@ -318,7 +373,7 @@ export function mountTable(host, opts) {
     // growing from 9,800 to 24,800 mid-hand, or the button moving on, never shifts a seat sideways
     const nameW = Math.max(...s.seats.map((p, k) => measure(p.name, m.name, 600, 0.06)
       + 2 * Math.round(m.dealer * 0.72) + measure('BB', m.tag, 700, 0.08) + 2 * Math.round(m.name * 0.35)))
-    const twoLine = portrait && o.showBB
+    const twoLine = round && o.showBB
     const stackW = twoLine ? measure('188.8 bb', m.stack, 400, 0.04) : measure('88.8k · 188 bb', m.stack, 400, 0.04)
     const textW = Math.max(nameW, stackW)
 
@@ -358,8 +413,9 @@ export function mountTable(host, opts) {
       return false
     }
     const rail = { rx: felt.rx + m.railOffset, ry: felt.ry + m.railOffset }
+    const angles = round ? roundAngles(cols, n, hero) : null
     const seats = cols.map((col, k) => {
-      const th = seatAngle(k, n, hero)
+      const th = round ? angles[k] : seatAngle(k, n, hero)
       const dir = { x: rail.rx * Math.cos(th), y: rail.ry * Math.sin(th) }
       let t = 1
       while (t < 6 && intrudes(col, t * dir.x, t * dir.y)) t += 0.004
@@ -379,11 +435,11 @@ export function mountTable(host, opts) {
     }
     for (const st of seats) { st.x = st.t * st.dir.x; st.y = st.t * st.dir.y }
 
-    const mid = middleLayout(s, m, portrait)
+    const mid = middleLayout(s, m, round)
 
     // Wagers sit on an ellipse inset from the felt edge, at each seat's own angle — in front of the
-    // player, the same depth from the rail at every seat. Where that spot is on the board (an upright
-    // table's felt is narrow, and five cards nearly fill it) or on another wager, the wager slides round
+    // player, the same depth from the rail at every seat. Where that spot is on the board (a round
+    // table's felt is small, and five cards nearly fill it) or on another wager, the wager slides round
     // its ring, away from the middle, by the smallest step that clears. It stays in front of its player.
     const inset = Math.round(Math.min(felt.rx, felt.ry) * 0.3)
     const bets = []
@@ -410,7 +466,7 @@ export function mountTable(host, opts) {
     let x1 = -rail.rx - m.railStroke, x2 = rail.rx + m.railStroke, y1 = -rail.ry - m.railStroke, y2 = rail.ry + m.railStroke
     for (const st of seats) { const r = rect(st); x1 = Math.min(x1, r.x1); x2 = Math.max(x2, r.x2); y1 = Math.min(y1, r.y1); y2 = Math.max(y2, r.y2) }
     const box = { x: x1 - m.viewPad, y: y1 - m.viewPad, w: x2 - x1 + 2 * m.viewPad, h: y2 - y1 + 2 * m.viewPad }
-    return { portrait, felt, seats, bets, box, mid }
+    return { round, felt, seats, bets, box, mid }
   }
 
   function controls(s) {
@@ -465,7 +521,9 @@ export function mountTable(host, opts) {
   return {
     update(next) { o = { ...o, ...next }; render() },
     get options() { return o },
-    destroy() { if (observer) observer.disconnect(); root.remove() },
+    /** The wide oval's natural width — what a drill needs beside its question to show it at full size. */
+    get naturalWidth() { return naturalWidth },
+    destroy() { if (observer) observer.disconnect(); if (phoneQuery) phoneQuery.removeEventListener('change', render); root.remove() },
   }
 }
 
