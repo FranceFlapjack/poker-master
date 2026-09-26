@@ -64,7 +64,7 @@ export function mountExercise(container, p, ctx = {}) {
         })
       } else {
         const { state, hero } = spotFromParams(p)
-        mountTable(wrap, { state, hero, avatars: avatarsForSeats(state.seats.length) })
+        mountTable(wrap, { state, hero, avatars: avatarsForSeats(state.seats.length, { hero: hero ?? 0 }) })
       }
     } catch (e) {
       container.querySelector('.exercise-table').innerHTML =

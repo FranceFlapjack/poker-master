@@ -492,12 +492,29 @@ is the row's label even when it holds a number.
 Also: the sandbox's seven inputs wrapped by content and stranded the last one alone on a second row.
 They are a four-column grid now, with the field that is about a *different* player taking the width below.
 
-### Next on design, owner's list
+### The seat portraits, redone 2026-09-26
 
-- **The seat portraits are one figure in nine tints.** They need real variety, and **the hero should be
-  the most distinct of them — the main character**, not the same silhouette in another colour. Whatever
-  replaces them goes through `content/images/avatars/manifest.json`, which records each file's source and
-  licence; read the README there before adding any.
+The owner's note was that every player looked the same in a different colour. They were right, and the
+cause was the source rather than the choice: **shigureni's icon section holds only twelve images**, and
+eight of them are one character in eight colours — the same pose holding the same fan. The app used all
+eight. No pick from that set could have fixed it.
+
+So the seats now come from shigureni's **main illustration library** instead (~124 images, square
+1001×1001, same licence, already recorded). Nine chosen one per activity and spread across the colour
+wheel: a runner in yellow, a blanket in purple, denim, teal, periwinkle, a green apron, navy, pink. The
+face is the same in all of them — the whole catalogue is one character, and that is not solvable from
+this source — but no two seats share an outfit, a prop or a silhouette.
+
+**The hero is signalled three ways**, because one is not enough at nine seats: a distinctly louder
+picture (bunny ears, popcorn, a soft toy, against eight people running or working or lying down with a
+headache), drawn 20% larger, and always ringed. `avatarsForSeats` pins that portrait to the hero seat
+whatever its index, so your own seat never changes between spots — a table you have to re-learn every
+hand is worse than no portraits at all.
+
+The nine retired icon files are kept on disk with a note in the manifest saying why they are unused, so
+the decision stays auditable. The portrait box grew 84 → 92px, since a full-body illustration reads
+smaller than a head-and-shoulders icon, and the wager inset is now proportional to the felt so a
+heads-up bet does not crowd the newly centred pot.
 
 ## What is left after Phase 6
 

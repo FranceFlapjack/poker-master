@@ -9,7 +9,7 @@
       "holder": "shigureni",
       "summary": "Free for use in apps and websites. Resizing, cropping, recolouring and flipping are permitted. Redrawing or tracing a derivative illustration is not, nor is any generative-AI use. Up to 5 illustrations free per production for commercial use; ¥1,000 each thereafter.",
       "attributionRequired": false,
-      "commercialUse": "Nine illustrations are used here, which is above the 5 that are free for COMMERCIAL use. Poker Master is a free site with no revenue, so the ceiling does not apply as things stand. If that ever changes, four additional licences are needed — see README.md."
+      "commercialUse": "Nine illustrations are used here, which is above the 5 that are free for COMMERCIAL use. Poker Master is a free site with no revenue, so the ceiling does not apply as things stand. If that ever changes, four additional licences are needed — see README.md. The nine unused icon files do not count while nothing references them."
     },
     "own-work": {
       "name": "Drawn for this project",
@@ -18,15 +18,160 @@
     }
   },
   "images": [
-    { "file": "shigureni-icon-01.png", "title": "女子高生のアイコン-1", "titleEn": "High school girl icon 1", "licence": "shigureni", "source": "https://shigureni.com/icon/1/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-05.png", "title": "推し活をする女の子のアイコン-1", "titleEn": "Girl at a fan event, icon 1", "licence": "shigureni", "source": "https://shigureni.com/icon/5/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-06.png", "title": "推し活をする女の子のアイコン-2", "titleEn": "Girl at a fan event, icon 2", "licence": "shigureni", "source": "https://shigureni.com/icon/6/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-07.png", "title": "推し活をする女の子のアイコン-3", "titleEn": "Girl at a fan event, icon 3", "licence": "shigureni", "source": "https://shigureni.com/icon/7/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-08.png", "title": "推し活をする女の子のアイコン-4", "titleEn": "Girl at a fan event, icon 4", "licence": "shigureni", "source": "https://shigureni.com/icon/8/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-09.png", "title": "推し活をする女の子のアイコン-5", "titleEn": "Girl at a fan event, icon 5", "licence": "shigureni", "source": "https://shigureni.com/icon/9/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-10.png", "title": "推し活をする女の子のアイコン-6", "titleEn": "Girl at a fan event, icon 6", "licence": "shigureni", "source": "https://shigureni.com/icon/10/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-11.png", "title": "推し活をする女の子のアイコン-7", "titleEn": "Girl at a fan event, icon 7", "licence": "shigureni", "source": "https://shigureni.com/icon/11/", "downloaded": "2026-09-24" },
-    { "file": "shigureni-icon-12.png", "title": "推し活をする女の子のアイコン-8", "titleEn": "Girl at a fan event, icon 8", "licence": "shigureni", "source": "https://shigureni.com/icon/12/", "downloaded": "2026-09-24" },
+    {
+      "file": "shigureni-illust-111.webp",
+      "title": "遊園地に来て浮かれている女の子のイラスト",
+      "titleEn": "Girl giddy at an amusement park",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/111",
+      "downloaded": "2026-09-26",
+      "note": "The hero's portrait — bunny ears, popcorn and a soft toy, chosen to be the loudest thing at the table."
+    },
+    {
+      "file": "shigureni-illust-123.png",
+      "title": "3日後にランニングをやめる女の子のイラスト",
+      "titleEn": "Girl who will give up running in three days",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/123",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-66.webp",
+      "title": "心当たりのない着信に恐る恐る出たらセールスの電話だった女の子のイラスト",
+      "titleEn": "Girl who nervously answered an unknown number and got a sales call",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/66",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-102.webp",
+      "title": "防御を固めてホラー映画に挑む女の子のイラスト",
+      "titleEn": "Girl braced under a blanket for a horror film",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/102",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-124.png",
+      "title": "採血で平然を装う女の子のイラスト",
+      "titleEn": "Girl feigning calm while having blood taken",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/124",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-87.webp",
+      "title": "低気圧で偏頭痛に苦しむ女の子のイラスト",
+      "titleEn": "Girl with a low-pressure migraine",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/87",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-76.webp",
+      "title": "新しいスキンケアを買ったので上機嫌な女の子のイラスト",
+      "titleEn": "Girl pleased with her new skincare",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/76",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-37.webp",
+      "title": "前にいいねしたツイートが見つからない女の子のイラスト",
+      "titleEn": "Girl who cannot find a tweet she liked",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/37",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-illust-119.webp",
+      "title": "体重計にのるのをためらう女の子のイラスト",
+      "titleEn": "Girl hesitating to step on the scales",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/119",
+      "downloaded": "2026-09-26"
+    },
+    {
+      "file": "shigureni-icon-01.png",
+      "title": "女子高生のアイコン-1",
+      "titleEn": "High school girl icon 1",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/1/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-05.png",
+      "title": "推し活をする女の子のアイコン-1",
+      "titleEn": "Girl at a fan event, icon 1",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/5/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-06.png",
+      "title": "推し活をする女の子のアイコン-2",
+      "titleEn": "Girl at a fan event, icon 2",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/6/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-07.png",
+      "title": "推し活をする女の子のアイコン-3",
+      "titleEn": "Girl at a fan event, icon 3",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/7/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-08.png",
+      "title": "推し活をする女の子のアイコン-4",
+      "titleEn": "Girl at a fan event, icon 4",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/8/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-09.png",
+      "title": "推し活をする女の子のアイコン-5",
+      "titleEn": "Girl at a fan event, icon 5",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/9/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-10.png",
+      "title": "推し活をする女の子のアイコン-6",
+      "titleEn": "Girl at a fan event, icon 6",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/10/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-11.png",
+      "title": "推し活をする女の子のアイコン-7",
+      "titleEn": "Girl at a fan event, icon 7",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/11/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
+    {
+      "file": "shigureni-icon-12.png",
+      "title": "推し活をする女の子のアイコン-8",
+      "titleEn": "Girl at a fan event, icon 8",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/icon/12/",
+      "downloaded": "2026-09-24",
+      "note": "Downloaded 2026-09-24 for the first draft of the seat portraits and NO LONGER USED — eight of the nine icons were one character in eight colours, which made the seats indistinguishable. Kept on disk rather than deleted so the decision stays auditable; safe to remove."
+    },
     {
       "file": "example-figure.svg",
       "title": "Built-in placeholder figure",

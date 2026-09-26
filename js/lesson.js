@@ -84,7 +84,7 @@ export async function renderLesson(container, md, { lessonId, onSolved = null } 
           state, hero,
           reveal: p.reveal === 'true',
           showBB: p.showBB !== 'false',
-          avatars: avatarsForSeats(state.seats.length),
+          avatars: avatarsForSeats(state.seats.length, { hero: hero ?? 0 }),
         }))
       } catch (e) {
         fig.innerHTML = `<p class="status bad">Could not build this table: ${esc(e.message)}</p>`

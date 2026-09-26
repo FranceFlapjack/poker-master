@@ -34,7 +34,7 @@ function geometry(n) {
   return { FELT_RX: 240, FELT_RY: 150, SEAT_RX: 309, SEAT_RY: 320 }
 }
 
-const COL_HALF = 46          // half the width of a seat column: illustration 42, two cards 43, plus air
+const COL_HALF = 58          // half the width of a seat column: the hero's picture is the widest thing in it
 const VIEW_PAD = 12
 
 /** The box the drawing actually occupies, so the viewBox can hug it instead of padding empty canvas. */
@@ -55,9 +55,12 @@ const BOARD_CARD_W = 46, BOARD_CARD_H = 64   // the board reads as the shared ha
 
 // A seat is a single centred column: illustration, then name, then stack on one line, then cards.
 // These offsets are from the seat's centre point and are what keeps every seat on the same grid.
-const ILLO = 84                 // illustration box, square
-const BET_INSET = 44            // how far inside the felt a wager sits, the same for every seat
-const Y_ILLO_TOP = -96
+const ILLO = 92                 // illustration box, square
+// How far inside the felt a wager sits. Proportional rather than fixed: a heads-up felt is two thirds
+// the height of a nine-handed one, and a constant inset there pushed the bet in far enough to crowd the
+// pot label now sitting in the middle. Same look at every seat count, same clearance from both edges.
+const betInset = geo => Math.min(44, Math.round(geo.FELT_RY * 0.3))
+const Y_ILLO_TOP = -100        // the picture hangs above the name; ILLO must fit in this gap
 const Y_NAME = 8
 const Y_DETAIL = 25
 const Y_CARDS_TOP = 34
@@ -221,7 +224,8 @@ export function mountTable(host, opts) {
     // the pot. The pill is gone with it: an amount is a number, so it is set bold with a rule under it
     // rather than boxed — the box had a fixed width that "25" rattled around in and "23.7k" filled.
     if (p.committed > 0) {
-      const b = seatPos(k, n, o.hero ?? 0, geo.FELT_RX - BET_INSET, geo.FELT_RY - BET_INSET)
+      const inset = betInset(geo)
+      const b = seatPos(k, n, o.hero ?? 0, geo.FELT_RX - inset, geo.FELT_RY - inset)
       const label = chips(p.committed)
       const w = textWidth(label, 13)
       g.append(text(label, { class: 'bet-t', x: b.x, y: b.y, 'text-anchor': 'middle' }))
