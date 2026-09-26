@@ -7,6 +7,8 @@ import { mountFamily } from './family.js'
 import { visibleParts, groupsOf, toolsOf, flatten, lessonId, lessonPath } from './curriculum.js'
 import { weakSpotReport } from './weak-spots.js'
 import { mascot, catHeadHTML } from './mascot.js'
+import { mountWelcome } from './welcome.js'
+import { pokerScene } from './welcome-scene.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -40,6 +42,8 @@ async function boot() {
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
   progress.onChange(() => renderSidebar())
   window.addEventListener('hashchange', route)
+  // the series welcome, the first time this browser opens the app — a curtain over the app, not a route
+  if (location.hash !== '#/welcome') mountWelcome({ app: 'poker', word: 'Poker', scene: pokerScene })
   window.addEventListener('resize', () => { if (innerWidth > 760) toggleSidebar(false) }) // an `open` left over from the narrow layout is invisible on desktop and must not survive back into it
   route()
 }
@@ -103,6 +107,10 @@ function toggleSidebar(force) {
 }
 
 function route() {
+  if (location.hash === '#/welcome') {
+    history.replaceState(null, '', '#/')
+    mountWelcome({ app: 'poker', word: 'Poker', scene: pokerScene, force: true })
+  }
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)

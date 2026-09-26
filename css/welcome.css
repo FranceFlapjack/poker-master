@@ -1,0 +1,131 @@
+/* The Master series welcome — the screen someone sees the first time they open an app of the series.
+
+   THIS FILE IS IDENTICAL IN EVERY APP OF THE SERIES, like js/family.js and js/welcome.js. What differs
+   from game to game — the word, the colour, the scene behind it — comes in from the app: the colour is
+   the app's own --accent, and the scene is drawn by that app's js/welcome-scene.js. So these tokens live
+   here rather than in tokens.css: they are series decisions, and a comment on one is a diff to all three.
+
+   The shape, the same everywhere:
+
+         P O K E R        the game, in the display face, letter-spaced — mid size
+          MASTER          the series, in the series sans — small, normal weight
+
+   EVERY CLASS HERE IS PREFIXED `wl-`, including the state classes. This file drops into three apps it
+   was not written in, and an unprefixed state class collides: the first version used `.play`, and each
+   app of the series already has a `.play` rule for its Play page — it put that page's margins and grid
+   on the welcome, which is how this was found.
+
+   Full bleed in the game's colour, deeper at the edges. The title lands letter by letter; nothing moves
+   for a reader who has asked the system for reduced motion. */
+
+:root {
+  /* the display face for the game word. Fallbacks first-class: Didot is the look this was drawn in */
+  --wl-display: "Didot", "Didot LT STD", "Bodoni 72", "Bodoni MT", "Playfair Display", "Times New Roman", serif;
+  --wl-ink: #f6f1e7;                               /* warm paper, not white — gentler on the colour */
+  /* scales with width AND height: a phone turned sideways is 375px tall, and a width-only size put the
+     whole title block into the top and bottom seats */
+  --wl-word-size: clamp(34px, min(8.4vw, 10vh), 94px);
+  --wl-word-track: 0.32em;                         /* P O K E R */
+  --wl-master-size: clamp(11px, 1.25vw, 14px);
+  --wl-master-track: 0.62em;
+  /* the sequence */
+  --wl-scene-in: 1100ms;
+  --wl-word-at: 1000ms;
+  --wl-letter-step: 110ms;
+  --wl-master-at: 1850ms;
+  --wl-begin-at: 2450ms;
+  --wl-leave: 650ms;
+}
+
+html.wl-open, html.wl-open body { overflow: hidden; }
+
+.wl {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  color: var(--wl-ink);
+  background:
+    radial-gradient(120% 90% at 50% 42%,
+      color-mix(in srgb, var(--accent), #ffffff 9%) 0%,
+      var(--accent) 50%,
+      color-mix(in srgb, var(--accent), #000000 38%) 100%);
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity var(--wl-leave) ease, transform var(--wl-leave) cubic-bezier(.4, 0, .2, 1);
+}
+.wl.wl-leaving { opacity: 0; transform: scale(1.03); pointer-events: none; }
+
+/* the scene sits behind the title and pushes in slowly, like a camera settling */
+.wl-scene { position: absolute; inset: 0; pointer-events: none; }
+.wl.wl-playing .wl-scene { animation: wl-push var(--wl-scene-in) cubic-bezier(.2, .7, .2, 1) both; }
+/* a vignette over the scene, so the edges fall away and the title is the brightest thing on screen */
+.wl::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(75% 65% at 50% 46%, transparent 45%, color-mix(in srgb, var(--accent), #000000 45%) 100%);
+  opacity: .55;
+}
+
+/* a layer above the vignette and below the title, for anything in a scene that must keep its true
+   colour — Poker's cat sits here, so it matches the cat it hands over to when the welcome lifts */
+.wl-front { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+.wl-center { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px; }
+/* every app's h1 is bold, tracked and uppercased; none of that is wanted here, so it is reset, not relied on */
+.wl-title { margin: 0; font-size: inherit; font-weight: 400; line-height: 1; letter-spacing: normal; text-transform: none; }
+.wl-word {
+  display: block; font-family: var(--wl-display); font-size: var(--wl-word-size); font-weight: 400;
+  letter-spacing: var(--wl-word-track);
+  padding-left: var(--wl-word-track);     /* letter-spacing trails the last letter; this re-centres the word */
+  white-space: nowrap;
+  text-shadow: 0 2px 18px color-mix(in srgb, var(--accent), #000000 55%);
+}
+.wl-word span { display: inline-block; opacity: 0; transform: translateY(.18em); }
+.wl.wl-playing .wl-word span {
+  animation: wl-letter 700ms cubic-bezier(.2, .8, .2, 1) calc(var(--wl-word-at) + var(--i) * var(--wl-letter-step)) both;
+}
+.wl-master {
+  display: block; margin-top: 1.1em;
+  font-family: var(--font-sans); font-size: var(--wl-master-size); font-weight: 500;
+  letter-spacing: var(--wl-master-track); padding-left: var(--wl-master-track);
+  opacity: 0;
+}
+.wl.wl-playing .wl-master { animation: wl-fade 900ms ease var(--wl-master-at) both; }
+.wl-rule { display: block; width: 36px; height: 1px; margin: 1.6em auto 0; background: currentColor; opacity: 0; }
+.wl.wl-playing .wl-rule { animation: wl-rule 900ms ease var(--wl-master-at) both; }
+.wl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wl-begin {
+  margin-top: 34px; padding: 11px 30px;
+  font: inherit; font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--wl-ink); background: transparent; border: 1px solid color-mix(in srgb, var(--wl-ink), transparent 45%);
+  cursor: pointer; opacity: 0; visibility: hidden;
+  transition: background 160ms, color 160ms, border-color 160ms;
+}
+.wl.wl-playing .wl-begin { animation: wl-rise 700ms cubic-bezier(.2, .8, .2, 1) var(--wl-begin-at) both; visibility: visible; }
+.wl-begin:hover, .wl-begin:focus-visible { background: var(--wl-ink); color: var(--accent); border-color: var(--wl-ink); outline: none; }
+
+.wl-skip {
+  position: absolute; z-index: 3; top: max(14px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+  padding: 6px 4px; border: 0; background: none; cursor: pointer;
+  font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--wl-ink), transparent 40%);
+}
+.wl-skip:hover, .wl-skip:focus-visible { color: var(--wl-ink); outline: none; }
+
+@keyframes wl-push { from { transform: scale(1.07); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes wl-letter { from { opacity: 0; transform: translateY(.18em) } to { opacity: 1; transform: translateY(0) } }
+@keyframes wl-fade { from { opacity: 0 } to { opacity: .78 } }
+@keyframes wl-rule { from { opacity: 0; width: 0 } to { opacity: .35; width: 36px } }
+@keyframes wl-rise { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+
+/* reduced motion: the final frame, arrived at with a plain fade — a still, not a sequence */
+@media (prefers-reduced-motion: reduce) {
+  .wl.wl-playing .wl-scene, .wl.wl-playing .wl-word span, .wl.wl-playing .wl-master, .wl.wl-playing .wl-rule, .wl.wl-playing .wl-begin { animation: wl-still 400ms ease both; }
+  /* a one-sided keyframe ends on the element's own value, so every final value is stated here — left to
+     the base rules, the letters would fade in to their hidden starting opacity and never appear */
+  .wl.wl-playing .wl-word span { opacity: 1; transform: none; }
+  .wl.wl-playing .wl-master { opacity: .78; }
+  .wl.wl-playing .wl-rule { opacity: .35; }
+  .wl.wl-playing .wl-begin { opacity: 1; }
+  .wl.wl-leaving { transform: none; }
+  @keyframes wl-still { from { opacity: 0 } }
+}
