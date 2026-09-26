@@ -36,6 +36,11 @@ live under `/poker-master/`).
   Links are `../<app>/` on GitHub Pages and the `dev` port on localhost (chess 8000, go 8001, poker 8002).
   **Copy this file into `chess-master` and `go-master` only once Poker Master is published**, or the Poker
   link is a 404 on the live site — the same gate the owner applied when Go Master was added.
+- **The Master series welcome** (`js/welcome.js` + `css/welcome.css`): the first-visit screen — the
+  game's word in heavy type fitted edge to edge, MASTER small beneath it, in the app's `--accent`; scroll
+  down to enter. Shared exactly like `family.js`: identical in every app, knows nothing about any one
+  game, and is copied to the siblings on the same gate. Shown once per app (`<app>-master.welcomed`);
+  `#/welcome` shows it again.
 
 ## Run
 

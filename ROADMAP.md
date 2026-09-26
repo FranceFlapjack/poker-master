@@ -25,7 +25,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | ✅ done 2026-09-26 |
-| **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
+| **7** | Publish to GitHub Pages → **then** copy `js/family.js`, `js/welcome.js` and `css/welcome.css` into `chess-master` and `go-master` | |
 | | ↳ `dev-table.html` and the nine unused first-draft icons were removed 2026-09-26, so nothing un-linked goes live. | ✅ |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
 
@@ -600,11 +600,43 @@ reader to the next page and every table's resize observer leaked. Lessons now un
 free for commercial use. Poker Master earns nothing, so the ceiling does not apply as things stand; if
 that ever changes, five licences are needed.
 
+## The series welcome — 2026-09-26
+
+The owner asked for a first-visit screen for the whole series: full screen in the game's colour, the
+game's word large and MASTER small beneath it, the same in every app.
+
+**Draft 1** set POKER MASTER over a poker table with the cast of illustrations seated round it. The
+owner's comment: no table and no icons — *plain, bold type fitted tight to the screen, scroll down to
+enter.* **Draft 2** is exactly that, and the scene module was deleted rather than kept switched off.
+
+- **Shared, like `family.js`.** `js/welcome.js` and `css/welcome.css` know nothing about poker: the app
+  passes its id and word, and the colour is the app's own `--accent`. Every class and state class is
+  `wl-` prefixed — Draft 1's `.play` state collided with each app's Play page rule.
+- **The word is measured, not guessed.** It is set at a probe size, measured, and scaled so it runs
+  edge to edge at `--wl-margin` — "GO" and "POKER" need very different sizes to fill the same width.
+  On a short screen height wins: the word is held to the room the title has once the scroll cue has
+  taken its place in the column (the cue used to be laid over the bottom, and on a phone turned
+  sideways MASTER landed on it).
+- **Scroll to enter, and the curtain follows the gesture** — wheel, trackpad or finger. Past a quarter
+  of the screen, or flicked, it goes; let go short of that and it settles back. The cue is a button,
+  and ArrowDown, PageDown, Space, Enter and Esc all enter, so it never traps anyone.
+- **Once per app**, flag `<app>-master.welcomed`. On GitHub Pages the three apps share one origin, so a
+  series-wide key would spend the welcome on whichever game someone opened first. `#/welcome` shows it
+  again.
+- **Reduced motion** gets the final frame with a plain fade.
+
+Verified by running it at 360×740, 375×812, 430×932, 667×375, 812×375, 768×1024, 1024×768 and 1440×900:
+the word's ink sits exactly at the margin on both sides at every size, and word, MASTER and cue never
+overlap. Keyboard, the cue button, a slow drag (settles back) and a flick (enters) each checked; the
+reduced-motion rules checked by applying them directly, since the Browser pane cannot emulate the query.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages
   first, *then* copy `js/family.js` into `chess-master` and `go-master`, or the Poker link 404s on the
-  live siblings. (`dev-table.html` is gone: the table is checked by `scripts/render-table.mjs` and by
+  live siblings. Copy `js/welcome.js` and `css/welcome.css` at the same time, and in each sibling add
+  the stylesheet link and one call in its boot — `mountWelcome({ app: 'chess', word: 'Chess' })` — plus
+  the `#/welcome` route; see "The series welcome" above. (`dev-table.html` is gone: the table is checked by `scripts/render-table.mjs` and by
   the layout audit recorded under Draft 4, not by a page that would ship with no link to it.)
 - **Phase 8** — the manual hand builder and per-decision review, deferred by the owner.
 - **The branch.** Everything is on `phase-1-engine`, ~30 commits, never merged. The name stopped
