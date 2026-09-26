@@ -53,6 +53,10 @@ hint: You are putting in 300 to contest 1,100 in total.
 why: 300 divided by 1,100 is 27.3%. Anything better than that and calling gains chips — which a lot of hands manage against a range that wide.
 ```
 
+```tip
+In the big blind you only pay the **difference**. Facing a raise to 500 at 100/200 you call 300 into 800 — you need just **27.3%**.
+```
+
 ## The catch
 
 If the price were the whole story the big blind would call with everything. It is not, because of the
@@ -95,6 +99,7 @@ ask: Same spot, and you hold seven-six of hearts. Call 300 or fold?
 options: Call 300 | Fold | Raise to 1500
 answer: Call 300
 why: You need 27.3% and a suited connector clears that comfortably against a button's opening range. It is also exactly the shape that plays well out of position — it flops a draw or a pair or nothing at all, and none of those are hard decisions. Compare an offsuit ace, which flops a weak pair and then has to guess for three streets.
+hint: You need 27.3%. Then ask the second question: how easy is this hand to play from the big blind, acting first on every street after this one?
 ```
 
 +++ Read more: the small blind is a different problem

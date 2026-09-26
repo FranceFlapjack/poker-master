@@ -40,6 +40,13 @@ for (const lesson of allLessons(curriculum)) {
   else if (meta.id !== lesson.slug) bad(where, `frontmatter id "${meta.id}" does not match the file name "${lesson.slug}"`)
   if (!meta.title) bad(where, 'frontmatter has no title')
   if (!meta.track) bad(where, 'frontmatter has no track')
+  // tips are said by the cat, in a bubble about 300px wide: keep them to a sentence or two
+  const { body } = parseFrontmatter(readFileSync(file, 'utf8'))
+  for (const m of body.matchAll(/```tip\n([\s\S]*?)```/g)) {
+    const t = m[1].replace(/^title:.*\n/i, '').trim()
+    if (!t) bad(where, 'an empty ```tip block')
+    else if (t.length > 220) bad(where, `a tip of ${t.length} characters — the cat's bubble reads well up to about 220: "${t.slice(0, 60)}…"`)
+  }
   const sources = Array.isArray(meta.sources) ? meta.sources.filter(x => x.trim()) : []
   if (!sources.length) bad(where, 'frontmatter has no `sources:` — every lesson must say where it got its material')
 }

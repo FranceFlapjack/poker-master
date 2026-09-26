@@ -33,6 +33,10 @@ So the width of an opening range tracks the number of seats behind almost mechan
 
 The button opens four times as many hands as the first seat. Same deck, same cards, four times the range.
 
+```tip
+Before you look at your cards, **count the players still to act**. Eight behind and two behind are different questions about the same hand.
+```
+
 ## What happens after the flop
 
 The second reason is bigger and less obvious. From the flop onward, **the button acts last on every
@@ -58,6 +62,7 @@ ask: Nine-handed. You are first to act before the flop, with eight players behin
 options: Fold | Call 200 | Raise to 500
 answer: Fold
 why: Ace-jack offsuit is comfortably above average as a pair of cards, and still a fold here. Eight players can beat it, and the ones who play back at you mostly have it dominated — ace-queen and ace-king both leave you drawing thin. It is also offsuit, so it flops well far less often than the picture suggests.
+hint: Count the players still to act behind you — and think about which hands they would play back at you with.
 ```
 
 ```try
@@ -74,6 +79,7 @@ options: Fold | Call 200 | Raise to 500
 answer: Raise to 500
 why: Same hand, opposite answer. Only the two blinds are left, both of whom will be playing the rest of the hand out of position against you, and ace-jack is well ahead of two random hands. Raising also wins the blinds outright a good share of the time — which is most of what a button raise is for.
 success: Right — and this pair of spots is the whole lesson. Nothing about the cards changed.
+hint: How many players are left to beat now, and who will act last on every street after the flop?
 ```
 
 ```try

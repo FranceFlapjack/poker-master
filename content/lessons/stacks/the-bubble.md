@@ -43,6 +43,10 @@ is not pressuring anyone because they are brave or because it feels strong. They
 identical call is genuinely cheaper for them than for the player they are pressuring — a hand the 15,000
 stack has to fold is a hand the leader can profitably take on.
 
+```tip
+On the bubble the **biggest stack pays the smallest premium** for the same call. That is the arithmetic behind bubble pressure, not bravado.
+```
+
 ## The other way to read the same number
 
 Hold the *amount at risk* constant, as above, and the big stack pays least.
@@ -141,6 +145,7 @@ options: Fold | Call all in | Raise
 answer: Call all in
 why: Identical hand, identical pot, opposite answer. You need 52.4% rather than 58.8%, and losing leaves you with 30,000 and the chip lead intact rather than on the rail. This is the asymmetry from the top of the lesson doing its work: the call that is too expensive for the 15,000 stack is a routine one for you.
 success: Right — and note that nothing about the cards, the pot or the odds changed between these two spots. Only the stack behind them did.
+hint: Same pot and the same price as the drill above. What changed is whose stack is at risk — look back at what each caller needs.
 ```
 
 +++ Read more: what ICM does not know

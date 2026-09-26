@@ -69,6 +69,10 @@ names: Ana, You
 caption: Checked down to the river, and now a pot-sized bet of 200 into 200. You have ace-high. The bluff needs to work 50% of the time; you need 33.3% to call.
 ```
 
+```tip
+MDF is about the **bet size**, never your hand. Defend with the top of your range and let the bottom of it go.
+```
+
 ## "They might fold" is not a reason
 
 Here is the number that kills more stacks than any other missing one.

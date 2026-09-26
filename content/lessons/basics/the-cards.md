@@ -103,6 +103,10 @@ why: The board is a royal flush and it belongs to both players equally. Neither 
 success: Right — the board played, and the pot is chopped.
 ```
 
+```tip
+When two hands look close, **count five cards**, not seven. Whatever is left over does not play — not even an ace.
+```
+
 +++ Read more: say your hand out loud as five cards
 
 New players lose pots they think they won, almost always for the same reason: they count six cards, or

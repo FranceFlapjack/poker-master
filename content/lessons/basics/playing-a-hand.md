@@ -126,6 +126,10 @@ why: The raise from 100 to 300 was an increase of 200, so the next must add at l
 success: Right. Remember it as "match the size of the last raise", not "beat the last number".
 ```
 
+```tip
+A raise must go up by at least as much as the last raise did. Someone bets 100 and another raises to 300 — the next raise has to be to **500** or more.
+```
+
 +++ Read more: how much to bet
 
 The rules barely constrain sizing — in no-limit you may bet anything from one big blind to your whole

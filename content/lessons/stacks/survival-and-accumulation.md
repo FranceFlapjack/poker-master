@@ -54,6 +54,10 @@ You did that.
 Both tables are the same model saying the same thing. Risk is expensive **and** waiting is expensive.
 Anyone who tells you tournaments are about survival has read the first table and not the second.
 
+```tip
+Folding is not free. Blinding down from 10,000 to 6,000 costs about **a fifth of your money** without losing a single pot.
+```
+
 ## Where the actual answer lives
 
 The resolution is not somewhere between the two. It is in a distinction the model makes very sharply:
@@ -116,6 +120,7 @@ ask: Twelve big blinds, five left, folded to you on the button. King-nine offsui
 options: Fold | Call 600 | Raise all in
 answer: Raise all in
 why: Two players behind and 1,400 already in the middle — more than two big blinds before anybody has acted. King-nine is not a strong hand, but you are not asking it to win a showdown — you are asking it to be good enough for the times you get called, which is a minority of the time. Calling 600 is the worst of the three: it puts in chips with no chance of winning the pot immediately, and leaves you playing a flop with eleven big blinds and no way to win without showing the best hand.
+hint: Most of a shove is paid for by the times nobody calls. How many players are left who could, and what is already in the middle?
 ```
 
 ```try
@@ -133,6 +138,7 @@ options: Fold | Call all in | Raise
 answer: Fold
 why: Identical cards, opposite answer, and the difference is that nobody can fold any more. Shoving king-nine was fine because most of its value came from everyone passing; calling with it wins only when it holds up at showdown against a range that beats it. And busting costs you far more than doubling gains — this is precisely the call the premium is there to stop you making.
 success: That pair of spots is the lesson. The hand did not change. The way the hand can win did.
+hint: Nobody can fold any more, so the hand has to win a showdown. How does it do against a range that shoved — and what does losing cost you here?
 ```
 
 +++ Read more: it is not the same for everybody

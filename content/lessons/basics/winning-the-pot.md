@@ -53,6 +53,10 @@ success: Well read. This is exactly where a beginner announces a split pot and i
 At a live table you never have to show a losing hand — you can muck quietly. But to **win** the pot your
 cards must be face up. Dealers award pots to visible cards, not announcements.
 
+```tip
+Read the **board on its own** before anyone's cards. If it is already the best five for everybody, the pot is split, whatever anyone holds.
+```
+
 ## All in, and side pots
 
 Sooner or later somebody bets more than you have. You are not forced out: you put in everything left and

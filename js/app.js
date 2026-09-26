@@ -6,6 +6,7 @@ import { sound } from './sound.js'
 import { mountFamily } from './family.js'
 import { visibleParts, groupsOf, toolsOf, flatten, lessonId, lessonPath } from './curriculum.js'
 import { weakSpotReport } from './weak-spots.js'
+import { mascot, catHeadHTML } from './mascot.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -27,6 +28,12 @@ async function boot() {
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
   mountFamily('poker')
+  // the cat's own switch, beside the sound: hints and tips go inline when it is off
+  const cat = $('#cat')
+  cat.innerHTML = catHeadHTML(20)
+  const paintCat = () => { cat.setAttribute('aria-pressed', String(mascot.enabled)); cat.title = mascot.enabled ? 'Tips from the cat: on' : 'Tips from the cat: off' }
+  paintCat(); cat.addEventListener('click', () => { mascot.enabled = !mascot.enabled })
+  document.addEventListener('mascot-toggle', paintCat)
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
@@ -99,6 +106,7 @@ function route() {
   const main = $('#main')
   toggleSidebar(false)
   if (unmountPage) { try { unmountPage() } catch (_) {} ; unmountPage = null }
+  mascot.hide()   // a hint belongs to the page it was given on
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
   const t = hash.match(/^#\/tools\/([\w-]+)/)
@@ -218,7 +226,10 @@ async function showLesson(main, dir, slug) {
   const page = document.createElement('div'); page.className = 'page'
   main.innerHTML = ''; main.append(page)
   if (unsubLesson) { unsubLesson(); unsubLesson = null }
-  const { meta, drillIds } = await renderLesson(page, md, { lessonId: id, onSolved: () => checkAuto() })
+  const { meta, drillIds, mounted } = await renderLesson(page, md, { lessonId: id, onSolved: () => checkAuto() })
+  // Leaving a lesson tears down what it mounted: tables hold resize observers, tips hold intersection
+  // observers, and neither should outlive the page.
+  unmountPage = () => { for (const x of mounted) if (x && typeof x.destroy === 'function') x.destroy() }
   document.title = `${meta.title || slug} · Poker Master`
   progress.setLastLesson(id)
 

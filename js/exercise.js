@@ -19,6 +19,7 @@ import { spotFromParams, solveDrill } from './spot.js'
 import { progress } from './progress.js'
 import { sound } from './sound.js'
 import { avatarsForSeats } from './avatars.js'
+import { mascot } from './mascot.js'
 
 
 export function mountExercise(container, p, ctx = {}) {
@@ -112,13 +113,16 @@ export function mountExercise(container, p, ctx = {}) {
       statusEl.className = 'status good'
       showWhy()
       optionsEl.querySelectorAll('button').forEach(b => { b.disabled = true })
+      mascot.hide(container)
       if (ctx.onSolved) ctx.onSolved(id)
     } else {
       btn.classList.add('wrong')
       btn.disabled = true
       statusEl.textContent = attempts === 1 ? 'Not that one. Try again.' : 'Still not it.'
       statusEl.className = 'status bad'
-      if (attempts >= 2) showHint()
+      // The cat offers the hint on the FIRST miss — the moment it helps. Inline, it used to wait for a
+      // second wrong answer, by which time half the options were already crossed out.
+      showHint()
     }
   }
 
@@ -130,10 +134,13 @@ export function mountExercise(container, p, ctx = {}) {
   }
   function showHint() {
     if (!p.hint) return
+    // the cat says it; if the cat is switched off, the hint goes inline as it always did
+    if (mascot.say({ kind: 'hint', text: p.hint, owner: container })) return
     whyEl.innerHTML = `<p>${esc(p.hint)}</p>`
     whyEl.hidden = false
   }
   function reset() {
+    mascot.hide(container)
     attempts = 0
     container.classList.remove('solved')
     statusEl.textContent = ''; statusEl.className = 'status'

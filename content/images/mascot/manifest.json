@@ -1,0 +1,33 @@
+{
+  "note": "Every image file in this folder needs a row here. Copyright stays with whoever made the artwork, and this file is where that is recorded. The licence rules are summarised in ../avatars/README.md — the same terms apply.",
+  "licences": {
+    "shigureni": {
+      "name": "shigureni free illust",
+      "site": "https://shigureni.com",
+      "terms": "https://shigureni.com/terms",
+      "termsRead": "2026-09-24",
+      "holder": "shigureni",
+      "summary": "Free for use in apps and websites. Permitted editing includes resizing, cropping, recolouring, flipping, adding text, simple compositing and animation — a speech bubble beside the cat and the pop-up motion are both within that. Creating another illustration from theirs by any means, including hand-drawing and tracing, is forbidden, as is any generative-AI use: the cat is only ever this file, cropped and scaled, and the small cat on inline tips is a crop of it, never a redraw.",
+      "attributionRequired": false,
+      "commercialUse": "With this file the app uses TEN shigureni illustrations (nine seats and this mascot), above the 5 free for commercial use. Poker Master is a free site with no revenue, so the ceiling does not apply as things stand; if that changes, five additional licences are needed. See ../avatars/README.md."
+    }
+  },
+  "images": [
+    {
+      "file": "shigureni-illust-82.webp",
+      "title": "すぐ箱に吸い込まれてしまう猫のイラスト",
+      "titleEn": "A cat that gets sucked straight into any box",
+      "licence": "shigureni",
+      "source": "https://shigureni.com/illust/82",
+      "downloaded": "2026-09-26",
+      "chosenBy": "the owner, who supplied this exact image as the mascot",
+      "ink": [
+        148,
+        248,
+        707,
+        535
+      ],
+      "note": "The hint and tip mascot (js/mascot.js). Ink box measured by alpha across every pixel; the head crop used for inline tips is [345, 240, 215, 170]."
+    }
+  ]
+}

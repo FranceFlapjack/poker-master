@@ -48,6 +48,10 @@ That curve has a tidy consequence. Take any stack at that table and double it:
 Twice the chips is worth about **1.4 times the money**, wherever you start from. Which is the cleanest
 way to see why a 50/50 for your stack is a losing bet: you are risking one unit to win 0.4 of one.
 
+```tip
+Doubling your stack multiplies your money by about **1.4**, wherever you start. That is why a coin flip for everything is a losing bet in money.
+```
+
 ## The same thing at a real table
 
 ```table

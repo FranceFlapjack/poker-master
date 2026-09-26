@@ -26,6 +26,10 @@ So tournament players do not count chips. They count **big blinds** — your sta
 One stack, three different games. At 125bb you can call a raise and play three streets after the flop. At
 8.3bb you are shoving or folding before the flop, and there is no third street to reach.
 
+```tip
+Say your stack in **big blinds**, never in chips. Twenty-five thousand tells you nothing until you know the blind.
+```
+
 ## The other number: what an orbit costs
 
 Depth tells you what you can do in a hand. The cost of an **orbit** — one full trip of the button around

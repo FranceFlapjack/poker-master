@@ -102,6 +102,10 @@ why: You may check, because your blind already matches, and you may raise, becau
 success: Right — this is the big blind's option, the one seat that sees a flop free when nobody raises.
 ```
 
+```tip
+Lost track of whose turn it is? Find the button. Before the flop, action starts **left of the big blind**; after it, **left of the button**.
+```
+
 +++ Read more: the blinds are a tax you pay in turn
 
 Over one orbit of the table every player posts both blinds exactly once, so nobody is singled out. But it

@@ -43,6 +43,10 @@ by feel rather than working out each time. Against a pot of 100:
 Read it in both directions. Facing a bet, it tells you the bar. Making one, it tells you what bar you are
 setting — a quarter-pot bet lets everyone in the world continue, and a pot-sized bet demands a third.
 
+```tip
+Learn three prices and fill in the rest: half pot needs **25%**, pot **33%**, twice pot **40%**.
+```
+
 ## Will you get there?
 
 Pot odds tell you the bar. **Outs** are how you work out whether you clear it. An out is a card that makes

@@ -38,6 +38,10 @@ That reframing matters more than it looks. "I had the right price" is not a reas
 call. It is a reason to be *indifferent*. The money is in the gap between your equity and the bar, and
 close calls have almost no gap.
 
+```tip
+At exactly the required equity a call is worth **zero**. "I had the odds" is a reason to be indifferent, not pleased.
+```
+
 ## The EV of a shove
 
 A shove is a better bet than a call because it has two ways to win: they fold, or they call and you win
@@ -122,6 +126,7 @@ options: Fold | Call 400 | Raise all in
 answer: Raise all in
 why: Two ways to win against one. The big blind folds often enough on its own to make this profitable, and when they do call, nines are rarely in terrible shape against a calling range. Calling 400 gets you the worst of it: no chance of winning immediately, and a flop played first-to-act with fourteen big blinds behind. The dead money from the antes is what tips it: 1,800 sitting there, and 1,300 of it is not yours — over a big blind and a half, won without a showdown every time everyone passes.
 success: Right. And notice the EV came from the folds, not from the nines.
+hint: Count the ways each option can win before you count your cards. How many does calling have, and how many does a shove have?
 ```
 
 +++ Read more: EV is not a promise

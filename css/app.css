@@ -143,7 +143,7 @@ button { font: inherit; color: inherit; }
 .lesson-link.started .tick { border-color: var(--accent); background: linear-gradient(90deg, var(--accent) 50%, transparent 50%); }
 .lesson-link .soon { margin-left: auto; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
 .sidebar-footer { padding: var(--s-4) var(--s-5) var(--s-5); border-top: 1px solid var(--line); }
-.sidebar-tools { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); margin-top: var(--s-3); }
+.sidebar-tools { display: flex; align-items: center; justify-content: flex-start; gap: var(--s-2); margin-top: var(--s-3); }
 
 .main { padding: var(--s-8) var(--s-7); min-width: 0; }
 .page { max-width: var(--page-w); margin: 0; }
@@ -612,3 +612,72 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .icm-table .gap { text-align: right; color: var(--ink-3); white-space: nowrap; }
 .icm-table .gap.up { color: var(--good); }
 .icm-table .gap.down { color: var(--bad); }
+
+
+/* ---------- the cat in the box (js/mascot.js) ---------- */
+/* Fixed to the bottom-right corner and parked below the screen edge until it has something to say; then
+   it pops up in its box, and the bubble follows a beat later from the tail. */
+.mascot {
+  position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: 0; z-index: 60;
+  display: flex; flex-direction: column; align-items: flex-end;
+  pointer-events: none;
+  transform: translateY(calc(100% + 12px));
+  transition: transform 440ms cubic-bezier(.2, 1.25, .35, 1);
+}
+.mascot.open { transform: translateY(0); }
+.mascot > * { pointer-events: auto; }
+.mascot[hidden] { display: none; }
+
+.mascot-bubble {
+  position: relative; box-sizing: border-box;
+  width: max-content; max-width: min(300px, calc(100vw - 32px));
+  padding: 12px 34px 13px 16px;
+  margin: 0 calc(var(--mascot-cat-w) * 0.08) calc(var(--mascot-tail) * 1px + 4px) 0;
+  transform-origin: 62% 100%; transform: scale(.55); opacity: 0;
+  transition: transform 280ms 200ms cubic-bezier(.2, 1.4, .4, 1), opacity 160ms 200ms;
+}
+.mascot.open .mascot-bubble { transform: scale(1); opacity: 1; }
+.mascot-outline { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.mascot-outline path {
+  fill: var(--mascot-paper); stroke: var(--mascot-ink); stroke-width: calc(var(--mascot-stroke) * 1px);
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.mascot-label, .mascot-text, .mascot-close { position: relative; }
+.mascot-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; color: var(--mascot-tip); }
+.mascot[data-kind="hint"] .mascot-label { color: var(--mascot-hint); }
+.mascot-text { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink); }
+.mascot-text b { font-weight: 700; }
+.mascot-close {
+  position: absolute; top: 5px; right: 7px; width: 24px; height: 24px; padding: 0;
+  border: 0; background: none; color: var(--ink-3); font-size: 19px; line-height: 1; cursor: pointer;
+}
+.mascot-close:hover { color: var(--ink); }
+.mascot-cat { display: block; width: var(--mascot-cat-w); padding: 0; margin: 0 0 -3px; border: 0; background: none; cursor: pointer; }
+.mascot-cat svg { display: block; width: 100%; height: auto; }
+
+@media (max-width: 560px) {
+  .mascot { right: max(10px, env(safe-area-inset-right)); }
+  .mascot-cat { width: var(--mascot-cat-w-phone); }
+  .mascot-bubble { max-width: calc(100vw - 20px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mascot { transform: none; opacity: 0; transition: opacity 160ms; }
+  .mascot.open { opacity: 1; }
+  .mascot-bubble { transform: none; transition: opacity 160ms; }
+}
+
+/* a tip tucked into a lesson: a small cat and a label in the text; the cat in the corner delivers it */
+.prose .tip { margin: var(--s-4) 0; }
+.prose .tip-cue {
+  display: inline-flex; align-items: center; gap: 9px; padding: 3px 12px 3px 4px;
+  border: 1px solid var(--line-2); border-radius: 999px; background: var(--bg); cursor: pointer;
+  font: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2);
+}
+.prose .tip-cue:hover { border-color: var(--accent); color: var(--accent); }
+.prose .tip-cat { display: block; }
+.prose .tip-text { margin: var(--s-2) 0 0; padding-left: var(--s-3); border-left: 2px solid var(--line-2); font-size: var(--fs-1); color: var(--ink-2); }
+
+/* the switch for the cat, beside the mute button */
+.icon-btn.cat-toggle { width: 32px; }
+.icon-btn.cat-toggle .tip-cat { width: 24px; height: auto; }
+.icon-btn.cat-toggle[aria-pressed="false"] { opacity: 0.4; }

@@ -87,6 +87,10 @@ hint: The name is the answer. Raise FIRST IN.
 why: Just that one spot. Facing a raise, facing a limp, and everything after the flop are separate questions, and a chart that claims to answer them all is answering none of them properly.
 ```
 
+```tip
+Treat a chart as a **default**, and leave it only for a reason you could say out loud at the table.
+```
+
 +++ Read more: why a simple chart can beat a better one
 
 There is a real argument for using a simplified chart even when a more accurate one exists.

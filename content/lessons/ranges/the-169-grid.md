@@ -57,6 +57,10 @@ hint: Suited means both cards share one of four suits. Offsuit means they do not
 why: Four ways to be suited against twelve ways not to be. Every offsuit cell on the grid is three times the volume of the suited cell above it, which the equal squares hide completely.
 ```
 
+```tip
+The squares are equal, the hands are not: an offsuit square holds **12** hands, a suited one **4**, a pair **6**.
+```
+
 ## Card removal
 
 The counts above assume you know nothing. The moment cards are face up, they change.

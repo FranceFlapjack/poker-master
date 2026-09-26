@@ -555,6 +555,42 @@ Two harness bugs were found on the way and are worth remembering: `getBBox` on a
 in that svg's own viewBox, and a board passed to a preflop spot is not on the table yet. Both made
 checks pass or fail for reasons that had nothing to do with the layout.
 
+### The cat in the box — hints and tips, 2026-09-26
+
+The owner's request: tips in some lessons, and a hint when you answer wrong, delivered by a mascot — the
+cat-in-a-box illustration they supplied — popping up in a corner of the screen with a speech bubble drawn
+in the same line as the cat.
+
+- **The artwork** is shigureni illust/82, *すぐ箱に吸い込まれてしまう猫* (a cat that gets sucked
+  straight into any box), the exact image the owner sent, recorded in
+  `content/images/mascot/manifest.json`. Their terms permit adding text, compositing and animation — a
+  bubble and a pop-up are both within that — and forbid redrawing their character by any means. So the
+  cat is only ever the file itself, cropped to its measured ink and scaled; the small cat on an inline tip
+  is a crop of the same file.
+- **The bubble is ours**, a generic speech bubble drawn to match: pure black like the artwork's lines,
+  the stroke weight those lines have at the size the cat is shown, rounded ends, and one short break in
+  the outline near the top-left — the broken-line habit of shigureni's drawings. It is sized to its text
+  and its tail is aimed at the cat's head.
+- **Hints** come on the FIRST wrong answer (inline, they used to wait for the second, by which time half
+  the options were struck out). A correct answer or a reset sends the cat back into the box.
+- **Tips** are ```tip fences, one per lesson, placed at the END of a section as a recap — never before
+  the text that establishes the point. The first placement put two of them ahead of their own
+  derivation (one gave away the 27.3% a paragraph early) and one echoed the bold line directly under it;
+  they were moved. Every tip restates its lesson's own material; the one that states a rule (the minimum
+  re-raise) was confirmed by the engine first. A tip never interrupts a hint.
+- **It can be switched off** from the sidebar, beside the sound. Off, hints and tips appear inline
+  instead, so nothing is lost.
+
+Enforced from now on: `verify-drills` requires a `hint:` on every drill (the seven judgement drills that
+had none now do), and `check-content` keeps tips short enough to read in the bubble.
+
+Found while testing it: lessons never tore down what they mounted, so a hint would have followed the
+reader to the next page and every table's resize observer leaked. Lessons now unmount like tools do.
+
+**The licence count.** With the cat, the app uses ten shigureni illustrations, above the five that are
+free for commercial use. Poker Master earns nothing, so the ceiling does not apply as things stand; if
+that ever changes, five licences are needed.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages

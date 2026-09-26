@@ -89,6 +89,10 @@ for (const lesson of allLessons(curriculum)) {
     fences(body, ['try']).forEach((f, i) => {
       const where = `${lesson.dir}/${lesson.slug} try#${i}`
       const p = parseParams(f.text)
+      // The cat in the corner says the hint on the first wrong answer. A drill without one leaves it
+      // with nothing to say at exactly the moment it is meant to help.
+      if (!p.hint || !String(p.hint).trim()) bad(where, 'every drill needs a `hint:` — the cat says it on the first wrong answer')
+      else if (String(p.hint).length > 240) bad(where, `the hint is ${String(p.hint).length} characters; the cat's bubble reads well up to about 240`)
       const anteBad = anteProblem(p)
       if (anteBad) bad(where, anteBad)
       const kind = p.type || 'action'
