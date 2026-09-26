@@ -133,7 +133,7 @@
           "slug": "odds",
           "title": "Pot odds & equity",
           "ready": true,
-          "blurb": "The price, your outs, and how a hand runs against a range."
+          "blurb": "Stack depth, the price, your outs, and how a hand runs against a range."
         },
         {
           "slug": "icm",

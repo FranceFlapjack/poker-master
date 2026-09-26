@@ -376,7 +376,29 @@ drilled anything should see the course, not an empty widget.
 
 Verified by running it in all three states, with progress backed up and restored afterwards.
 
-**Still to do in Phase 6:** the live MTT utilities (shape decision outstanding) and polish. The weak-spot report now has
+### Live MTT utilities — folded in, not a sixth tool, 2026-09-25
+
+**The decision was where they live, not whether they work.** They are now the first panel of
+`#/tools/odds` — *At the table*: stack depth in big blinds, what an orbit costs, how many laps you have
+left folding every hand, and the effective stack against one opponent.
+
+Not a separate page, for a reason worth keeping: counting in big blinds is one division. What earns it a
+panel is sitting *next to the price*, because depth decides whether a price is even the right question —
+under ten big blinds there is no call to price, only a shove or a fold. The band readout says which part
+of the game you are in and links to the tool that covers it. A sixth route would have been a sixth thing
+to maintain for one division.
+
+It handles both ante styles, because the engine does: every player anteing costs `sb + bb + n × ante` a
+lap, while one big-blind ante for the table costs `sb + bb + ante`. Same total contributed to pots,
+different amount out of *your* stack per lap — 7,200 against 4,800 at level 14 — which is the part that
+actually decides how long you can wait.
+
+**Checked against the lessons rather than in isolation**: the panel reproduces every figure in
+`counting-in-big-blinds` exactly — 8.3bb and 3.5 laps at 1,500/3,000 with a 300 ante, 125bb and 83.3 laps
+at 100/200, 2,400 a lap at 500/1,000. The tool and the lesson cannot drift because both do the division
+the same way.
+
+**Phase 6 is complete** apart from final polish. The weak-spot report now has
 `pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as
 separate readouts is an open decision — mixing them may just surface "you are worst at whatever you
 drilled least".

@@ -1,15 +1,22 @@
-// Pot odds & equity — the sandbox. Three questions a player actually asks at the table:
+// Pot odds & equity — the sandbox. Four questions a player actually asks at the table, in the order they
+// actually ask them:
 //
+//   how deep am I?                stack and blinds in, big blinds and orbits out
 //   what price am I getting?      pot and bet in, required equity out
 //   will I get there?             outs in, exact chance out — and what the shortcut would have told you
 //   how does my hand do?          cards in, equity out, against a hand or a whole range
 //
 // Every number here comes from js/engine/, so the sandbox and the lessons cannot disagree.
+//
+// The stack panel is FIRST and it is deliberately not its own page. Counting in big blinds is one
+// division; what makes it worth a panel is sitting next to the price, because depth is what decides
+// whether a price is even the right question — under ten big blinds there is no call to price, only a
+// shove or a fold.
 
 import { parseCards, cardsGlyph } from '../engine/cards.js'
 import { parseRange, countCombos } from '../engine/ranges.js'
 import { equityExact, equityMC, runoutCount } from '../engine/equity.js'
-import { potOdds, requiredEquity, outsEquity, ruleOf4And2, outsError, mdf, alpha, evCall } from '../engine/ev.js'
+import { potOdds, requiredEquity, outsEquity, ruleOf4And2, outsError, mdf, alpha, evCall, inBB } from '../engine/ev.js'
 
 const pct = (x, dp = 1) => `${(x * 100).toFixed(dp)}%`
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -21,8 +28,28 @@ export function mountOdds(main) {
       <header class="hero">
         <span class="eyebrow">Tournament · tool</span>
         <h1>Pot odds &amp; equity</h1>
-        <p>Three questions, answered by the same engine the lessons and drills use. Nothing here is a rule of thumb unless it says so.</p>
+        <p>Four questions, answered by the same engine the lessons and drills use. Nothing here is a rule of thumb unless it says so.</p>
       </header>
+
+      <section class="panel">
+        <h2>At the table</h2>
+        <div class="fields">
+          <label>Your stack<input id="stack" type="number" min="0" step="100" value="25000"></label>
+          <label>Small blind<input id="sb" type="number" min="0" step="50" value="500"></label>
+          <label>Big blind<input id="bb" type="number" min="1" step="100" value="1000"></label>
+          <label>Ante<input id="ante" type="number" min="0" step="25" value="100"></label>
+          <label>Ante style
+            <select id="antetype">
+              <option value="each">Every player antes</option>
+              <option value="bb">One big-blind ante for the table</option>
+              <option value="none">No ante</option>
+            </select>
+          </label>
+          <label>Players<input id="seats" type="number" min="2" max="9" step="1" value="9"></label>
+          <label>Their stack <small>for the effective stack</small><input id="opp" type="number" min="0" step="100" value="41000"></label>
+        </div>
+        <div class="readout" id="table"></div>
+      </section>
 
       <section class="panel">
         <h2>The price</h2>
@@ -56,6 +83,43 @@ export function mountOdds(main) {
     </div>`
 
   const $ = s => main.querySelector(s)
+
+  // The bands are not rules and the page says so — they are roughly where the game changes shape, and
+  // the point of naming one is to send you to the tool that covers it.
+  const band = d =>
+    d < 10 ? ['Shove or fold', 'Under ten big blinds there is no postflop to play for. This is the part of the game that is actually solved — <a href="#/tools/pushfold">the push/fold trainer</a> deals these spots.']
+    : d < 20 ? ['Committed on entry', 'Ten to twenty. One raise is a third of you, so most pots you enter, you enter for everything.']
+    : d < 40 ? ['Raise or fold', 'Twenty to forty. You can still raise and fold, but a raise commits a real share of your stack and calling to see a flop gets expensive.']
+    : ['Everything available', 'Over forty big blinds the whole game is open — raise, call, and make a river bet that is not all your chips.']
+
+  const atTable = () => {
+    const stack = Math.max(0, +$('#stack').value || 0)
+    const sb = Math.max(0, +$('#sb').value || 0)
+    const bb = Math.max(1, +$('#bb').value || 1)
+    const ante = Math.max(0, +$('#ante').value || 0)
+    const type = $('#antetype').value
+    const seats = Math.max(2, Math.min(9, +$('#seats').value || 9))
+    const opp = Math.max(0, +$('#opp').value || 0)
+
+    const depth = inBB(stack, bb)
+    // One lap of the button: both blinds once each, and the ante as often as it is actually collected
+    // from you — every hand when everybody antes, once a lap when one player posts for the table.
+    const orbit = sb + bb + (type === 'each' ? ante * seats : type === 'bb' ? ante : 0)
+    const orbits = orbit > 0 ? stack / orbit : Infinity
+    const eff = Math.min(stack, opp)
+    const [name, why] = band(depth)
+
+    $('#table').innerHTML = `
+      <div class="stats">
+        ${stat('You are', `${depth.toFixed(1)} bb`, `${stack.toLocaleString()} at ${sb.toLocaleString()}/${bb.toLocaleString()}`)}
+        ${stat('An orbit costs', orbit.toLocaleString(), type === 'each' ? `both blinds and ${seats} antes` : type === 'bb' ? 'both blinds and one table ante' : 'both blinds')}
+        ${stat('Laps left', Number.isFinite(orbits) ? orbits.toFixed(1) : '∞', 'folding every hand')}
+        ${stat('Effective', `${inBB(eff, bb).toFixed(1)} bb`, `${eff.toLocaleString()} — the smaller of the two`)}
+      </div>
+      <p class="verdict">${esc(name)} — ${why}</p>
+      <p class="note">Only the <b>effective</b> stack can be won or lost, so it is the one that sets the depth of a pot. Against a bigger stack that is yours; against a shorter one it is theirs, and the chips you have behind their all-in are not in play.</p>`
+  }
+
   const price = () => {
     const pot = Math.max(0, +$('#pot').value || 0), toCall = Math.max(1, +$('#call').value || 1)
     const o = potOdds(toCall, pot)
@@ -157,10 +221,12 @@ export function mountOdds(main) {
 
   let timer
   const later = fn => { clearTimeout(timer); timer = setTimeout(fn, 250) }
+  for (const id of ['#stack', '#sb', '#bb', '#ante', '#antetype', '#seats', '#opp']) $(id).addEventListener('input', atTable)
   for (const id of ['#pot', '#call']) $(id).addEventListener('input', () => { price(); later(equity) })
   for (const id of ['#outs', '#ctc']) $(id).addEventListener('input', draw)
   for (const id of ['#hero', '#villain', '#board']) $(id).addEventListener('input', () => later(equity))
 
+  atTable()
   price()
   equity()
   return { destroy() {} }
