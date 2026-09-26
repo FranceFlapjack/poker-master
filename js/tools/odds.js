@@ -33,7 +33,7 @@ export function mountOdds(main) {
 
       <section class="panel">
         <h2>At the table</h2>
-        <div class="fields">
+        <div class="fields four">
           <label>Your stack<input id="stack" type="number" min="0" step="100" value="25000"></label>
           <label>Small blind<input id="sb" type="number" min="0" step="50" value="500"></label>
           <label>Big blind<input id="bb" type="number" min="1" step="100" value="1000"></label>
@@ -46,7 +46,7 @@ export function mountOdds(main) {
             </select>
           </label>
           <label>Players<input id="seats" type="number" min="2" max="9" step="1" value="9"></label>
-          <label>Their stack <small>for the effective stack</small><input id="opp" type="number" min="0" step="100" value="41000"></label>
+          <label class="wide">Their stack <small>for the effective stack</small><input id="opp" type="number" min="0" step="100" value="41000"></label>
         </div>
         <div class="readout" id="table"></div>
       </section>

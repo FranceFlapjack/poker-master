@@ -291,7 +291,11 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 .lesson-body table { border-collapse: collapse; margin: var(--s-4) 0; font-size: var(--fs-1); }
 .lesson-body th, .lesson-body td { text-align: left; padding: 6px 18px 6px 0; border-bottom: 1px solid var(--line); }
 .lesson-body th { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
-.lesson-body td:last-child, .lesson-body th:last-child { font-family: var(--font-mono); }
+/* set by js/lesson.js, per column, only where every cell in the column is a number */
+.lesson-body td.num, .lesson-body th.num { font-family: var(--font-mono); text-align: right; padding-right: 22px; }
+.lesson-body th.num { font-family: var(--font-sans); }
+/* the first column is the row's label even when it holds a number, so it stays left and anchors the row */
+.lesson-body tr > .num:first-child { text-align: left; }
 
 
 /* ---------- play page ---------- */
@@ -407,8 +411,8 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .portrait.tint-7 { --av-tint: var(--av-7); }
 .pk-table .portrait.tint-8 { --av-tint: var(--av-8); }
 
-.pk-table .bet-pill { fill: var(--tb-bet-bg); stroke: var(--card-edge); stroke-width: 1; rx: var(--pill-radius); }
-.pk-table .bet-t { font-size: 11px; font-weight: 600; fill: var(--tb-bet-ink); }
+.pk-table .bet-t { font-size: 14px; font-weight: 700; letter-spacing: 0.02em; fill: var(--tb-bet-ink); }
+.pk-table .bet-rule { stroke: var(--tb-bet-rule); stroke-width: 1.5; }
 .pk-table .dealer { fill: var(--tb-dealer); stroke: var(--ink-3); stroke-width: 1; }
 .pk-table .dealer-t { font-size: 13px; font-weight: 700; fill: var(--ink); }
 
@@ -434,11 +438,38 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .exercise { margin: var(--s-6) 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--line); }
 .exercise-table { margin-bottom: var(--s-3); }
 .exercise .prompt { font-weight: 600; margin: 0 0 var(--s-3); }
-.exercise .options { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-3); }
-.exercise .btn.opt { padding: 8px 16px; font-size: 12px; }
-.exercise .btn.opt.right { background: var(--good); border-color: var(--good); color: #fff; }
-.exercise .btn.opt.wrong { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
-.exercise .btn.opt[disabled] { opacity: 0.45; }
+/* Options are content, so they are set like content: a list of rows, sentence case, at reading size.
+   The marker carries the letter that mountHands prints beside each hand. No boxes — a border that
+   resizes itself around a sentence gives a ragged stack of rectangles, and eighteen of these labels run
+   past forty characters. */
+.exercise .options { display: flex; flex-direction: column; margin-bottom: var(--s-3); border-top: 1px solid var(--line); }
+.exercise .opt {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: baseline; gap: var(--s-3);
+  width: 100%; text-align: left; font: inherit; font-size: var(--fs-2); line-height: 1.45;
+  padding: 10px var(--s-2) 10px 0; background: none; border: 0; border-bottom: 1px solid var(--line);
+  color: var(--ink); cursor: pointer; transition: color 140ms, background 140ms;
+}
+.exercise .opt .mark {
+  font-size: 11px; font-weight: 600; letter-spacing: var(--track); color: var(--ink-2);
+  justify-self: center; transition: color 140ms;
+}
+.exercise .opt:hover { background: var(--surface-2); color: var(--accent); }
+.exercise .opt:hover .mark { color: var(--accent); }
+.exercise .opt:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
+.exercise .opt.right { color: var(--good); font-weight: 600; }
+.exercise .opt.right .mark { color: var(--good); }
+.exercise .opt.wrong { color: var(--bad); }
+.exercise .opt.wrong .t { text-decoration: line-through; }
+.exercise .opt.wrong .mark { color: var(--bad); }
+.exercise .opt[disabled] { cursor: default; }
+.exercise .opt[disabled]:not(.right):not(.wrong) { color: var(--ink-3); }
+.exercise .opt[disabled]:hover { background: none; }
+
+/* No picture, so no second column — the question takes the width instead of being crushed into 42% of
+   it. The list is still held to a readable measure rather than stretched to 900px. */
+.exercise.no-picture { grid-template-columns: minmax(0, 1fr); }
+.exercise.no-picture .exercise-side { max-width: 620px; }
+.exercise.no-picture .prompt { font-size: var(--fs-3); line-height: 1.45; }
 .exercise .status { font-size: var(--fs-1); min-height: 1.4em; }
 .exercise .status.good { color: var(--good); font-weight: 600; }
 .exercise .status.bad { color: var(--bad); }
@@ -501,6 +532,12 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .tool .panel { border-top: 1px solid var(--line); padding-top: var(--s-4); margin-bottom: var(--s-6); }
 .tool .panel h2 { margin-top: 0; }
 .tool .fields { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-bottom: var(--s-4); }
+/* Seven inputs wrapping by content left the last one stranded alone on a second row. A fixed four-column
+   grid keeps the rows even, and the one field that is about a DIFFERENT player takes the width below. */
+.tool .fields.four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tool .fields.four label { flex: none; }
+.tool .fields.four label.wide { grid-column: 1 / -1; max-width: 320px; }
+@media (max-width: 760px) { .tool .fields.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .tool .fields label { display: flex; flex-direction: column; gap: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); flex: 1 1 160px; }
 .tool .fields small { font-weight: 400; letter-spacing: 0.04em; text-transform: none; color: var(--ink-3); }
 .tool .fields input, .tool .fields select { font: inherit; font-size: var(--fs-2); padding: 7px 9px; border: 1px solid var(--line-2); background: var(--bg); color: var(--ink); border-radius: 0; }

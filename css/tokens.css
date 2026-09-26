@@ -14,6 +14,13 @@
    --radius, so the table can be soft while the shell stays square. Draft 1's table values are kept in
    comments beside each line so reverting is a one-line edit.
 
+   Draft 3 (2026-09-26, owner's comment: the bet/bb number is not in position relative to the table shape
+   or to the player — "maybe not an oval box but just underline with bold"): the pill is removed. A wager
+   is now bold cream text with a hairline rule under it, and — the actual fix — it sits on an ellipse
+   inset a CONSTANT distance from the felt at the seat's own angle, so every seat's bet is the same depth
+   from the rail. The old straight-line placement put two bets at the same table at 0.71 and 0.99 of the
+   way out, which is what the comment was seeing.
+
    Comment on any line here and it becomes a small diff. */
 :root {
   /* ground & ink */
@@ -62,8 +69,9 @@
   --tb-seat: #fdfaf4;          /* Draft 1: #f5f5f5 */
   --tb-seat-hero: #e6edf6;     /* Draft 1: var(--accent-soft) */
   --tb-dealer: #fffdf8;        /* Draft 1: #ffffff */
-  --tb-bet-bg: #fdfaf4;        /* Draft 1: rgba(0,0,0,0.34) — a cream chip, not a hole in the felt */
-  --tb-bet-ink: #3d4348;       /* Draft 1: #ffffff */
+  --tb-bet-bg: #fdfaf4;        /* Draft 1: rgba(0,0,0,0.34). Draft 3: the bet pill is gone; still used by the blind chip */
+  --tb-bet-ink: #fffdf7;       /* Draft 3: cream, reading with the pot. Draft 2: #3d4348 on a cream pill */
+  --tb-bet-rule: rgba(255, 253, 247, 0.8);    /* the rule under a wager — the same cream, held back */
   --tb-pot-ink: #fdfaf4;
   --plate-radius: 10px;        /* Draft 1: 0 (square, via --radius) */
   --pill-radius: 13px;

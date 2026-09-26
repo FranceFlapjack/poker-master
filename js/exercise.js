@@ -33,9 +33,12 @@ export function mountExercise(container, p, ctx = {}) {
     return { id, broken: true }
   }
 
-  container.className = 'exercise'
+  // A `choice` drill has no picture, so the two-column grid would leave 58% of the row empty and crush
+  // the question into the rest. It gets a single column instead, and the question grows to match.
+  const hasPicture = kind !== 'choice'
+  container.className = hasPicture ? 'exercise' : 'exercise no-picture'
   container.innerHTML = `
-    <div class="exercise-table"></div>
+    ${hasPicture ? '<div class="exercise-table"></div>' : ''}
     <div class="exercise-side">
       <p class="prompt">${esc(p.ask || 'What is the best play?')}</p>
       <div class="options" role="group"></div>
@@ -51,7 +54,7 @@ export function mountExercise(container, p, ctx = {}) {
   // cards; an action drill is a spot at a table. Using a table for both was wrong in two ways: it drew
   // blinds, a pot and a button that have nothing to do with "who wins", and it draws exactly two hole
   // cards per seat, so a five-card ranking hand silently lost three of them.
-  if (kind !== 'choice') {
+  if (hasPicture) {
     try {
       const wrap = container.querySelector('.exercise-table')
       if (kind === 'showdown' || kind === 'rank') {
@@ -74,10 +77,23 @@ export function mountExercise(container, p, ctx = {}) {
   const whyEl = container.querySelector('.why')
   let done = progress.isDrillDone(id), attempts = 0
 
+  // Options are CONTENT, not chrome, and they are rendered that way: a list of rows, each with a letter
+  // marker and its text in sentence case at reading size. They were boxed buttons in uppercase, which
+  // worked for "Fold" and failed for the eighteen labels that run past forty characters — the longest is
+  // eighty-two. A box that resizes itself around a sentence also gives a ragged stack of rectangles,
+  // which is the opposite of composition.
+  //
+  // The letter marker is not decoration: mountHands already labels its rows A, B, C so the reader can
+  // match a hand to an option, and a showdown drill's labels arrive with that letter in the text. Where
+  // one is there, it is lifted out into the marker rather than printed twice.
   solved.options.forEach((label, i) => {
     const b = document.createElement('button')
-    b.className = 'btn opt'
-    b.textContent = label
+    b.className = 'opt'
+    const m = /^([A-Z]) — (.*)$/.exec(label)
+    const mark = m ? m[1] : String.fromCharCode(65 + i)
+    const text = m ? m[2] : label
+    b.innerHTML = `<span class="mark" aria-hidden="true">${esc(mark)}</span><span class="t"></span>`
+    b.querySelector('.t').textContent = text
     b.addEventListener('click', () => choose(i, b))
     optionsEl.append(b)
   })

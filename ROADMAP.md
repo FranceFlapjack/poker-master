@@ -457,6 +457,48 @@ a folded player what they would do. In each case the assertions were green and t
 Both checks added here follow the same rule: if the engine can decide something, the checker should ask
 it, rather than trusting prose.
 
+## Design draft 3 — composition, 2026-09-26
+
+Four changes, from the owner's review of the finished app.
+
+**Drill options are content, so they are set as content.** They were boxed uppercase buttons in a flex
+row. That works for "Fold" and fails for the eighteen labels that run past forty characters — the
+longest is eighty-two — and a border that resizes itself around a sentence gives a ragged stack of
+rectangles. They are now a list: a letter marker, then the text in sentence case at reading size, with
+hairline rules between. The marker is not decoration — `mountHands` already labels its rows A, B, C so
+a reader can match a hand to an option, and where a label arrives carrying that letter it is lifted into
+the marker rather than printed twice.
+
+**Choice drills get the width.** `.exercise` was always a two-column grid, picture left and question
+right, but a `choice` drill has no picture — so **31 of the 57 drills** rendered with 522px of empty
+column beside a crushed 354px question. The grid collapses below 980px, so it was broken on the desktop
+and fine on the phone. They are single-column now, with the question at `--fs-3` and the list held to a
+620px measure.
+
+**Wagers sit on the table's own shape.** The bet pill was placed 46% of the way along a straight line
+from the seat to the middle, which is wrong on an ellipse: the same fraction crosses a 240×150 oval at a
+different depth depending on the angle. Measured, two bets at the same table sat at **0.71 and 0.99** of
+the way to the rail — one adrift on the felt, the other jammed against it. Every wager now sits on its
+own ellipse, inset a constant distance from the felt at the seat's own angle. The pill went with it: an
+amount is a number, so it is bold cream with a hairline rule under it rather than boxed — the box had a
+fixed width that "25" rattled around in and "23.7k" filled.
+
+**Numbers in prose tables align by content, not by position.** The rule was `td:last-child`, right by
+luck most of the time and wrong twice: the rule-of-4-and-2 table has six numeric columns and only the
+last was monospaced, and the MDF table put the mono face on the words "80.0% of your range". A column
+is numeric only when every cell in its body reads as one; the first column stays left-aligned because it
+is the row's label even when it holds a number.
+
+Also: the sandbox's seven inputs wrapped by content and stranded the last one alone on a second row.
+They are a four-column grid now, with the field that is about a *different* player taking the width below.
+
+### Next on design, owner's list
+
+- **The seat portraits are one figure in nine tints.** They need real variety, and **the hero should be
+  the most distinct of them — the main character**, not the same silhouette in another colour. Whatever
+  replaces them goes through `content/images/avatars/manifest.json`, which records each file's source and
+  licence; read the README there before adding any.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages

@@ -54,6 +54,7 @@ const BOARD_CARD_W = 46, BOARD_CARD_H = 64   // the board reads as the shared ha
 // A seat is a single centred column: illustration, then name, then stack on one line, then cards.
 // These offsets are from the seat's centre point and are what keeps every seat on the same grid.
 const ILLO = 84                 // illustration box, square
+const BET_INSET = 44            // how far inside the felt a wager sits, the same for every seat
 const Y_ILLO_TOP = -96
 const Y_NAME = 8
 const Y_DETAIL = 25
@@ -182,11 +183,23 @@ export function mountTable(host, opts) {
       g.append(card(p.hole[1], pos.x + 3, pos.y + Y_CARDS_TOP, !shown))
     }
 
-    // Chips wagered, between the seat and the middle — clear of the column at either end.
+    // Chips wagered, on the felt in front of the player.
+    //
+    // This used to be a fixed pill placed 46% of the way along a straight line from the seat to the
+    // middle, and that is wrong on an OVAL: the same fraction crosses a 240x150 ellipse at a different
+    // depth depending on the angle, so two bets at the same table sat at 0.71 and 0.99 of the way to the
+    // rail — one adrift on the felt, the other jammed against it. Measured, not guessed.
+    //
+    // Now every bet sits on its own ellipse, inset a constant distance from the felt, at the seat's own
+    // angle. Same depth from the rail for all nine seats, and still on the line between that player and
+    // the pot. The pill is gone with it: an amount is a number, so it is set bold with a rule under it
+    // rather than boxed — the box had a fixed width that "25" rattled around in and "23.7k" filled.
     if (p.committed > 0) {
-      const b = lerp(pos, { x: CX, y: CY }, 0.46)
-      g.append(el('rect', { class: 'bet-pill', x: b.x - 30, y: b.y - 12, width: 60, height: 24 }))
-      g.append(text(chips(p.committed), { class: 'bet-t', x: b.x, y: b.y + 5, 'text-anchor': 'middle' }))
+      const b = seatPos(k, n, o.hero ?? 0, geo.FELT_RX - BET_INSET, geo.FELT_RY - BET_INSET)
+      const label = chips(p.committed)
+      const w = textWidth(label, 13)
+      g.append(text(label, { class: 'bet-t', x: b.x, y: b.y, 'text-anchor': 'middle' }))
+      g.append(el('line', { class: 'bet-rule', x1: b.x - w / 2 - 3, x2: b.x + w / 2 + 3, y1: b.y + 6, y2: b.y + 6 }))
     }
     return g
   }
@@ -277,6 +290,19 @@ function seatPos(k, n, hero, rx, ry, degOffset = 0) {
 }
 
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })
+
+/**
+ * Roughly how wide a short numeric label draws, so a rule can be sized to sit under it.
+ *
+ * Measuring properly means getBBox, which needs the node in a live document — and this module also runs
+ * under the DOM shim in scripts/render-table.mjs, where there is no layout at all. These are digits in
+ * one known face at one known size, so the estimate is good to a pixel or two and costs nothing.
+ */
+function textWidth(str, size) {
+  let em = 0
+  for (const c of str) em += c === '.' || c === ',' ? 0.28 : 0.556
+  return em * size
+}
 
 
 /**

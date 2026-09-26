@@ -45,6 +45,25 @@ export async function renderLesson(container, md, { lessonId, onSolved = null } 
       ${sources.length ? `<section class="sources"><span class="eyebrow">Sources</span><ul>${sources.map(s => `<li>${linkify(esc(s))}</li>`).join('')}</ul></section>` : ''}
     </article>`
 
+  // Numbers in prose tables are aligned and set in the mono face BY CONTENT, not by position. The rule
+  // used to be `td:last-child`, which was right by luck most of the time and wrong twice: the rule of
+  // 4 and 2 table has six numeric columns and only the last was monospaced, and the MDF table put the
+  // mono face on the words "80.0% of your range". A column counts as numeric only when every cell in
+  // its body reads as a number, so a column of prose is never dragged into it.
+  for (const table of container.querySelectorAll('.lesson-body table')) {
+    const rows = [...table.querySelectorAll('tbody tr')]
+    if (!rows.length) continue
+    const cols = Math.max(...rows.map(r => r.children.length))
+    for (let c = 0; c < cols; c++) {
+      const cells = rows.map(r => r.children[c]).filter(Boolean)
+      if (!cells.length) continue
+      if (!cells.every(td => isNumeric(td.textContent))) continue
+      for (const td of cells) td.classList.add('num')
+      const head = table.querySelector('thead tr')
+      if (head && head.children[c]) head.children[c].classList.add('num')
+    }
+  }
+
   const mounted = []
   const drillIds = []
   let index = 0
@@ -82,6 +101,17 @@ export async function renderLesson(container, md, { lessonId, onSolved = null } 
     }
   }
   return { meta, mounted, drillIds }
+}
+
+/**
+ * Does this cell read as a number? Currency, percentages, multipliers, big-blind counts, an odds ratio
+ * and a leading sign all count; anything with a word in it does not. An em dash counts as a blank so a
+ * single "no value" row does not disqualify an otherwise numeric column.
+ */
+function isNumeric(text) {
+  const t = String(text).trim()
+  if (!t || t === '\u2014' || t === '\u2013' || t === '-') return true
+  return /^[+\u2212\-\u00b1\u00d7x]?\s*[$\u00a3\u20ac]?\s*\d[\d,.\s]*\s*(%|bb|x|\u00d7|k|M|to 1)?$/i.test(t)
 }
 
 function linkify(s) { return s.replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>') }
