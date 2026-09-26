@@ -44,7 +44,9 @@ function contentBox(n, g, hero) {
   for (let k = 0; k < n; k++) {
     const p = seatPos(k, n, hero, g.SEAT_RX, g.SEAT_RY)
     x1 = Math.min(x1, p.x - COL_HALF); x2 = Math.max(x2, p.x + COL_HALF)
-    y1 = Math.min(y1, p.y + Y_ILLO_TOP - 17); y2 = Math.max(y2, p.y + Y_CARDS_TOP + CARD_H)
+    // the hero's picture is 20% taller and grows upwards, so its seat needs that much more headroom
+    const head = Y_ILLO_TOP - 17 - (k === hero ? Math.round(ILLO * 0.2) + 4 : 0)
+    y1 = Math.min(y1, p.y + head); y2 = Math.max(y2, p.y + Y_CARDS_TOP + CARD_H)
   }
   return { x: x1 - VIEW_PAD, y: y1 - VIEW_PAD, w: x2 - x1 + VIEW_PAD * 2, h: y2 - y1 + VIEW_PAD * 2 }
 }
@@ -101,19 +103,34 @@ export function mountTable(host, opts) {
     svg.append(el('ellipse', { class: 'felt', cx: CX, cy: CY, rx: g.FELT_RX, ry: g.FELT_RY }))
     svg.append(el('ellipse', { class: 'rail', cx: CX, cy: CY, rx: g.FELT_RX + 10, ry: g.FELT_RY + 10 }))
 
-    // pot and board in the middle
+    // The middle of the table, as one centred stack: board, then the pot, then the street.
+    //
+    // The pot used to sit up against the top rail while "PREFLOP" held the middle, which put the least
+    // important label in the most important place — and left the pot competing with whichever seat was
+    // directly above it. The pot is the number everyone at a real table looks at, so it takes the centre;
+    // the board sits above it, and the street name drops underneath in the quieter weight it deserves.
     const pot = potTotal(s)
-    if (pot > 0) {
-      svg.append(text(`POT ${chips(pot)}`, { class: 'pot', x: CX, y: CY - g.FELT_RY + 26, 'text-anchor': 'middle' }))
-    } else if (s.result) {
-      svg.append(text(`POT ${chips(s.result.total)} — PAID`, { class: 'pot', x: CX, y: CY - g.FELT_RY + 26, 'text-anchor': 'middle' }))
+    const potText = pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
+    const hasBoard = s.board.length > 0
+
+    // With cards out the stack is board + pot; without them it is pot + street. Either way the group is
+    // centred on CY rather than anchored to an edge.
+    const stackH = (hasBoard ? BOARD_CARD_H + 10 : 0) + (potText ? 20 : 0) + (hasBoard ? 0 : 20)
+    let y = CY - stackH / 2
+
+    if (hasBoard) {
+      const boardW = s.board.length * BOARD_CARD_W + (s.board.length - 1) * 8
+      s.board.forEach((c, i) => {
+        svg.append(card(c, CX - boardW / 2 + i * (BOARD_CARD_W + 8), y, false, BOARD_CARD_W, BOARD_CARD_H))
+      })
+      y += BOARD_CARD_H + 10
     }
-    const boardW = 5 * BOARD_CARD_W + 4 * 8
-    s.board.forEach((c, i) => {
-      svg.append(card(c, CX - boardW / 2 + i * (BOARD_CARD_W + 8), CY - BOARD_CARD_H / 2, false, BOARD_CARD_W, BOARD_CARD_H))
-    })
-    if (!s.board.length) {
-      svg.append(text(streetLabel(s), { class: 'street', x: CX, y: CY + 6, 'text-anchor': 'middle' }))
+    if (potText) {
+      svg.append(text(potText, { class: 'pot', x: CX, y: y + 14, 'text-anchor': 'middle' }))
+      y += 20
+    }
+    if (!hasBoard) {
+      svg.append(text(streetLabel(s), { class: 'street', x: CX, y: y + 14, 'text-anchor': 'middle' }))
     }
 
     const sb = sbSeat(s), bb = bbSeat(s)
@@ -164,11 +181,20 @@ export function mountTable(host, opts) {
       g.append(text(blind, { class: 'blind-tag', x: pos.x, y: by + 10.5, 'text-anchor': 'middle' }))
     }
 
-    // whose turn it is, shown as a ring around the illustration rather than a box around the seat
+    // The hero is drawn LARGER than the other seats, and always ringed.
+    //
+    // Nine seats share one illustration style, so seat identity cannot rest on the artwork alone — and
+    // the one seat that must never be hunted for is your own. Size and a standing ring say "this is you"
+    // before you have read a single name. The extra height is taken upwards so every seat's name, stack
+    // and cards stay on the same baseline; only the picture grows.
+    const size = isHero ? Math.round(ILLO * 1.2) : ILLO
+    const illoTop = pos.y + Y_ILLO_TOP - (size - ILLO)
+    const illoMid = illoTop + size / 2
+    if (isHero) g.append(el('circle', { class: 'hero-ring', cx: pos.x, cy: illoMid, r: size / 2 + 4 }))
     if (toAct) {
-      g.append(el('circle', { class: 'act-ring', cx: pos.x, cy: pos.y + Y_ILLO_TOP + ILLO / 2, r: ILLO / 2 + 3 }))
+      g.append(el('circle', { class: 'act-ring', cx: pos.x, cy: illoMid, r: size / 2 + (isHero ? 4 : 3) }))
     }
-    g.append(illustration(pos.x, pos.y + Y_ILLO_TOP, k, o.avatars[k], p.name))
+    g.append(illustration(pos.x, illoTop, k, o.avatars[k], p.name, size))
 
 
     g.append(text(p.name, { class: 'seat-name', x: pos.x, y: pos.y + Y_NAME, 'text-anchor': 'middle' }))
@@ -312,11 +338,11 @@ function textWidth(str, size) {
  * Any artwork passed in here belongs to whoever made it. `content/images/avatars/manifest.json` is where
  * each file's source and licence are recorded — see the README there before adding any.
  */
-function illustration(cx, top, k, url, name) {
+function illustration(cx, top, k, url, name, size = ILLO) {
   const g = el('g', { class: `portrait tint-${k % 9}` })
   if (url) {
     const img = el('image', {
-      href: url, x: cx - ILLO / 2, y: top, width: ILLO, height: ILLO,
+      href: url, x: cx - size / 2, y: top, width: size, height: size,
       preserveAspectRatio: 'xMidYMid meet',   // whole illustration, never cropped
     })
     const t = el('title'); t.textContent = name
@@ -325,8 +351,8 @@ function illustration(cx, top, k, url, name) {
   } else {
     // No artwork: our own marker gets a disc, because unlike an illustration it has no silhouette of
     // its own and would read as a smudge floating on the felt.
-    g.append(el('circle', { class: 'av-disc', cx, cy: top + ILLO / 2, r: ILLO / 2 - 3 }))
-    g.append(builtInFigure(cx, top + ILLO / 2, ILLO / 2 - 3))
+    g.append(el('circle', { class: 'av-disc', cx, cy: top + size / 2, r: size / 2 - 3 }))
+    g.append(builtInFigure(cx, top + size / 2, size / 2 - 3))
   }
   return g
 }
