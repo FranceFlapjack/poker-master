@@ -131,7 +131,7 @@ function mountTip(blk, raw) {
 
   const el = document.createElement('div')
   el.className = 'tip'
-  el.innerHTML = `<button class="tip-cue" type="button">${catHeadHTML(26)}<span>${esc(title || 'A tip from the cat')}</span></button><p class="tip-text" hidden></p>`
+  el.innerHTML = `<button class="tip-cue" type="button">${catHeadHTML(26)}<span>${esc(title || 'Meow tip')}</span></button><p class="tip-text" hidden></p>`
   el.querySelector('.tip-text').innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
   blk.replaceWith(el)
 
