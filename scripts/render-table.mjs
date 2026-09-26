@@ -63,6 +63,22 @@ const { mountTable, SIZE_DEFAULTS } = await import('../js/table.js')
   }
   if (drift.length) { console.error('Table sizes have drifted:\n  ' + drift.join('\n  ')); process.exit(1) }
 }
+// Every kind of picture table.js draws cards into must be in the card rules' list in app.css. SVG fills
+// black by default, so a picture left out draws black rectangles — the hand comparison in the showdown
+// and ranking drills shipped exactly like that, and no check could see it.
+{
+  const src = readFileSync(join(ROOT, 'js/table.js'), 'utf8')
+  const css = readFileSync(join(ROOT, 'css/app.css'), 'utf8')
+  const pictures = [...new Set([...src.matchAll(/class:\s*'(pk-[a-z]+)'/g)].map(m => m[1]))]
+  const rule = css.match(/:is\(([^)]*)\)\s*\.card rect\s*\{/)
+  const styled = rule ? rule[1].split(',').map(s => s.trim().replace(/^\./, '')) : []
+  const missing = pictures.filter(p => !styled.includes(p))
+  if (!pictures.length || missing.length) {
+    console.error(`Cards would draw black in: ${missing.join(', ') || '(no pictures found — has table.js changed?)'}.` +
+      ` Add ${missing.map(p => '.' + p).join(', ')} to the :is(...) list on the card rules in css/app.css.`)
+    process.exit(1)
+  }
+}
 const { avatarsForSeats } = await import('../js/avatars.js')
 
 const H = s => parseCards(s)
