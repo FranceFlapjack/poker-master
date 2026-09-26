@@ -33,6 +33,7 @@ async function boot() {
   cat.innerHTML = catHeadHTML(20)
   const paintCat = () => { cat.setAttribute('aria-pressed', String(mascot.enabled)); cat.title = mascot.enabled ? 'Tips from the cat: on' : 'Tips from the cat: off' }
   paintCat(); cat.addEventListener('click', () => { mascot.enabled = !mascot.enabled })
+  mascot.mount()   // the cat lives in its corner from the start, quiet until it has something to say
   document.addEventListener('mascot-toggle', paintCat)
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))

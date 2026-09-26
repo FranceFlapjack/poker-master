@@ -117,9 +117,9 @@ function isNumeric(text) {
 }
 
 /**
- * A tip tucked into a lesson: ```tip fences. In the text it is only a small cat and a label; the cat in
- * the corner pops up and says it the first time the tip scrolls fully into view, and again whenever the
- * label is clicked. With the cat switched off, the label opens the tip inline instead — nothing is lost.
+ * A tip tucked into a lesson: ```tip fences. In the text it is only a small cat and a label. The first
+ * time the tip scrolls fully into view the cat in the corner meows that it has one; clicking the cat, or
+ * the label, opens it. With the cat switched off, the label opens the tip inline instead.
  *
  * The body is plain text, **bold** allowed. An optional first line `title: …` replaces "Tip".
  */
@@ -135,9 +135,10 @@ function mountTip(blk, raw) {
   el.querySelector('.tip-text').innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
   blk.replaceWith(el)
 
-  const say = () => mascot.say({ kind: 'tip', text, title: title || 'Tip', owner: el })
+  const msg = { kind: 'tip', text, title: title || 'Tip', owner: el }
+  // clicking the label in the text is asking, so the bubble opens; with the cat off, it opens inline
   el.querySelector('.tip-cue').addEventListener('click', () => {
-    if (!say()) { const t = el.querySelector('.tip-text'); t.hidden = !t.hidden }
+    if (!mascot.say(msg)) { const t = el.querySelector('.tip-text'); t.hidden = !t.hidden }
   })
 
   // Pop once, the first time the whole cue is on screen and clear of the bottom fifth (where the cat
@@ -148,7 +149,8 @@ function mountTip(blk, raw) {
   const arm = setTimeout(() => {
     if (dead || typeof IntersectionObserver !== 'function') return
     io = new IntersectionObserver(entries => {
-      if (entries.some(e => e.isIntersecting)) { io.disconnect(); io = null; say() }
+      // reaching it only makes the cat meow — nothing opens over what you are reading
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); io = null; mascot.notify(msg) }
     }, { threshold: 1, rootMargin: '0px 0px -20% 0px' })
     io.observe(el.querySelector('.tip-cue'))
   }, 700)

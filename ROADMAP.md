@@ -581,6 +581,14 @@ in the same line as the cat.
 - **It can be switched off** from the sidebar, beside the sound. Off, hints and tips appear inline
   instead, so nothing is lost.
 
+**Draft 2 of the cat, same day (owner's comment):** it now lives in the corner ALL the time, small,
+and never opens by itself. When it has something it *meows* — a small drawn "meow" with sound lines
+beside its head, and a hop — and waits to be clicked; the bubble opens only then. Clicked with nothing
+to say, it answers with hearts and a squish. The bubble is smaller, its line thinner (1.3px) and lighter
+(42% black), its type 12.5px. The Hint button and a tip's label in the text still open the bubble
+directly, because those are asking; and an explicit request always wins, where the hint-beats-tip rule
+is only for things that arrive by themselves.
+
 Enforced from now on: `verify-drills` requires a `hint:` on every drill (the seven judgement drills that
 had none now do), and `check-content` keeps tips short enough to read in the bubble.
 

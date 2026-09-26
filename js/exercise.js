@@ -120,9 +120,9 @@ export function mountExercise(container, p, ctx = {}) {
       btn.disabled = true
       statusEl.textContent = attempts === 1 ? 'Not that one. Try again.' : 'Still not it.'
       statusEl.className = 'status bad'
-      // The cat offers the hint on the FIRST miss — the moment it helps. Inline, it used to wait for a
-      // second wrong answer, by which time half the options were already crossed out.
-      showHint()
+      // On the FIRST miss the cat meows: it has a hint, and it waits to be asked. Inline, the hint used
+      // to wait for a second wrong answer, by which time half the options were already crossed out.
+      showHint(false)
     }
   }
 
@@ -132,10 +132,12 @@ export function mountExercise(container, p, ctx = {}) {
     whyEl.innerHTML = parts.map(t => `<p>${esc(t)}</p>`).join('')
     whyEl.hidden = false
   }
-  function showHint() {
+  /** `asked`: the reader pressed Hint, so open it now. Otherwise the cat only meows that it has one. */
+  function showHint(asked) {
     if (!p.hint) return
-    // the cat says it; if the cat is switched off, the hint goes inline as it always did
-    if (mascot.say({ kind: 'hint', text: p.hint, owner: container })) return
+    const msg = { kind: 'hint', text: p.hint, owner: container }
+    if (asked ? mascot.say(msg) : mascot.notify(msg)) return
+    // the cat is switched off: the hint goes inline, as it always did
     whyEl.innerHTML = `<p>${esc(p.hint)}</p>`
     whyEl.hidden = false
   }
@@ -151,7 +153,7 @@ export function mountExercise(container, p, ctx = {}) {
   container.querySelector('.actions').addEventListener('click', e => {
     const b = e.target.closest('[data-act]'); if (!b) return
     sound.unlock()
-    if (b.dataset.act === 'hint') showHint()
+    if (b.dataset.act === 'hint') showHint(true)
     if (b.dataset.act === 'reset') reset()
   })
 

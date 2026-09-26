@@ -140,16 +140,18 @@
   --tb-size-figure: 58;        /* an opponent's figure slot */
   --tb-size-hero: 70;          /* yours — the main character is drawn bigger */
 
-  /* the cat in the box — hints and tips (js/mascot.js). The bubble's line matches the artwork's: pure
-     black, and at the width the cat is shown its lines render about this thick. */
-  --mascot-cat-w: 132px;
-  --mascot-cat-w-phone: 96px;
-  --mascot-stroke: 2.2;
-  --mascot-ink: #000000;
-  --mascot-paper: #ffffff;
-  --mascot-tail: 14;
+  /* the cat in the box — hints and tips (js/mascot.js). Draft 2 (owner's comment): always in the
+     corner and small; it meows and waits to be clicked; smaller bubble with a thinner, lighter line. */
+  --mascot-cat-w: 76px;
+  --mascot-cat-w-phone: 62px;
+  --mascot-stroke: 1.3;                     /* Draft 1: 2.2, full black */
+  --mascot-line: rgba(0, 0, 0, 0.42);       /* Draft 1: #000000 */
+  --mascot-ink: #000000;                    /* the meow and the hearts' outline — the artwork's black */
+  --mascot-paper: rgba(255, 255, 255, 0.97);
+  --mascot-tail: 9;
   --mascot-hint: #9a4a1e;      /* the label on a hint — warm, not alarm red: you are being helped */
   --mascot-tip: var(--accent);
+  --mascot-heart: #ff8ca0;
 
   --board-anim: 160ms;
   --board-max: 660px;   /* was 560px — a table needs room to be read */
