@@ -148,10 +148,18 @@ function partCard(part) {
       }).join('')}</ul>`
     : ''
 
+  // The trainers were reachable only from the sidebar, which buried half of what this part is for — in
+  // Grinder mode the tools ARE the app, and a home page that lists only lessons misrepresents it.
+  const tools = toolsOf(part)
+  const toolRow = tools.length
+    ? `<ul class="part-tools">${tools.map(t => `<li><a href="#/tools/${t.slug}"><b>${esc(t.title)}</b><span>${esc(t.blurb || '')}</span></a></li>`).join('')}</ul>`
+    : ''
+
   return `<section class="card part-card">
     <span class="eyebrow">${esc(part.title)}</span>
     <p>${esc(part.blurb || '')}</p>
     ${inner}
+    ${toolRow}
     <div class="part-foot"><span class="meta">${meta}</span>${first ? `<a class="btn" href="#/lesson/${first.dir}/${first.slug}">Open</a>` : '<span class="meta">Not written yet</span>'}</div>
   </section>`
 }

@@ -24,7 +24,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **3** | `engine/ev.js` → Equity & odds sandbox + Preflop range trainer | ✅ done 2026-09-25 |
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
-| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | both sections written 2026-09-25; weak-spot report and utilities to do |
+| **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | ✅ done 2026-09-26 |
 | **7** | Publish to GitHub Pages → **then** copy `js/family.js` into `chess-master` and `go-master` | |
 | | ↳ **publish checklist:** decide `dev-table.html` — it is committed, so it goes live at `/poker-master/dev-table.html` with no nav path to it. Remove it, or keep it deliberately. | |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
@@ -398,7 +398,43 @@ actually decides how long you can wait.
 at 100/200, 2,400 a lap at 500/1,000. The tool and the lesson cannot drift because both do the division
 the same way.
 
-**Phase 6 is complete** apart from final polish. The weak-spot report now has
+### Polish, and Phase 6 closed 2026-09-26
+
+**The trainers are on the home page.** They were reachable only from the sidebar, which buried half of
+what the Tournament part is for — in Grinder mode the tools *are* the app, and a home page listing only
+lessons misrepresented it. All five now sit on the part card with their blurbs.
+
+**Verified end to end**: all 22 routes — home, 15 lessons, 5 tools — visited in sequence. Every one
+rendered and the console stayed completely silent, which also exercises the teardown path the Play page
+once leaked on.
+
+### The Phase 0 decisions, closed
+
+Two of the three judgement calls recorded in Phase 0 are now decided rather than merely shipped.
+
+1. **The home hero keeps no quotation.** Chess Master and Go Master each open with a sourced quote, so
+   the house pattern says add one — but the pattern does not fit here. Chess and Go have centuries of
+   public-domain literature; poker's quotable writing is almost entirely modern and copyrighted, and the
+   content rules forbid both quoting from memory and lifting from modern books. The obvious candidate,
+   Blackbridge's *The Complete Poker Player* (1875), is not on Project Gutenberg and has no scan on the
+   Internet Archive — both checked, not assumed. So there is nothing to verify a quote against, and the
+   app's own rule 4 says that settles it. The written hero line does the work instead.
+2. **Beginner mode still defaults ON.** Deliberately unchanged: the stated first purpose of this app is a
+   friend who has never played, and they should not have to find a switch. The owner turns it off once.
+3. **Activity-grid thresholds stay at 5/15/40 hands a day** — still the one open item, and still waiting
+   on real data rather than another guess.
+
+## What is left after Phase 6
+
+- **Phase 7, publishing** — deferred by the owner ("github later"). When it happens: push to GitHub Pages
+  first, *then* copy `js/family.js` into `chess-master` and `go-master`, or the Poker link 404s on the
+  live siblings. Decide `dev-table.html` before that — it is committed, so it goes live at
+  `/poker-master/dev-table.html` with no nav path to it.
+- **Phase 8** — the manual hand builder and per-decision review, deferred by the owner.
+- **The branch.** Everything is on `phase-1-engine`, ~30 commits, never merged. The name stopped
+  describing the contents around Phase 3, and that branch is now the whole app. Merging is
+  `--ff-only` after the owner approves — and since a push to `main` is a deploy, the merge and the
+  publish are the same decision. The weak-spot report now has
 `pushfold.hu.<seat>.<band>` keys alongside `preflop.*`, and whether it ranks them in one list or as
 separate readouts is an open decision — mixing them may just surface "you are worst at whatever you
 drilled least".

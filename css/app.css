@@ -542,6 +542,14 @@ svg.pk-hands { display: block; width: 100%; height: auto; }
 .trainer .hand .pc + .pc { margin-left: 0.35em; }
 .trainer .actions { display: flex; gap: var(--s-2); margin-bottom: var(--s-3); }
 
+/* the trainers, on the home page's part card — a grid so five of them stay scannable */
+.part-tools { list-style: none; margin: var(--s-4) 0 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-3) var(--s-4); }
+.part-tools a { display: block; text-decoration: none; color: inherit; }
+.part-tools b { display: block; font-size: var(--fs-2); font-weight: 600; }
+.part-tools span { display: block; font-size: var(--fs-1); color: var(--ink-2); margin-top: 2px; }
+.part-tools a:hover b { text-decoration: underline; }
+
 /* the weak-spot report: worst first, with the sample size always visible next to the percentage */
 .report .wlist { list-style: none; margin: var(--s-3) 0 0; padding: 0; }
 .report .wrow a { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label area" "bar bar" "pct n"; gap: 2px var(--s-3);
