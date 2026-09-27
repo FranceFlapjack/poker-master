@@ -25,7 +25,7 @@ A third pillar — reviewing hands you have played — is **roadmap, not v1**, b
 | **4** | `js/bot/` + Play a hand + Ranges section written | ✅ done 2026-09-25 |
 | **5** | `engine/icm.js` + `engine/pushfold.js` → Push/fold trainer + ICM lab | ✅ done 2026-09-25 |
 | **6** | Stacks/ICM + Maths sections written, weak-spot report, live MTT utilities, polish | ✅ done 2026-09-26 |
-| **7** | Publish to GitHub Pages → **then** copy `js/family.js`, `js/welcome.js` and `css/welcome.css` into `chess-master` and `go-master` | ✅ published 2026-09-27; sibling copy next |
+| **7** | Publish to GitHub Pages → **then** copy `js/family.js`, `js/welcome.js` and `css/welcome.css` into `chess-master` and `go-master` | ✅ published 2026-09-27; siblings updated the same day |
 | | ↳ `dev-table.html` and the nine unused first-draft icons were removed 2026-09-26, so nothing un-linked goes live. | ✅ |
 | **8** | *Roadmap:* manual hand builder + per-decision review | |
 
@@ -675,8 +675,11 @@ reduced-motion rules checked by applying them directly, since the Browser pane c
   live: every lesson and tool loads, all 61 files the site requests answer, no console errors, and the
   switcher's links reach all three live sites. Before pushing, every requested file was matched against
   git by exact case — Pages is case-sensitive and a Mac is not — and `table-snapshot.html` was taken out
-  of git so an unlinked test page did not go live. **Still to do:** copy `js/family.js` into
-  `chess-master` and `go-master`, now that the Poker link resolves. Copy `js/welcome.js` and `css/welcome.css` at the same time, and in each sibling add
+  of git so an unlinked test page did not go live. **The siblings, the same day:** `js/family.js`,
+  `js/welcome.js` and `css/welcome.css` copied byte for byte into `chess-master` and `go-master`, wired
+  in as here (stylesheet link, one call at boot, the `#/welcome` route), checked locally, then published.
+  Live: Chess opens on CHESS in its green, Go on GO in its red (a two-letter word is held by the screen's
+  height on a desktop, not its width); every bubble lists the other two, and every link answers. Copy `js/welcome.js` and `css/welcome.css` at the same time, and in each sibling add
   the stylesheet link and one call in its boot — `mountWelcome({ app: 'chess', word: 'Chess' })` — plus
   the `#/welcome` route; see "The series welcome" above. (`dev-table.html` is gone: the table is checked by `scripts/render-table.mjs` and by
   the layout audit recorded under Draft 4, not by a page that would ship with no link to it.)
