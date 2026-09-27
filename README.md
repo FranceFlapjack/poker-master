@@ -29,3 +29,10 @@ what it is. No chart is ever labelled "GTO" unless we computed it.
 
 Every lesson lists its sources; quotations come only from public-domain or Creative Commons material.
 Nothing here assists a hand in progress — review is post-session, always.
+
+## Using this
+
+Copyright (c) 2026 FranceFlapjack. Free to read, learn from, share and build on, **with credit and not for sale** — the code under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/), the lessons and the design under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Credit reads "Poker Master by FranceFlapjack" with a link to https://franceflapjack.github.io/poker-master/. Everything under `vendor/` keeps its own licence. See [LICENSE](LICENSE).
+
+`robots.txt` asks the generative-AI crawlers not to take the lessons for training. That is an opt-out the well-behaved ones honour, not a lock.
+

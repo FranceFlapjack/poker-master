@@ -1,0 +1,36 @@
+Poker Master — https://franceflapjack.github.io/poker-master/
+Copyright (c) 2026 FranceFlapjack. All rights reserved except as granted below.
+
+You may read this site, learn from it, share it and build on it, as long as you
+credit the original and link back, and as long as you do not sell it or run it
+as a commercial product or service. Two licences cover the two halves:
+
+1. THE CODE — everything under js/, css/, scripts/, index.html and the
+   content-checking tools — is licensed under the
+   PolyForm Noncommercial License 1.0.0:
+   https://polyformproject.org/licenses/noncommercial/1.0.0/
+   Non-commercial use, modification and redistribution are allowed; the
+   copyright notice and this licence must travel with any copy.
+
+2. THE WRITING AND THE DESIGN — everything under content/ and assets/
+   (lessons, annotations, notes, curriculum, logos), the name "Poker Master" as used
+   here, and the site's look — is licensed under Creative Commons
+   Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0):
+   https://creativecommons.org/licenses/by-nc-sa/4.0/
+   Credit "Poker Master by FranceFlapjack" with a link to the site above, do not use
+   it commercially, and share any adaptation on these same terms.
+
+WHAT IS NOT COVERED
+
+- Everything under vendor/ belongs to its own authors and keeps its own
+  licence: marked (MIT). See vendor/VERSIONS.md. Nothing here adds to or takes
+  away from those licences. The table (js/table.js), the rules and the poker
+  mathematics are ours and fall under section 1.
+- Poker hand histories and the mathematics behind the game are facts and
+  belong to nobody. The worked examples and the writing around them are ours.
+- Quoted public-domain and Creative Commons material keeps the terms named in
+  each lesson's sources block.
+
+Poker Master is one of the Master series (Chess, Go, Poker), all under these terms.
+For permission beyond them, open an issue at
+https://github.com/FranceFlapjack/poker-master

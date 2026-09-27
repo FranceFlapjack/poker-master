@@ -118,3 +118,8 @@ Written down because it is the thing most likely to go wrong:
 
 Branch before editing; merge to `main` with `--ff-only` after the owner approves. Run the checkers before
 every commit.
+
+## Licence
+
+`LICENSE` (2026-09-27): the code is PolyForm Noncommercial 1.0.0, the lessons, design and assets are CC BY-NC-SA 4.0, `vendor/` keeps its own licences — credit and no selling, the same terms across the whole Master series. `robots.txt` asks generative-AI training crawlers to stay out; the head carries `author`, `canonical`, `license` and `noai` tags and the sidebar footer carries the credit line. Keep all of it in place, and keep the wording identical across the series.
+

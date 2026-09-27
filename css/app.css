@@ -754,3 +754,8 @@ svg.pk-cards { display: block; }
 .icon-btn.cat-toggle { width: 32px; }
 .icon-btn.cat-toggle .tip-cat { width: 24px; height: auto; }
 .icon-btn.cat-toggle[aria-pressed="false"] { opacity: 0.4; }
+.sidebar-footer .credit { margin-top: var(--s-3); font-size: 10px; line-height: 1.5; color: var(--ink-3); }
+.sidebar-footer .credit b { font-weight: 600; color: var(--ink-2); }
+.sidebar-footer .credit a { color: var(--ink-3); text-decoration: none; }
+.sidebar-footer .credit a:hover { color: var(--accent); }
+/* cmx-20260927-dec0fc469f71 */
