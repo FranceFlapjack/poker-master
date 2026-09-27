@@ -7,6 +7,9 @@
 //
 //   node scripts/render-table.mjs out.html
 //
+// With no argument it writes table-snapshot.html at the repo root, which .gitignore keeps out of git —
+// and so out of the published site.
+//
 // It runs table.js against a minimal DOM shim. The shim covers only what a NON-INTERACTIVE render
 // touches; the action controls build real form elements and are deliberately out of scope.
 

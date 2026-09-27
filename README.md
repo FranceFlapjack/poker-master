@@ -2,7 +2,8 @@
 
 A no-limit hold'em course as a website, the third of the Master series alongside
 [Chess Master](https://franceflapjack.github.io/chess-master/) and
-[Go Master](https://franceflapjack.github.io/go-master/). Not yet published.
+[Go Master](https://franceflapjack.github.io/go-master/). Live at
+**https://franceflapjack.github.io/poker-master/**.
 
 Two readers, one app. The course teaches someone who has never played a hand — short lesson, a live table
 inside the text, then drills. The trainers cover what a tournament actually asks of you: starting-hand

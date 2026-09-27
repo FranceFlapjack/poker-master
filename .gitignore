@@ -1,2 +1,6 @@
 .DS_Store
 node_modules/
+
+# written by scripts/render-table.mjs on every run: a local file to look at or send, not part of the site.
+# Committed, it went live as an unlinked 400KB page and fell out of date with every tokens.css comment.
+table-snapshot.html
