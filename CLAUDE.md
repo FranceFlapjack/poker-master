@@ -5,9 +5,10 @@ against the app's own engine, and trainers for the maths a tournament actually a
 odds, ICM, push/fold). The third app of the Master series.
 
 Static site, **no build step, no framework** — deliberate, like the siblings. Plain HTML/CSS/ES modules;
-libraries are vendored under `vendor/` (see `vendor/VERSIONS.md`). Intended for GitHub Pages from `main`:
-**a push to main is a deploy**, so merge only what is tested. All paths must stay relative (the site will
-live under `/poker-master/`).
+libraries are vendored under `vendor/` (see `vendor/VERSIONS.md`). **Live on GitHub Pages from `main`** at
+https://franceflapjack.github.io/poker-master/ (published 2026-09-27): **a push to main is a deploy**, so
+merge only what is tested. All paths must stay relative (the site lives under `/poker-master/`), and file
+names must match their references exactly — Pages is case-sensitive, a Mac is not.
 
 **Before starting any work here, read `ROADMAP.md`** — it holds the agreed phases and what is next.
 
@@ -35,7 +36,8 @@ live under `/poker-master/`).
   This repo's copy is currently the newest one — it is the only copy that contains the Poker entry.
   Links are `../<app>/` on GitHub Pages and the `dev` port on localhost (chess 8000, go 8001, poker 8002).
   **Copy this file into `chess-master` and `go-master` only once Poker Master is published**, or the Poker
-  link is a 404 on the live site — the same gate the owner applied when Go Master was added.
+  link is a 404 on the live site — the same gate the owner applied when Go Master was added. Poker Master
+  is now published (2026-09-27), so that gate is open; the copy has not been made yet.
 - **The Master series welcome** (`js/welcome.js` + `css/welcome.css`): the first-visit screen — the
   game's word in heavy type fitted edge to edge, MASTER small beneath it, in the app's `--accent`; scroll
   down to enter. Shared exactly like `family.js`: identical in every app, knows nothing about any one
