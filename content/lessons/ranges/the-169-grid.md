@@ -14,7 +14,14 @@ Two cards from fifty-two is **1,326** distinct hands. But A♠K♠ and A♥K♥ 
 and so do all four suited ace-kings. Collapse the ones that behave the same and you get **169**.
 
 That is the grid everyone draws: thirteen by thirteen, pairs down the diagonal, suited above it, offsuit
-below.
+below. Rows and columns both run ace down to deuce, so every two ranks meet twice: once above the
+diagonal, suited — ace-king suited is in the top row — and once below it, offsuit — ace-king offsuit is
+in the first column.
+
+```grid
+show: shapes
+caption: Tap a square to see the hands inside it. AKs holds four, one per suit; AKo holds twelve.
+```
 
 - **13 pairs** — AA down to 22
 - **78 suited** hands — AKs down to 32s
@@ -38,6 +45,14 @@ So the grid looks about half suited, and suited hands are under a quarter of wha
 Seven hands in ten are offsuit. When you widen a range by adding a row of offsuit hands you are adding
 three times the volume that the same row of suited hands would add, which is why charts widen through
 suited hands first and reach for offsuit ones last.
+
+Switch the grid below from **as drawn** to **as dealt** and the picture corrects itself: each square
+is shaded by the number of real hands in it, and the bottom half fills in.
+
+```grid
+show: dealt
+caption: As dealt, each square shows its number of hands — 6 for a pair, 4 suited, 12 offsuit.
+```
 
 ```try
 type: choice

@@ -1,10 +1,11 @@
 // Lesson renderer: Markdown (+ frontmatter) → HTML, with `table` and `try` fences mounted as components.
 //
-// Four fences:
+// Five fences:
 //   ```table     a spot to look at    — the parameters of js/spot.js, plus `caption`
 //   ```try       a spot to answer     — see js/exercise.js for the four kinds
 //   ```tip       a tip the cat in the corner can say — see mountTip
 //   ```rankings  hands drawn as cards, strongest first — see mountRankings
+//   ```grid      the 169-hand grid, tap a square for its hands — see js/grid-block.js
 //
 // `+++ Title` opens a collapsible section and a bare `+++` closes it, which is how a lesson keeps its
 // long explanations out of the way of its drills.
@@ -14,13 +15,14 @@ import { mountTable, cardRowSVG } from './table.js'
 import { parseCards, cardGlyph, rankOf } from './engine/cards.js'
 import { evaluate, describe, HIGH_CARD, PAIR, TWO_PAIR, TRIPS, QUADS } from './engine/evaluator.js'
 import { mountExercise } from './exercise.js'
+import { mountGridBlock } from './grid-block.js'
 import { spotFromParams } from './spot.js'
 import { avatarsForSeats } from './avatars.js'
 import { parseFrontmatter, parseParams } from './frontmatter.js'
 import { mascot, catHeadHTML } from './mascot.js'
 export { parseFrontmatter, parseParams }
 
-const BLOCKS = new Set(['table', 'try', 'tip', 'rankings'])
+const BLOCKS = new Set(['table', 'try', 'tip', 'rankings', 'grid'])
 marked.use({
   renderer: {
     code({ text, lang }) {
@@ -77,6 +79,7 @@ export async function renderLesson(container, md, { lessonId, onSolved = null } 
     const kind = blk.dataset.kind
     if (kind === 'tip') { mounted.push(mountTip(blk, decodeURIComponent(blk.dataset.src))); continue }
     if (kind === 'rankings') { mounted.push(mountRankings(blk, decodeURIComponent(blk.dataset.src))); continue }
+    if (kind === 'grid') { mounted.push(mountGridBlock(blk, parseParams(decodeURIComponent(blk.dataset.src)))); continue }
     const p = parseParams(decodeURIComponent(blk.dataset.src))
     const fig = document.createElement('figure')
     blk.replaceWith(fig)

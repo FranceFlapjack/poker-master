@@ -130,6 +130,11 @@
   --rg-line: #ffffff;
   --rg-hero: #b3141a;
   --rg-mix: #b3141a;           /* a hand the solver plays both ways — outlined, never filled in */
+  /* the lesson grid (```grid): the three shapes, and the "as dealt" shading */
+  --gr-pair: #0f2d57;          /* the accent: the diagonal reads as one line */
+  --gr-suited: #b9c7dc;
+  --gr-offsuit: #ece8e0;       /* warm and quiet — the most squares, so the least ink */
+  --gr-dealt: #0f2d57;         /* as dealt, every square is this, at 6/12, 4/12 or 12/12 strength */
 
   /* table sizes, in RENDERED PIXELS (Draft 4). The table is laid out at one unit per pixel for the width
      it has, so these come out the same at every seat count and on every screen — they used to be SVG

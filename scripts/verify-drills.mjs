@@ -91,6 +91,12 @@ for (const lesson of allLessons(curriculum)) {
       } catch (e) { bad(where, e.message) }
     })
 
+    // a ```grid fence draws its own numbers from the engine, so all there is to get wrong is the mode
+    fences(body, ['grid']).forEach((f, i) => {
+      const p = parseParams(f.text)
+      if (!['shapes', 'dealt'].includes(p.show)) bad(`${lesson.dir}/${lesson.slug} grid#${i}`, `\`show: ${p.show}\` — use shapes or dealt`)
+    })
+
     fences(body, ['rankings']).forEach((f, i) => {
       const where = `${lesson.dir}/${lesson.slug} rankings#${i}`
       let prev = null

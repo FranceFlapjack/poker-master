@@ -166,6 +166,20 @@ export function cellCombos(i, j) {
 }
 
 /**
+ * The grid's three shapes, counted from the deck: how many cells each takes and how many actual hands
+ * those cells hold. The lesson grid shows these, and the checkers hold them to 13/78/78 and 78/312/936.
+ */
+export function shapeCounts() {
+  const out = { pair: { cells: 0, combos: 0 }, suited: { cells: 0, combos: 0 }, offsuit: { cells: 0, combos: 0 } }
+  for (let i = 0; i < GRID; i++) for (let j = 0; j < GRID; j++) {
+    const k = isPair(i, j) ? 'pair' : isSuited(i, j) ? 'suited' : 'offsuit'
+    out[k].cells++
+    out[k].combos += cellCombos(i, j).length
+  }
+  return out
+}
+
+/**
  * Every weighted combination in a range, minus any that use a dead card.
  * Card removal is the whole reason a range's combo count is not just 6/4/12 per cell: if the board
  * has an ace, AA drops from 6 combos to 3.

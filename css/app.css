@@ -592,6 +592,56 @@ svg.pk-cards { display: block; }
 .grid169 .c.off.here { background: var(--ink-3); }
 .grid169 .c.mix { box-shadow: inset 0 0 0 1px var(--rg-mix); }
 @media (max-width: 560px) { .grid169 .c { font-size: 0; } .grid169 .c.here { font-size: 8px; } }
+@media (max-width: 560px) { .grid169.lesson-grid .c { font-size: 7px; letter-spacing: -0.04em; font-weight: 600; } }
+
+/* the lesson grid — a ```grid fence (js/grid-block.js). Every square is a button: tap it for its hands.
+   Labels stay on a phone here, unlike the trainers' grid: this grid is the thing being read. */
+.gridblock { margin: var(--s-5) 0 var(--s-6); }
+.lesson-grid .c { border: 0; padding: 0; margin: 0; cursor: pointer; font-family: var(--font-sans); font-size: 10px; font-weight: 600;
+  min-width: 0; overflow: hidden; transition: background-color 260ms ease, color 260ms ease; }
+.lesson-grid .c.pair { background: var(--gr-pair); color: #fff; }
+.lesson-grid .c.suited { background: var(--gr-suited); color: var(--ink); }
+.lesson-grid .c.offsuit { background: var(--gr-offsuit); color: var(--ink-2); }
+.lesson-grid .c .ct { display: none; }
+.gridblock.dealt .lesson-grid .c { background: color-mix(in srgb, var(--gr-dealt) calc(var(--share) * 100%), #fff); color: var(--ink); }
+.gridblock.dealt .lesson-grid .c.offsuit { color: #fff; }
+.gridblock.dealt .lesson-grid .c .nm { display: none; }
+.gridblock.dealt .lesson-grid .c .ct { display: inline; }
+.lesson-grid .c:hover { filter: brightness(0.94); }
+.lesson-grid .c.picked { outline: 2px solid var(--rg-hero); outline-offset: -2px; z-index: 1; position: relative; }
+.lesson-grid .c:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; z-index: 1; position: relative; }
+
+.gb-switch { display: flex; margin-bottom: var(--s-3); }
+.gb-switch button { font: 600 10px var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; padding: 7px 12px;
+  border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2); cursor: pointer; margin-right: -1px; }
+.gb-switch button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.gb-key { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); margin: var(--s-3) 0 0; font-size: var(--fs-1); color: var(--ink-2); }
+.gb-k { display: inline-flex; align-items: center; gap: 6px; }
+.gb-k i { width: 11px; height: 11px; display: inline-block; }
+.gb-k.pair i { background: var(--gr-pair); }
+.gb-k.suited i { background: var(--gr-suited); }
+.gb-k.offsuit i { background: var(--gr-offsuit); box-shadow: inset 0 0 0 1px var(--line-2); }
+.gb-k b { color: var(--ink); font-weight: 600; }
+
+.gb-bar { margin: var(--s-3) 0 0; max-width: 560px; }
+.gb-track { display: flex; height: 12px; gap: 2px; }
+.gb-track span { flex-basis: 0; min-width: 2px; transition: flex-grow 420ms cubic-bezier(.2, .8, .2, 1); }
+.gb-track .pair { background: var(--gr-pair); }
+.gb-track .suited { background: var(--gr-suited); }
+.gb-track .offsuit { background: var(--gr-offsuit); box-shadow: inset 0 0 0 1px var(--line-2); }
+.gb-bar p { font-size: var(--fs-1); color: var(--ink-2); margin: 6px 0 0; }
+/* as dealt, the key and the bar take the squares' own shading, so the key never contradicts the grid */
+.gridblock.dealt :is(.gb-k i, .gb-track span) { background: color-mix(in srgb, var(--gr-dealt) calc(var(--share) * 100%), #fff); box-shadow: none; }
+.gb-bar p b { color: var(--ink); font-weight: 600; }
+
+.gb-detail { margin-top: var(--s-4); min-height: 3em; max-width: 640px; }
+.gb-detail p { font-size: var(--fs-1); color: var(--ink-2); margin: 0 0 var(--s-2); line-height: 1.5; }
+.gb-detail p b { color: var(--ink); }
+.gb-prompt { font-style: italic; }
+.gb-combos { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.gridblock figcaption { font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--s-3); }
+@media (prefers-reduced-motion: reduce) { .lesson-grid .c, .gb-track span { transition: none; } }
 
 /* the push/fold trainer shows both sides of the same spot, so the two ranges sit side by side */
 .two-grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-5); margin-bottom: var(--s-3); }

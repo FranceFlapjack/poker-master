@@ -12,7 +12,7 @@
 
 import { parseCard, parseCards, cardStr, cardsStr, makeDeck, deckWithout, mulberry32, rankOf, suitOf } from '../js/engine/cards.js'
 import { evaluate, describe, straightHigh, HIGH_CARD, PAIR, TWO_PAIR, TRIPS, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH } from '../js/engine/evaluator.js'
-import { parseRange, serializeRange, cellName, nameToCell, cellCombos, rangeCombos, countCombos, handToCell, idx, newRange } from '../js/engine/ranges.js'
+import { parseRange, serializeRange, cellName, nameToCell, cellCombos, rangeCombos, countCombos, handToCell, idx, newRange, shapeCounts } from '../js/engine/ranges.js'
 import { equityExact, equityMC, runoutCount } from '../js/engine/equity.js'
 import { createHand, legalActions, applyAction, buildPots, potTotal, sbSeat, bbSeat, effectiveStack } from '../js/engine/rules.js'
 import { newHand, recordFromState, validateHand } from '../js/engine/hand.js'
@@ -158,6 +158,13 @@ section('ranges')
   eq(cellCombos(...Object.values(nameToCell('AA'))).length, 6, 'a pair is 6 combos')
   eq(cellCombos(...Object.values(nameToCell('AKs'))).length, 4, 'a suited hand is 4 combos')
   eq(cellCombos(...Object.values(nameToCell('AKo'))).length, 12, 'an offsuit hand is 12 combos')
+  {
+    // the lesson grid's key and its "as dealt" bar are read from these
+    const sc = shapeCounts()
+    eq([sc.pair.cells, sc.suited.cells, sc.offsuit.cells].join('/'), '13/78/78', 'the grid is 13 pairs, 78 suited, 78 offsuit')
+    eq([sc.pair.combos, sc.suited.combos, sc.offsuit.combos].join('/'), '78/312/936', 'which hold 78, 312 and 936 hands')
+    eq(sc.pair.combos + sc.suited.combos + sc.offsuit.combos, 1326, 'and 1,326 in all — two cards from 52')
+  }
   eq(countCombos(parseRange('AA')), 6, 'aces are 6 combos')
   eq(countCombos(parseRange('AA'), H('Ah')), 3, 'one dead ace leaves 3 combos of aces')
   eq(countCombos(parseRange('AA'), H('Ah As')), 1, 'two dead aces leave 1 combo')
