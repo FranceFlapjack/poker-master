@@ -626,6 +626,20 @@ the right play at the right price is 100% — on random tables, with an analysis
 
 Next, by the owner's choice: famous hands (each checked against a published source first), then full
 hands against the bots scored decision by decision where the maths allows.
+### Opening charts, rewritten for learning — 2026-10-04
+
+The owner could not follow "Opening charts, and where they come from": it was about where charts come from
+(solvers, databases, licensing) — a question for a grinder — and never showed the chart, said how to read
+one, gave the ranges, or practised using it. Rewritten as "Opening charts — what to raise from each seat":
+the one question a chart answers; three steps to read it; the chart itself on the grid with a seat
+switcher (`show: chart` in the ```grid fence, drawn from content/charts/rfi-9max.json, the file the trainer
+and the game score against); a table of what each seat raises; five facts to remember, each checked
+against the chart; five open-or-fold drills; what a chart does not cover; and where charts come from,
+shortened to the end with the solver detail behind "Read more".
+
+New check: a drill tagged `chart: <seat>` is VERIFIED — verify-drills requires the table to put the hero
+in that seat with everyone before folded, and the answer to be a raise exactly when the chart opens the
+hand there. Deliberate mistakes (a wrong answer, a hero one seat off) are both caught.
 
 ### The cat in the box — hints and tips, 2026-09-26
 

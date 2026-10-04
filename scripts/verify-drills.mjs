@@ -26,6 +26,7 @@ import { parseFrontmatter, parseParams } from '../js/frontmatter.js'
 import { spotFromParams, solveDrill } from '../js/spot.js'
 import { allLessons, lessonPath } from '../js/curriculum.js'
 import { parseCards, cardStr } from '../js/engine/cards.js'
+import { parseRange, handToCell, cellName } from '../js/engine/ranges.js'
 import { evaluate, describe, CATEGORY_NAMES, STRAIGHT_FLUSH } from '../js/engine/evaluator.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -56,7 +57,7 @@ function anteProblem(p) {
   return null
 }
 const VERBOSE = process.argv.includes('-v')
-let fails = 0, verified = 0, unverified = 0, tables = 0, charted = 0
+let fails = 0, verified = 0, unverified = 0, tables = 0, charted = 0, chartChecked = 0
 const bad = (where, msg) => { fails++; console.log(`FAIL  ${where}\n      ${msg}`) }
 
 const ENGINE_DECIDES = new Set(['showdown', 'rank', 'legal'])
@@ -71,6 +72,7 @@ function fences(md, langs) {
 }
 
 const curriculum = JSON.parse(readFileSync(join(ROOT, 'content/curriculum.json'), 'utf8'))
+const RFI_CHART = JSON.parse(readFileSync(join(ROOT, 'content/charts/rfi-9max.json'), 'utf8'))
 
 for (const lesson of allLessons(curriculum)) {
   if (!lesson.ready) continue
@@ -94,7 +96,8 @@ for (const lesson of allLessons(curriculum)) {
     // a ```grid fence draws its own numbers from the engine, so all there is to get wrong is the mode
     fences(body, ['grid']).forEach((f, i) => {
       const p = parseParams(f.text)
-      if (!['shapes', 'dealt'].includes(p.show)) bad(`${lesson.dir}/${lesson.slug} grid#${i}`, `\`show: ${p.show}\` — use shapes or dealt`)
+      if (!['shapes', 'dealt', 'chart'].includes(p.show)) bad(`${lesson.dir}/${lesson.slug} grid#${i}`, `\`show: ${p.show}\` — use shapes, dealt or chart`)
+      if (p.show === 'chart' && p.position && !RFI_CHART.positions.some(x => x.id === p.position)) bad(`${lesson.dir}/${lesson.slug} grid#${i}`, `\`position: ${p.position}\` is not a seat in the opening chart`)
     })
 
     fences(body, ['rankings']).forEach((f, i) => {
@@ -161,9 +164,32 @@ for (const lesson of allLessons(curriculum)) {
             } else if (state.toAct !== hero) {
               bad(where, `it is seat ${state.toAct}'s turn, not the hero's (seat ${hero}). The table shown will not match the question — check the \`button\` seat against the \`actions\` list.`)
             }
+            // `chart: CO` — an open-or-fold drill answered by the opening chart, which makes it VERIFIED:
+            // the table must put the hero in that seat with everyone before them folded, and the answer
+            // must be a raise exactly when the chart opens the hand there.
+            if (p.chart) {
+              const pos = RFI_CHART.positions.find(x => x.id === p.chart)
+              const n = state.seats.length
+              const seatOf = { 0: 'BTN', 1: 'SB', 3: 'UTG', 4: 'UTG1', 5: 'MP', 6: 'LJ', 7: 'HJ', 8: 'CO' }[(hero - state.button + n) % n]
+              const entered = state.actions.some(a => a.type !== 'fold' && a.type !== 'post' && a.seat !== hero && !/blind|ante/.test(a.type))
+              const cards = parseCards(p.hand || '')
+              if (!pos) bad(where, `\`chart: ${p.chart}\` is not a seat in the opening chart`)
+              else if (n !== 9) bad(where, `the opening chart is nine-handed; this table has ${n} seats`)
+              else if (seatOf !== p.chart) bad(where, `\`chart: ${p.chart}\` but the hero sits ${seatOf || 'in the big blind'} at this table`)
+              else if (entered) bad(where, 'somebody has already entered the pot, so the opening chart does not answer this')
+              else if (cards.length !== 2) bad(where, 'a chart drill needs the hero\'s `hand`')
+              else {
+                const { i, j } = handToCell(cards[0], cards[1])
+                const opens = parseRange(pos.range)[i * 13 + j] > 0
+                const said = String(solved.options[solved.correct])
+                if (opens !== /^raise/i.test(said)) bad(where, `the chart ${opens ? 'opens' : 'folds'} ${cellName(i, j)} from ${p.chart}, but the answer is "${said}"`)
+                else { chartChecked++; if (VERBOSE) console.log(`ok    ${where} — chart: ${cellName(i, j)} ${opens ? 'opens' : 'folds'} from ${p.chart}`) }
+              }
+            }
           }
         }
         if (!p.why) bad(where, 'a judgement drill must say `why`, or the reader learns nothing from being right')
+        if (p.chart) return
         unverified++
         if (VERBOSE) console.log(`note  ${where} — ${kind}, answer "${solved.options[solved.correct]}" is authored, not verified`)
       }
@@ -174,6 +200,7 @@ for (const lesson of allLessons(curriculum)) {
 console.log(`\n${fails ? `${fails} FAILED, ` : ''}${tables} table${tables === 1 ? '' : 's'} built, ` +
   `${verified} drill${verified === 1 ? '' : 's'} verified against the engine, ` +
   (charted ? `${charted} charted hand${charted === 1 ? '' : 's'} evaluated, ` : '') +
+  (chartChecked ? `${chartChecked} open-or-fold drill${chartChecked === 1 ? '' : 's'} checked against the opening chart, ` : '') +
   `${unverified} judgement drill${unverified === 1 ? '' : 's'} checked but NOT verified`)
 if (unverified && !fails) console.log('(a judgement drill has no ground truth — its answer is the author\'s opinion)')
 process.exit(fails ? 1 : 0)

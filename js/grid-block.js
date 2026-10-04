@@ -8,12 +8,14 @@
 //                  every cell labelled, and a key with the counts
 //   show: dealt    the same grid with a switch: "as drawn" (every square equal) and "as dealt" (every
 //                  square shaded by how many real hands it holds, 6 / 4 / 12), with a bar of the shares
+//   show: chart    the app's opening chart (content/charts/rfi-9max.json) on the grid, one seat at a time
+//                  with a seat switcher — coloured squares are the raises; `position: UTG` picks the first
 //
 // Tap any square and the hands inside it are drawn as cards — the four AKs, the twelve AKo — which is
 // what turns "169 shapes, 1,326 hands" from a sentence into something seen. Every number shown is
 // counted here from the deck (js/engine/ranges.js), never typed in; engine-test holds the totals.
 
-import { GRID, cellName, cellCombos, isPair, isSuited, gridToRank, shapeCounts } from './engine/ranges.js'
+import { GRID, cellName, cellCombos, isPair, isSuited, gridToRank, shapeCounts, parseRange, idx } from './engine/ranges.js'
 import { cardRowSVG } from './table.js'
 
 const WORD = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king', 'ace']
@@ -48,6 +50,7 @@ function why(i, j, n) {
  * @param {{show?: string, caption?: string}} p
  */
 export function mountGridBlock(blk, p = {}) {
+  if (p.show === 'chart') return mountChartBlock(blk, p)
   const dealtBlock = p.show === 'dealt'
   const counts = shapeCounts()
   const totalCells = GRID * GRID
@@ -132,3 +135,83 @@ export function mountGridBlock(blk, p = {}) {
   return { destroy() { fig.remove() } }
 }
 
+
+// --- show: chart ------------------------------------------------------------------------------------
+
+const SEAT_WORDS = { UTG: 'under the gun', UTG1: 'under the gun + 1', MP: 'in middle position', LJ: 'in the lojack', HJ: 'in the hijack', CO: 'in the cutoff', BTN: 'on the button', SB: 'in the small blind' }
+const BEHIND = { UTG: 8, UTG1: 7, MP: 6, LJ: 5, HJ: 4, CO: 3, BTN: 2, SB: 1 }
+
+/**
+ * The opening chart on the grid, one seat at a time. The chart is the same file the range trainer and
+ * the game score against, fetched here rather than copied into the lesson, so the lesson cannot show a
+ * different chart from the one that marks you. Its percentages are recomputed by scripts/check-charts.mjs.
+ */
+function mountChartBlock(blk, p) {
+  const fig = document.createElement('figure')
+  fig.className = 'gridblock chartblock'
+  fig.innerHTML = '<p class="gb-prompt">Loading the chart…</p>'
+  blk.replaceWith(fig)
+  let dead = false, seat = null, picked = null, chart = null
+
+  fetch('content/charts/rfi-9max.json').then(r => r.json()).then(c => {
+    if (dead) return
+    chart = c
+    seat = c.positions.find(x => x.id === p.position) || c.positions[0]
+    fig.innerHTML = `
+      <div class="gb-seats" role="group" aria-label="Your seat">${c.positions.map(x =>
+        `<button type="button" data-seat="${x.id}"><b>${x.id}</b><span>${x.pct}%</span></button>`).join('')}</div>
+      <p class="gb-seatline"></p>
+      <div class="grid169 lesson-grid chart-grid">${cells().map((cl, k) =>
+        `<button type="button" class="c" data-k="${k}"><span class="nm">${cl.name}</span></button>`).join('')}</div>
+      <div class="gb-key"><span class="gb-k raise"><i></i><b>Raise</b></span><span class="gb-k fold"><i></i><b>Fold</b></span></div>
+      <div class="gb-detail" aria-live="polite"></div>
+      ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ''}`
+    paint()
+  }).catch(e => { if (!dead) fig.innerHTML = `<p class="status bad">Could not load the chart: ${esc(e.message)}</p>` })
+
+  let CELLS = null
+  function cells() {
+    if (!CELLS) { CELLS = []; for (let i = 0; i < GRID; i++) for (let j = 0; j < GRID; j++) CELLS.push({ i, j, name: cellName(i, j) }) }
+    return CELLS
+  }
+
+  function paint() {
+    const w = parseRange(seat.range)
+    fig.querySelectorAll('.gb-seats button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.seat === seat.id)))
+    fig.querySelectorAll('.chart-grid .c').forEach(b => {
+      const cl = cells()[Number(b.dataset.k)]
+      const on = w[idx(cl.i, cl.j)] > 0
+      b.classList.toggle('raise', on)
+      b.setAttribute('aria-label', `${cl.name}: ${on ? 'raise' : 'fold'} ${SEAT_WORDS[seat.id] || seat.name}`)
+    })
+    fig.querySelector('.gb-seatline').innerHTML = `<b>${esc(seat.name)}</b> — ${BEHIND[seat.id]} player${BEHIND[seat.id] === 1 ? '' : 's'} still to act behind you. Raise <b>${seat.pct}%</b> of hands: ${esc(seat.range)}.`
+    paintDetail()
+  }
+
+  function paintDetail() {
+    const d = fig.querySelector('.gb-detail')
+    fig.querySelectorAll('.chart-grid .c.picked').forEach(b => b.classList.remove('picked'))
+    if (picked == null) {
+      d.innerHTML = `<p class="gb-prompt">${esc(seat.note || '')} Tap any square to check a hand.</p>`
+      return
+    }
+    const cl = cells()[picked]
+    fig.querySelector(`.chart-grid [data-k="${picked}"]`).classList.add('picked')
+    const on = parseRange(seat.range)[idx(cl.i, cl.j)] > 0
+    d.innerHTML = `<p><b>${esc(cl.name)}</b> — ${esc(spoken(cl.i, cl.j))} — <b>${on ? 'raise' : 'fold'}</b> ${esc(SEAT_WORDS[seat.id] || '')}. ${esc(seat.note || '')}</p><div class="gb-combos"></div>`
+    const box = d.querySelector('.gb-combos')
+    // one example of the hand as cards is enough here; the 169 lesson shows them all
+    box.append(cardRowSVG(cellCombos(cl.i, cl.j)[0], { height: 40, gap: 3 }))
+  }
+
+  fig.addEventListener('click', e => {
+    const sb = e.target.closest('.gb-seats button')
+    if (sb && chart) { seat = chart.positions.find(x => x.id === sb.dataset.seat); return paint() }
+    const c = e.target.closest('.chart-grid .c')
+    if (!c) return
+    const k = Number(c.dataset.k)
+    picked = picked === k ? null : k
+    paintDetail()
+  })
+  return { destroy() { dead = true; fig.remove() } }
+}

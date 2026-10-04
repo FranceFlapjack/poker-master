@@ -1,117 +1,223 @@
 ---
 id: opening-charts
 track: Ranges
-title: Opening charts, and where they come from
-lede: A chart is somebody's answer to a question. Knowing whose, and to which question, is most of knowing how far to trust it.
+title: Opening charts — what to raise from each seat
+lede: Everyone before you has folded. Raise or fold? An opening chart answers that for every seat, and reading one takes ten seconds.
 level: Tournament
 sources:
   - "Texas hold 'em — Wikipedia, CC BY-SA: https://en.wikipedia.org/wiki/Texas_hold_%27em"
   - "Position (poker) — Wikipedia, CC BY-SA: https://en.wikipedia.org/wiki/Position_(poker)"
-  - The chart used in this app is content/charts/rfi-9max.json; its percentages are recomputed from the range notation by scripts/check-charts.mjs
+  - The chart in this lesson is this app's own, content/charts/rfi-9max.json — the same one the range trainer and the game score against. Its percentages are recomputed from the ranges by scripts/check-charts.mjs, and every drill below is checked against it by scripts/verify-drills.mjs
 ---
 
-An opening chart says: from this seat, raise these hands and fold the rest. It is the most useful single
-page in poker and the most often misunderstood, so it is worth being precise about what one actually is.
+You are at a nine-player table. Nobody has put any chips in yet except the blinds, and everyone before
+you has folded. Now it is your turn: **raise, or fold?**
 
-## Where charts come from
+An **opening chart** answers exactly that question. For each seat it lists the hands to raise with.
+Every other hand, you fold.
 
-Broadly, three places.
+## Reading the chart
 
-**Solver output.** Run an equilibrium solver over a simplified version of the game and read off what it
-does. These are the most rigorous charts available and they come with real caveats: the answer depends
-entirely on the assumptions fed in — stack depth, bet sizes allowed, what happens after the flop — and
-the output is usually **mixed**, meaning it raises a hand some percentage of the time rather than always.
-They are also, almost always, somebody's commercial product.
+Three steps:
 
-**Measured from results.** Take a large database of real hands and see what winning players actually did.
-Descriptive rather than prescriptive: it tells you what a population does, which may or may not be right.
+1. **Find your seat** along the top. The seats run in the order they act, from *under the gun* — the
+   first to speak, just left of the big blind — round to the *small blind*.
+2. **Find your hand** on the grid. Pairs run down the diagonal, suited hands sit above it and offsuit
+   hands below, exactly as in [the 169-hand lesson](#/lesson/ranges/the-169-grid).
+3. **Coloured means raise. Grey means fold.**
 
-**Authored from principles.** Someone applies the ideas in the previous lesson — fewer players behind
-means wider, position after the flop is worth a lot, suited beats offsuit — and writes down a range that
-follows them. Simple enough to memorise, and explicitly an approximation.
+Try it. Pick a seat, then tap any hand.
 
-## Which one this app uses, and why
+```grid
+show: chart
+position: UTG
+caption: Start under the gun, then step through the seats to the button and watch the coloured area grow.
+```
 
-**The chart in this app is the third kind.** It was authored from positional principles for this course.
-It is not solver output, it is not equilibrium, and it is not copied from anyone else's chart.
+## The pattern: the later you sit, the more you raise
 
-That is a deliberate choice rather than a shortcut. Solver-derived charts, cell by cell, are somebody's
-product, and lifting one would be taking work that is not ours to take. The *shape* of a positional
-opening range — tighter early, wider late, suited before offsuit — is ordinary poker knowledge that
-nobody owns.
+| Seat | Players still to act behind you | Hands to raise |
+|---|---|---|
+| Under the gun | 8 | 10% |
+| Under the gun + 1 | 7 | 12.5% |
+| Middle position | 6 | 16.3% |
+| Lojack | 5 | 18.9% |
+| Hijack | 4 | 22.5% |
+| Cutoff | 3 | 26.4% |
+| Button | 2 | 41.5% |
+| Small blind | 1 | 36.7% |
 
-What the app does instead is tell you, on the page, exactly what the chart is. The trainer carries the
-provenance beside the grid rather than hiding it in a file, because a chart looks authoritative whether
-or not it has earned it.
+The big blind has no row: if everyone folds to it, the hand is already over and the big blind wins.
 
-The percentages are the one part that cannot drift: they are recomputed from the range notation itself
-every time the checkers run, so a chart here can never claim a width it does not have.
+Two reasons, both simple:
+
+- **Fewer players can have you beaten.** Under the gun, eight players still get to look at their cards.
+  One of them will often hold something better than yours. On the button only the two blinds are left.
+- **Acting last is worth a lot.** The button acts last on every round after the flop, so it gets to see
+  what everyone else does first. That is why it raises more hands than any other seat — about four
+  in ten. The [position lesson](#/lesson/ranges/position-and-ranges) has the full story.
+
+## Five things worth remembering
+
+You do not need to memorise all 169 squares. These five facts, all straight from the chart, get you most
+of the way:
+
+- **Under the gun, about 1 hand in 10.** Pairs from 55 up, big aces (A9 suited or better, AQ offsuit or
+  better), KJ, KQ, QJ and JT suited, and KQ offsuit.
+- **Every pair is a raise from the lojack onward.** Before that, the smallest pairs fold.
+- **Every suited ace is a raise from the hijack onward.**
+- **The button raises about 4 hands in 10** — more than any other seat.
+- **Suited before offsuit.** Under the gun you raise A9 suited but fold AJ offsuit. Suited hands make
+  flushes, so they are worth more, and the chart reaches for them first.
 
 ```try
-type: choice
-ask: This app's opening chart was authored from positional principles. What does that mean about it?
-options: It is the equilibrium answer | It is a simple approximation that a solver would disagree with in places | It came from a database of winning players | It is wrong
-answer: It is a simple approximation that a solver would disagree with in places
-hint: Which of these is a claim the app actually makes about itself?
-why: It is a teaching baseline — coherent, memorable, and close enough to be useful. A solver would mix some of these hands rather than always opening them, and would size differently by position. Neither "the truth" nor "wrong": an approximation that says so.
+type: action
+chart: UTG
+seats: 9
+names: You, Ana, Bo, Cy, Dee, Eli, Fay, Gus, Hal
+stacks: 10000
+blinds: 100/200
+button: 6
+hero: 0
+hand: 7s 7h
+ask: You are under the gun, first to act, with a pair of sevens. Raise or fold?
+options: Fold | Raise to 500
+answer: Raise to 500
+hint: Under the gun the chart raises pairs from 55 upward. Is 77 in?
+why: Under the gun the chart raises every pair from 55 up, and 77 is one of them. Pairs are the one kind of hand that is often already best before the flop.
 ```
 
 ```try
-type: choice
-ask: A solver chart says to raise a hand 65% of the time. What does that mean?
-options: It wins 65% of the time | Raise it in 65% of seats | Play a mixed strategy — raise it most of the time, fold sometimes | The solver is 65% confident
-answer: Play a mixed strategy — raise it most of the time, fold sometimes
-hint: It is a frequency, not a probability of winning or a measure of confidence.
-why: Equilibrium strategies are often mixed: the same hand gets played more than one way so that an opponent can never read you from your action. It is also why solver charts are hard to use live — you cannot run a random number generator at the table, which is part of why simplified charts exist at all.
+type: action
+chart: UTG
+seats: 9
+names: You, Ana, Bo, Cy, Dee, Eli, Fay, Gus, Hal
+stacks: 10000
+blinds: 100/200
+button: 6
+hero: 0
+hand: Ks Ts
+ask: Under the gun again, now with king-ten suited. Raise or fold?
+options: Fold | Raise to 500
+answer: Fold
+hint: Under the gun the suited kings start at KJ.
+why: Under the gun the chart raises suited kings only from KJ up. With eight players still to act, king-ten too often runs into a better king or a bigger hand.
 ```
-
-## How to use one, and when to stop
-
-A chart answers exactly one question: **nobody has entered the pot yet, what do you open?** That is the
-"raise first in" part, and it covers a large share of preflop decisions.
-
-It does not tell you what to do facing a raise, what to do after someone limps, or anything at all about
-what happens on the flop. Those are different questions and need different answers.
-
-The honest way to hold a chart is as a **default you depart from for a reason**. Knowing the default
-matters because it means every departure is a decision rather than a drift. Playing a tight table? Open
-wider than the chart. Somebody behind you is re-raising constantly? Open tighter, especially with the
-hands that hate being raised. The chart is the thing you adjust *from*.
 
 ```try
-type: choice
-ask: What question does a "raise first in" chart answer?
-options: What to do on every street | What to open with when nobody has entered the pot yet | What to do facing a raise | Which hands win most often
-answer: What to open with when nobody has entered the pot yet
-hint: The name is the answer. Raise FIRST IN.
-why: Just that one spot. Facing a raise, facing a limp, and everything after the flop are separate questions, and a chart that claims to answer them all is answering none of them properly.
+type: action
+chart: BTN
+seats: 9
+names: You, Ana, Bo, Cy, Dee, Eli, Fay, Gus, Hal
+stacks: 10000
+blinds: 100/200
+button: 0
+hero: 0
+hand: Ks Ts
+actions: fold, fold, fold, fold, fold, fold
+ask: Same king-ten suited — but now everyone has folded to you on the button. Raise or fold?
+options: Fold | Raise to 500
+answer: Raise to 500
+hint: Only the two blinds are left, and you act last for the rest of the hand.
+why: On the button the chart raises every suited king. The cards did not change; the seat did. Only the blinds can wake up with something, and you will act last on every round after the flop.
+success: Right — same cards, opposite answer. That is the whole idea of a chart.
 ```
+
+```try
+type: action
+chart: HJ
+seats: 9
+names: You, Ana, Bo, Cy, Dee, Eli, Fay, Gus, Hal
+stacks: 10000
+blinds: 100/200
+button: 2
+hero: 0
+hand: Ad 5d
+actions: fold, fold, fold, fold
+ask: Folded to you in the hijack, with ace-five suited. Raise or fold?
+options: Fold | Raise to 500
+answer: Raise to 500
+hint: One of the five things worth remembering is about suited aces.
+why: From the hijack on, every suited ace is a raise. The small ones are not there for the ace — they can make a flush, and holding an ace makes it less likely anyone else has one.
+```
+
+```try
+type: action
+chart: CO
+seats: 9
+names: You, Ana, Bo, Cy, Dee, Eli, Fay, Gus, Hal
+stacks: 10000
+blinds: 100/200
+button: 1
+hero: 0
+hand: Qc 9h
+actions: fold, fold, fold, fold, fold
+ask: Folded to you in the cutoff, with queen-nine offsuit. Raise or fold?
+options: Fold | Raise to 500
+answer: Fold
+hint: Offsuit hands come in last. In the cutoff the offsuit queens start at QT.
+why: In the cutoff the chart raises offsuit queens from QT up, so Q9 offsuit is a fold. One seat later, on the button, it becomes a raise — offsuit hands are the last to join, seat by seat.
+```
+
+## What the chart does not tell you
+
+A chart answers **one** question: everyone before you folded — what do you open? It says nothing about
+what to do when somebody has already raised, when someone just called the big blind, or anything after
+the flop. Those are different questions; [defending the blinds](#/lesson/ranges/defending-the-blinds)
+covers the first of them.
+
+Treat the chart as your **starting point**. Change it only for a reason you could say out loud — the
+players behind you fold too much, say, or one of them re-raises everything.
 
 ```tip
-Treat a chart as a **default**, and leave it only for a reason you could say out loud at the table.
+The chart is your **default**. Leave it only for a reason you could say out loud at the table.
 ```
 
-+++ Read more: why a simple chart can beat a better one
+```try
+type: choice
+ask: Which question does an opening chart answer?
+options: What to do on every street | What to raise with when everyone before you has folded | What to do when someone has raised | Which hands win most often
+answer: What to raise with when everyone before you has folded
+hint: Think about what has happened before it is your turn.
+why: Just that one moment. Facing a raise, facing a call, and everything after the flop are separate questions.
+```
 
-There is a real argument for using a simplified chart even when a more accurate one exists.
+## Where this chart comes from
 
-A chart you have memorised and follow consistently produces a coherent range. A chart you half-remember
-produces something worse than either — you will recall the hands you like, forget the ones you do not,
-and end up with a range shaped by taste rather than position.
+Charts come from three places:
 
-Mixed strategies make this worse rather than better. "Raise this 65% of the time" is not something anyone
-executes at a live table; in practice it becomes "raise this when I feel like it", which is exactly the
-drift a chart is supposed to prevent.
+- **A solver** — a computer program that works out a strategy nobody can exploit, for a simplified game.
+  The most rigorous kind, and usually somebody's commercial product.
+- **A database** — what winning players actually did, measured over millions of real hands.
+- **Principles** — someone writes ranges down from rules like the ones in this lesson.
 
-So the useful test of a chart is not how close it is to equilibrium. It is whether you will actually
+**The chart in this app is the third kind.** It was written for this course from positional principles:
+it is not solver output, not GTO, and not copied from anyone else's chart. It is simple on purpose, so you
+can hold it in your head at a real table. A solver would disagree with some squares, and the range trainer
+says so on its page too.
+
++++ Read more: solvers, mixed strategies, and why a simple chart can beat a better one
+
+A solver's chart often says something like "raise this hand 65% of the time". That is a **frequency**, not a
+win rate: the solver plays the same hand more than one way so that nobody can read it from its action. It
+is also why solver charts are hard to use at a live table — nobody can run a random number generator in
+their head.
+
+And that points at a real argument for a simple chart. One you have memorised and follow consistently
+gives you a sensible range. One you half-remember gives you something worse than either: you recall the
+hands you like, forget the ones you do not, and end up with a range shaped by taste rather than by seat.
+"Raise this 65% of the time" tends to become "raise this when I feel like it", which is exactly the drift a
+chart is supposed to stop.
+
+So the useful test of a chart is not how close it comes to a solver. It is whether you will actually
 follow it.
 +++
 
 ## Remember
 
-- Charts come from solvers, from databases, or from principles. Each has different authority.
-- **This app's chart is authored from principles** — a teaching baseline, not equilibrium, and it says so
-  on the page.
-- A solver's percentage is a **frequency**, not a win rate.
-- A chart answers one question: what to open when nobody has entered.
-- Hold it as a default you depart from **for a reason**.
+- A chart answers one question: **everyone before you folded — raise or fold?**
+- **Find your seat, find your hand: coloured is raise, grey is fold.**
+- **The later you sit, the more you raise** — about 1 hand in 10 under the gun, about 4 in 10 on the button.
+- Every pair from the lojack on, every suited ace from the hijack on, and suited hands before offsuit.
+- This app's chart is written from principles, not a solver — a starting point you leave only for a reason.
+- Practise it in the [range trainer](#/tools/ranges).
