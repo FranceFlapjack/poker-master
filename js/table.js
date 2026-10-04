@@ -125,8 +125,13 @@ function middleLayout(s, m, round) {
   return { lines, w, h, cardW, cardH }
 }
 
-/** Seat k's direction, with the hero pinned to the bottom and the rest running clockwise. */
-const seatAngle = (k, n, hero, offset = 0) => (90 - ((k - hero + n) % n) * 360 / n + offset) * Math.PI / 180
+/**
+ * Seat k's direction, with the hero pinned to the bottom and the rest running CLOCKWISE on screen — the
+ * next seat is on the hero's left, as at a real table, where the button, the blinds and the action all
+ * pass to the left. Screen y points down, so clockwise is an INCREASING angle. This was a minus sign
+ * until 2026-10-04 (owner's catch): the table ran anticlockwise while the lessons said clockwise.
+ */
+const seatAngle = (k, n, hero, offset = 0) => (90 + ((k - hero + n) % n) * 360 / n + offset) * Math.PI / 180
 
 /**
  * Seat directions round a CIRCLE. Evenly spaced angles suit an oval, not a circle: a seat is a tall,
@@ -138,7 +143,7 @@ const seatAngle = (k, n, hero, offset = 0) => (90 - ((k - hero + n) % n) * 360 /
  */
 function roundAngles(cols, n, hero) {
   const order = Array.from({ length: n }, (_, i) => (hero + i) % n)       // the hero, then round the table
-  let th = order.map((_, i) => 90 - i * 360 / n)
+  let th = order.map((_, i) => 90 + i * 360 / n)                         // clockwise, as seatAngle
   const along = (c, deg) => {
     const a = deg * Math.PI / 180
     return 2 * c.half * Math.abs(Math.sin(a)) + (c.top + c.bottom) * Math.abs(Math.cos(a))
@@ -150,7 +155,7 @@ function roundAngles(cols, n, hero) {
     })
     const total = gaps.reduce((a, b) => a + b, 0)
     const next = [90]
-    for (let i = 1; i < n; i++) next.push(next[i - 1] - gaps[i - 1] / total * 360)
+    for (let i = 1; i < n; i++) next.push(next[i - 1] + gaps[i - 1] / total * 360)
     th = next
   }
   const out = []
@@ -451,8 +456,10 @@ export function mountTable(host, opts) {
       const label = chips(p.committed)
       const b = { k, label, w: measure(label, m.bet, 700, 0.02) }
       const base = seatAngle(k, n, hero)
-      // slide away from the horizontal axis first: that is the direction that leaves the board behind
-      const away = Math.sin(base) >= 0 ? 1 : -1
+      // slide away from the horizontal axis first: that is the direction that leaves the board behind.
+      // |sin| grows when the angle moves in the direction of sin·cos — true on both sides of the table
+      // (the old sign(sin) was right only on the right-hand side, which mattered once seats ran clockwise)
+      const away = Math.sign(Math.sin(base) * Math.cos(base)) || 1
       for (const deg of [0, 4, 8, 12, 16, 20, 25, 30, 36, -4, -8, -12]) {
         const th = base + away * deg * Math.PI / 180
         const x = (felt.rx - inset) * Math.cos(th), y = (felt.ry - inset) * Math.sin(th)
