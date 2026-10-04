@@ -177,7 +177,9 @@ function pfSpot(rng, charts, seat) {
   const d = charts.pushfold.depths.find(x => x.bb === depth)
   const mine = parseRange(seat === 'sb' ? d.push : d.call)
   const mixed = parseRange(seat === 'sb' ? (d.pushMixed || '') : (d.callMixed || ''))
-  const theirs = parseRange(seat === 'sb' ? d.call : d.push)
+  // The other side plays the chart AS SOLVED: its pure hands always, and the hands the solution mixes
+  // (played 35–65% of the time, listed apart from the main range) at half weight — not all or nothing.
+  const theirs = withMixed(parseRange(seat === 'sb' ? d.call : d.push), parseRange(seat === 'sb' ? (d.callMixed || '') : (d.pushMixed || '')))
   const inside = rng() < 0.5
   // mixed hands are never dealt: the solution plays them both ways, so there is nothing to score
   const cells = allCells().filter(c => inRange(mine, c) === inside && !inRange(mixed, c))
@@ -191,11 +193,12 @@ function pfSpot(rng, charts, seat) {
   // the opponent's hidden cards come from the range the chart says they play, so the picture is honest
   const theirCombos = liveCombos(theirs, hand)
   if (!theirCombos.length) return null
-  const vHand = pick(rng, theirCombos).c
+  const vHand = pickWeighted(rng, theirCombos).c
   let s = createHand({ seats, button, blinds: { sb: SB, bb: BB }, hole: { 0: hand, 1: vHand }, seed: (rng() * 1e9) | 0 })
   if (seat === 'bb') s = applyAction(s, { type: 'raise', amount: depth * BB })   // they shove
   // their range, without the cards in the hero's hand — card removal changes how often they continue
-  const cont = theirCombos.length / 1225                            // 1,225 hands are left once yours are out
+  // how often they continue, out of the 1,225 hands left once yours are out — card removal included
+  const cont = theirCombos.reduce((a, o) => a + o.wt, 0) / 1225
   const mc = equityMC([hand, theirs], [], [], { trials: 30000, seed: (rng() * 1e9) | 0 })
   const eq = mc.equity[0], se = mc.stderr[0]
   const chartSays = inRange(mine, cell)
@@ -213,7 +216,7 @@ function pfSpot(rng, charts, seat) {
       state: s, hero: 0, topic: `pushfold.hu.sb.${band(depth)}`, source: 'pushfold',
       title: 'Shove or fold',
       prompt: `Heads-up, ${depth} big blinds each. You are the small blind with ${glyphs(hand)}. All in, or fold?`,
-      facts: [`Heads-up, blinds 100/200, no ante — the game the push/fold chart solves.`, `${villain} plays the chart: they call a shove with ${pct(cont)} of hands (${d.call}).`],
+      facts: [`Heads-up, blinds 100/200, no ante — the game the push/fold chart solves.`, `${villain} plays the chart as solved: they call ${pct(cont)} of the hands they can hold (${d.call}${d.callMixed ? `; ${d.callMixed} about half the time` : ''}).`],
       options, ev, stake: depth, unit: 'bb', scored: true,
       best: bestOf(ev, noise, chartSays ? 'shove' : 'fold'),
       chartSays: chartSays ? 'shove' : 'fold',
@@ -233,9 +236,9 @@ function pfSpot(rng, charts, seat) {
   assertLegal(s, options)
   return {
     state: s, hero: 0, topic: `pushfold.hu.bb.${band(depth)}`, source: 'pushfold',
-    title: 'Call the shove?',
+    title: 'Calling a shove',
     prompt: `Heads-up, ${depth} big blinds each. ${villain} shoves from the small blind. You have ${glyphs(hand)} in the big blind. Call or fold?`,
-    facts: [`Heads-up, blinds 100/200, no ante — the game the push/fold chart solves.`, `${villain} plays the chart: they shove ${d.pushPct}% of hands (${d.push}).`],
+    facts: [`Heads-up, blinds 100/200, no ante — the game the push/fold chart solves.`, `${villain} plays the chart as solved: they shove ${pct(cont)} of the hands they can hold (${d.push}${d.pushMixed ? `; ${d.pushMixed} about half the time` : ''}).`],
     options, ev, stake: depth - 1, unit: 'bb', scored: true,
     best: bestOf(ev, noise, chartSays ? 'call' : 'fold'),
     chartSays: chartSays ? 'call' : 'fold',
@@ -246,6 +249,19 @@ function pfSpot(rng, charts, seat) {
 }
 const shove = (rng, charts) => pfSpot(rng, charts, 'sb')
 const callshove = (rng, charts) => pfSpot(rng, charts, 'bb')
+
+/** A range with its mixed cells set to half weight. */
+function withMixed(pure, mixed) {
+  const w = pure.slice()
+  for (let c = 0; c < w.length; c++) if (mixed[c] > 0) w[c] = 0.5
+  return w
+}
+/** One combo, drawn in proportion to its weight. */
+function pickWeighted(rng, combos) {
+  let x = rng() * combos.reduce((a, o) => a + o.wt, 0)
+  for (const o of combos) { x -= o.wt; if (x <= 0) return o }
+  return combos[combos.length - 1]
+}
 
 /** Every option within `noise` of the top EV counts as best. */
 function bestOf(ev, noise, prefer) {
@@ -311,7 +327,7 @@ function river(rng, charts) {
   for (const v of value) { const k = describe(v.v).split(',')[0]; valueBy[k] = (valueBy[k] || 0) + 1 }
   return {
     state: s, hero: 0, topic: 'maths.call.river', source: 'potodds',
-    title: 'Catch the bluff?',
+    title: 'Catching a bluff',
     prompt: `Heads-up, ${villain} raised to 500 on the button and you called in the big blind; flop and turn went check, check. You check with ${glyphs(hand)} — ${describe(ev0).toLowerCase()} — and they bet ${betBB * BB} into ${potBB * BB}. Call or fold?`,
     facts: [
       `Assume they bet every hand from their button range that beats you: ${value.length} combinations (${Object.entries(valueBy).map(([k, n]) => `${k.toLowerCase()} ${n}`).join(', ')}).`,
@@ -372,7 +388,7 @@ function allin(rng) {
   const need = S / (P + 2 * S)
   return {
     state: s, hero: 0, topic: 'maths.call.allin', source: 'potodds',
-    title: 'Call with the draw?',
+    title: 'Calling with a draw',
     prompt: `On the turn ${villain} moves all in for ${shoveChips} into ${potTurn}. You hold ${glyphs(hand)}. Call or fold?`,
     facts: [`Say they hold ${glyphs(vHand)} — ${describe(vNow).toLowerCase()}.`, `They are all in, so nothing more can be won or lost after this call: the price is all there is.`],
     options, ev, stake: S, unit: 'bb', scored: true,

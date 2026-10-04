@@ -608,8 +608,15 @@ the right play at the right price is 100% — on random tables, with an analysis
   Options within two standard errors of the best (where the equity is simulated) all count as best.
 - **Every decision feeds the weak-spot report.** Opening and push/fold spots use the trainers' own topic
   keys, so a weakness shows once wherever it was drilled; river calls, all-in calls and bubble calls have
-  their own (`maths.call.river`, `maths.call.allin`, `icm.bubble.call`). Each spot counts as a hand on the
-  activity grid, and the game keeps a history of scores (no streak).
+  their own (`maths.call.river`, `maths.call.allin`, `icm.bubble.call`). Like the trainers, the game does
+  not count hands on the activity grid — only Play deals real hands. It keeps a history of scores (no
+  streak).
+- **Dealt near the line, and the page says so**: half inside and half outside a range, prices tuned so
+  the answer can go either way. The score measures close decisions, not accuracy at a real table.
+- **The push/fold opponent plays the chart as solved**: its mixed hands (played 35–65% of the time,
+  listed apart from the main ranges) at half weight, in both the frequency and the equity.
+- **Beginner mode** hides the per-option EV table (the switch governs whether raw EV shows); the
+  explanation, in words, stays in both modes.
 - **`scripts/game-test.mjs`** builds spots of every kind and checks the hero is to act, every option is
   legal, the best option has the top EV and scores 100, points stay in 0–100, push/fold answers agree with
   the chart wherever it is pure, and the river EV reproduces from the stated counts. 240 spots: all pass,

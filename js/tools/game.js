@@ -57,6 +57,7 @@ export async function mountGame(main) {
         <p class="gm-formula">points = 100 × (1 − 2 × EV given up ÷ stake), never below 0</p>
         <p class="note">So a play that throws away a quarter of the stake on average scores 50, and half of it scores 0. Your score is the average of the ten.</p>
         <ul class="gm-sources">${SOURCES.map(([k, v]) => `<li><b>${esc(k)}</b> — scored by ${esc(v)}</li>`).join('')}</ul>
+        <p class="note"><b>Dealt near the line.</b> The spots are dealt near the line on purpose — hands half inside and half outside a range, prices tuned so the answer could go either way — because that is where a decision is worth testing. So your score here is how well you play close spots, not your accuracy at a real table, where most decisions are easy.</p>
         <p class="note"><b>Not scored: bet size.</b> No lesson teaches a sizing rule and the app has no solver, so opens are offered at one size, 2.5 big blinds, and the size is never graded.</p>
       </section>
       ${past.length ? `<section class="panel"><h2>Your last games</h2><p class="note">${past.map(g => `<b>${g.score}%</b> <span class="gm-when">${new Date(g.t).toLocaleDateString()}</span>`).join(' · ')}</p></section>` : ''}
@@ -104,7 +105,6 @@ export async function mountGame(main) {
     if (g.best) sound.play('success')
     // the trainers' topic keys where the skill is the same, so a weakness shows once wherever it was drilled
     if (g.points != null) progress.recordDrill(`game#${game.seed}#${k}`, { firstAttempt: true, topic: spot.topic, correct: g.points >= 90 })
-    progress.recordHand()
     stage.querySelectorAll('.gm-opts .opt').forEach(b => {
       b.disabled = true
       if (spot.best.includes(b.dataset.opt)) b.classList.add('right')
@@ -132,6 +132,7 @@ export async function mountGame(main) {
       <section class="gm-score">
         <span class="eyebrow">Your score</span>
         <div class="gm-big">${score}%</div>
+        <p class="note">These spots were dealt near the line, so this measures close decisions, not your accuracy at a real table, where most decisions are easy.</p>
         <p class="note">The best play in ${bestCount} of ${GAME_LENGTH} spots.${worst && worst.avg < 100 ? ` Your weakest kind of spot: <b>${esc(worst.t)}</b>, ${Math.round(worst.avg)} points. To go over it: <a href="${worst.lesson.href}">${esc(worst.lesson.title)}</a>.` : ' Every spot played the best way.'}</p>
       </section>
       <h2 class="gm-h2">The analysis</h2>
@@ -143,8 +144,8 @@ export async function mountGame(main) {
   function review(s, a, k) {
     const lab = id => (s.options.find(o => o.id === id) || {}).label || id
     const evRows = s.ev
-      ? `<table class="gm-ev"><tbody>${s.options.map(o => `<tr class="${s.best.includes(o.id) ? 'best' : ''}${o.id === a.id ? ' mine' : ''}"><td>${esc(o.label)}</td><td class="num">${o.id === 'fold' ? '0 (the zero)' : `${sign(s.ev[o.id])} ${esc(unitWord(s.unit))}`}</td></tr>`).join('')}</tbody></table>
-         <p class="gm-small">On average, compared with folding. At stake: ${Math.round(s.stake * 100) / 100} ${esc(unitWord(s.unit))}.</p>`
+      ? `<div class="grinder-only"><table class="gm-ev"><tbody>${s.options.map(o => `<tr class="${s.best.includes(o.id) ? 'best' : ''}${o.id === a.id ? ' mine' : ''}"><td>${esc(o.label)}</td><td class="num">${o.id === 'fold' ? '0 (the zero)' : `${sign(s.ev[o.id])} ${esc(unitWord(s.unit))}`}</td></tr>`).join('')}</tbody></table>
+         <p class="gm-small">On average, compared with folding. At stake: ${Math.round(s.stake * 100) / 100} ${esc(unitWord(s.unit))}.</p></div>`
       : ''
     return `<li class="${a.best ? 'good' : 'bad'}">
       <div class="gm-rhead"><b>${k + 1}. ${esc(s.title)}</b><span class="gm-pts">${a.points} points</span></div>

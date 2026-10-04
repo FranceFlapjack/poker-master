@@ -14,6 +14,8 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { makeSpot, makeGame, grade, TYPES, GAME_LENGTH } from '../js/game/spots.js'
 import { legalActions, applyAction } from '../js/engine/rules.js'
+import { evaluate, compare, HIGH_CARD } from '../js/engine/evaluator.js'
+import { parseRange, cellCombos, idx } from '../js/engine/ranges.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const charts = {
@@ -63,13 +65,43 @@ for (const type of TYPES) {
       const top = Math.max(...Object.values(s.ev))
       bad(where, `the chart says ${s.chartSays} but EV prefers ${s.best} by ${(top - s.ev[s.chartSays]).toFixed(3)}bb`)
     }
-    // the river: re-derive the equity from the stated counts in the facts
+    // the river, recounted from the table itself: the hero's cards, the dealt board, the button range
     if (type === 'river') {
+      const hero = s.state.seats[0].hole, board = s.state.presetBoard
+      const mine = evaluate([...hero, ...board])
+      const btn = parseRange(charts.rfi.positions.find(p => p.id === 'BTN').range)
+      let beats = 0, missed = 0
+      for (let i = 0; i < 13; i++) for (let j = 0; j < 13; j++) {
+        if (!btn[idx(i, j)]) continue
+        for (const c of cellCombos(i, j)) {
+          if (c.some(x => hero.includes(x) || board.includes(x))) continue
+          const v = evaluate([...c, ...board])
+          if (compare(v, mine) > 0) beats++
+          else if (compare(v, mine) < 0 && v.cat === HIGH_CARD) missed++
+        }
+      }
       const v = Number(/(\d+) combinations \(/.exec(s.facts[0])[1]), b = Number(/— (\d+) combinations/.exec(s.facts[1])[1])
-      const eq = b / (v + b)
-      const call = s.ev.call, bet = s.stake
-      const pot = (call + bet) / eq - 2 * bet
-      if (Math.abs(pot - 5) > 1e-6) bad(where, `the stated range does not reproduce the call EV (pot comes out ${pot})`)
+      if (v !== beats) bad(where, `the facts say ${v} hands beat you; a recount of the button range finds ${beats}`)
+      if (b > missed) bad(where, `${b} bluffs stated but only ${missed} hands in the range missed`)
+      const eq = b / (v + b), bet = s.stake
+      const want = eq * (5 + 2 * bet) - bet
+      if (Math.abs(want - s.ev.call) > 1e-9) bad(where, `call EV ${s.ev.call} but the recount gives ${want}`)
+    }
+    // the all-in, recounted: every river card, from the two hands and the turn board on the table
+    if (type === 'allin') {
+      const hero = s.state.seats[0].hole, vil = s.state.seats[1].hole, board = s.state.presetBoard.slice(0, 4)
+      const known = [...hero, ...vil, ...board]
+      let win = 0, tie = 0, n = 0
+      for (let c = 0; c < 52; c++) {
+        if (known.includes(c)) continue
+        const k = compare(evaluate([...hero, ...board, c]), evaluate([...vil, ...board, c])); n++
+        if (k > 0) win++; else if (k === 0) tie++
+      }
+      if (n !== 44) bad(where, `${n} river cards, not 44`)
+      const eq = (win + tie / 2) / n
+      const P = 2 * s.state.seats[0].total / 200, S = s.stake
+      const want = eq * (P + 2 * S) - S
+      if (Math.abs(want - s.ev.call) > 1e-9) bad(where, `call EV ${s.ev.call} but counting the rivers gives ${want}`)
     }
     for (const id of s.best) answers[type][id] = (answers[type][id] || 0) + 1
   }
