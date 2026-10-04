@@ -455,28 +455,28 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
    The marker carries the letter that mountHands prints beside each hand. No boxes — a border that
    resizes itself around a sentence gives a ragged stack of rectangles, and eighteen of these labels run
    past forty characters. */
-.exercise .options { display: flex; flex-direction: column; margin-bottom: var(--s-3); border-top: 1px solid var(--line); }
-.exercise .opt {
+:is(.exercise, .gm-opts) .options { display: flex; flex-direction: column; margin-bottom: var(--s-3); border-top: 1px solid var(--line); }
+:is(.exercise, .gm-opts) .opt {
   display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: baseline; gap: var(--s-3);
   width: 100%; text-align: left; font: inherit; font-size: var(--fs-2); line-height: 1.45;
   padding: 10px var(--s-2) 10px 0; background: none; border: 0; border-bottom: 1px solid var(--line);
   color: var(--ink); cursor: pointer; transition: color 140ms, background 140ms;
 }
-.exercise .opt .mark {
+:is(.exercise, .gm-opts) .opt .mark {
   font-size: 11px; font-weight: 600; letter-spacing: var(--track); color: var(--ink-2);
   justify-self: center; transition: color 140ms;
 }
-.exercise .opt:hover { background: var(--surface-2); color: var(--accent); }
-.exercise .opt:hover .mark { color: var(--accent); }
-.exercise .opt:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
-.exercise .opt.right { color: var(--good); font-weight: 600; }
-.exercise .opt.right .mark { color: var(--good); }
-.exercise .opt.wrong { color: var(--bad); }
-.exercise .opt.wrong .t { text-decoration: line-through; }
-.exercise .opt.wrong .mark { color: var(--bad); }
-.exercise .opt[disabled] { cursor: default; }
-.exercise .opt[disabled]:not(.right):not(.wrong) { color: var(--ink-3); }
-.exercise .opt[disabled]:hover { background: none; }
+:is(.exercise, .gm-opts) .opt:hover { background: var(--surface-2); color: var(--accent); }
+:is(.exercise, .gm-opts) .opt:hover .mark { color: var(--accent); }
+:is(.exercise, .gm-opts) .opt:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
+:is(.exercise, .gm-opts) .opt.right { color: var(--good); font-weight: 600; }
+:is(.exercise, .gm-opts) .opt.right .mark { color: var(--good); }
+:is(.exercise, .gm-opts) .opt.wrong { color: var(--bad); }
+:is(.exercise, .gm-opts) .opt.wrong .t { text-decoration: line-through; }
+:is(.exercise, .gm-opts) .opt.wrong .mark { color: var(--bad); }
+:is(.exercise, .gm-opts) .opt[disabled] { cursor: default; }
+:is(.exercise, .gm-opts) .opt[disabled]:not(.right):not(.wrong) { color: var(--ink-3); }
+:is(.exercise, .gm-opts) .opt[disabled]:hover { background: none; }
 
 /* No picture, so no second column — the question takes the width instead of being crushed into 42% of
    it. The list is still held to a readable measure rather than stretched to 900px. */
@@ -555,6 +555,40 @@ svg.pk-cards { display: block; }
   .pk-hands .hand-label { font-size: 22px; }
   .hands-wrap { max-width: 100%; }
 }
+
+/* ---------- the game (js/tools/game.js) ---------- */
+.game-page .gm-formula { font-family: var(--font-mono); font-size: var(--fs-1); padding: var(--s-2) var(--s-3); background: var(--surface-2); margin: 0 0 var(--s-3); }
+.game-page .gm-sources { font-size: var(--fs-1); color: var(--ink-2); padding-left: 1.1em; margin: 0 0 var(--s-3); }
+.game-page .gm-sources li { margin-bottom: var(--s-2); }
+.game-page .gm-sources b { color: var(--ink); }
+.game-page .gm-when { color: var(--ink-3); font-size: 11px; }
+.gm-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-3); }
+.gm-running { font-size: var(--fs-1); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.gm-table { margin-bottom: var(--s-2); }
+.gm-prompt { font-size: var(--fs-3); line-height: 1.45; margin: 0 0 var(--s-2); max-width: 720px; }
+.gm-facts { font-size: var(--fs-1); color: var(--ink-2); margin: 0 0 var(--s-4); padding-left: 1.1em; max-width: 720px; }
+.gm-facts li { margin-bottom: var(--s-1); }
+.gm-opts { max-width: 620px; margin-bottom: var(--s-3); }
+.gm-opts .opt small { display: block; font-size: 11px; color: var(--ink-3); font-weight: 400; }
+.gm-result .verdict { font-size: var(--fs-2); margin: 0 0 var(--s-3); padding-left: var(--s-3); border-left: 2px solid var(--line-2); }
+.gm-result .verdict.good { border-left-color: var(--good); }
+.gm-result .verdict.bad { border-left-color: var(--bad); }
+.gm-score { border-top: 1px solid var(--line); padding-top: var(--s-4); margin-bottom: var(--s-6); }
+.gm-big { font-size: 64px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--accent); margin: var(--s-2) 0; font-variant-numeric: tabular-nums; }
+.gm-h2 { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 var(--s-3); }
+.gm-review { list-style: none; padding: 0; margin: 0 0 var(--s-6); border-top: 1px solid var(--line); max-width: 760px; }
+.gm-review > li { padding: var(--s-4) 0 var(--s-4) var(--s-3); border-bottom: 1px solid var(--line); border-left: 2px solid var(--line-2); margin: 0; }
+.gm-review > li.good { border-left-color: var(--good); }
+.gm-review > li.bad { border-left-color: var(--bad); }
+.gm-review p { margin: 0 0 var(--s-2); font-size: var(--fs-2); line-height: 1.5; }
+.gm-rhead { display: flex; justify-content: space-between; gap: var(--s-3); margin-bottom: var(--s-2); }
+.gm-pts { font-variant-numeric: tabular-nums; font-weight: 600; }
+.gm-review .gm-small, .gm-small { font-size: var(--fs-1); color: var(--ink-2); }
+.gm-ev { border-collapse: collapse; font-size: var(--fs-1); margin: 0 0 var(--s-1); }
+.gm-ev td { padding: 3px var(--s-4) 3px 0; border-bottom: 1px solid var(--line); }
+.gm-ev td.num { font-family: var(--font-mono); text-align: right; }
+.gm-ev tr.best td { color: var(--good); font-weight: 600; }
+.gm-ev tr.mine td:first-child::after { content: " · yours"; color: var(--ink-3); font-weight: 400; }
 
 /* ---------- tools: calculators, not lessons ---------- */
 .lessons.tools { border-top: 1px solid var(--line); margin-top: var(--s-2); padding-top: var(--s-2); }

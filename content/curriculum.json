@@ -118,6 +118,12 @@
           "blurb": "Six-handed against rule-based opponents."
         },
         {
+          "slug": "game",
+          "title": "Test yourself",
+          "ready": true,
+          "blurb": "Ten spots, each scored by the maths behind it. The right play every time is 100%."
+        },
+        {
           "slug": "ranges",
           "title": "Preflop range trainer",
           "ready": true,

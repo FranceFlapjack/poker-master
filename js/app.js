@@ -203,6 +203,10 @@ async function showTool(main, slug) {
       const { mountRanges } = await import('./tools/ranges.js')
       main.innerHTML = ''
       view = await mountRanges(main)
+    } else if (slug === 'game') {
+      const { mountGame } = await import('./tools/game.js')
+      main.innerHTML = ''
+      view = await mountGame(main)
     } else if (slug === 'pushfold') {
       const { mountPushfold } = await import('./tools/pushfold.js')
       main.innerHTML = ''

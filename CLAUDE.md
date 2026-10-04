@@ -62,6 +62,7 @@ node scripts/check-content.mjs
 node scripts/engine-test.mjs
 node scripts/verify-drills.mjs
 node scripts/check-charts.mjs
+node scripts/game-test.mjs        # the game's spots: hero to act, legal options, best is best, chart agreement
 ```
 
 `check-charts.mjs` recomputes every percentage in `content/charts/` from the range notation itself and
@@ -80,6 +81,12 @@ come from" must stay answerable by anyone reading the file.
 - `js/progress.js` localStorage progress under the `poker-master.` prefix; drills additionally record
   accuracy **per topic** (a dotted key like `preflop.bbdef.btn.25bb`), which is what the weak-spot report
   reads. `js/activity-grid.js` the 12-week grid, shaded by hands played per day.
+- **The game** (`#/tools/game`, "Test yourself"): ten spots, scored. `js/game/spots.js` builds and scores
+  them with no DOM; `js/tools/game.js` is the page. A spot is SCORED only where the app knows the answer,
+  and BUILT to match exactly what scores it: open/fold by the opening chart (right or wrong, no EV),
+  push/fold by the solved heads-up chart and the EV against it, river and all-in calls by pot odds against
+  a stated range or hand (exact — nothing can be bet afterwards), the bubble by ICM. **Bet size is not
+  scored** — no lesson teaches a sizing rule. Every EV is measured against folding.
 - `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and
   `content/lessons/<track>/<slug>.md` exists.
 

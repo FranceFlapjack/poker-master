@@ -588,6 +588,38 @@ normal table there, and make the phone table a circle, which looks nicer than a 
   Illustrations are measured by the box their drawing fills inside the slot, not by the slot, as in
   Draft 4.
 
+### The game — "Test yourself", 2026-10-04
+
+The owner's request: a game mode like a quiz, drawn from what the lessons teach, scored as a percentage —
+the right play at the right price is 100% — on random tables, with an analysis afterwards. Ten spots.
+
+- **Scored only where the app knows the answer.** Six kinds of spot, four sources: open or fold (the
+  opening chart — authored, not solver output, so right is 100 and wrong is 0); shove or fold and calling
+  a shove, heads-up 2–15bb (the solved push/fold chart, with the EV of each option against the other
+  side's chart range — mixed hands are never dealt); catching a bluff on the river and calling an all-in
+  with a draw on the turn (pot odds against a STATED range or hand — exact, because nothing can be bet
+  after either); and a big-blind call on the bubble (ICM on stated stacks and payouts, the shove range a
+  stated assumption). Each spot's table is built to be the game its source assumes: the push/fold tables
+  are heads-up, 100/200, no ante, as the chart was solved.
+- **Bet size is not scored**, which leaves part of the request open: no lesson teaches a sizing rule and
+  there is no solver, so opens are offered at one size (2.5bb) and the page says the size is not graded.
+  A sourced sizing lesson would be the way to score it.
+- **Points:** 100 × (1 − 2 × EV given up ÷ stake), floored at 0 — every EV measured against folding.
+  Options within two standard errors of the best (where the equity is simulated) all count as best.
+- **Every decision feeds the weak-spot report.** Opening and push/fold spots use the trainers' own topic
+  keys, so a weakness shows once wherever it was drilled; river calls, all-in calls and bubble calls have
+  their own (`maths.call.river`, `maths.call.allin`, `icm.bubble.call`). Each spot counts as a hand on the
+  activity grid, and the game keeps a history of scores (no streak).
+- **`scripts/game-test.mjs`** builds spots of every kind and checks the hero is to act, every option is
+  legal, the best option has the top EV and scores 100, points stay in 0–100, push/fold answers agree with
+  the chart wherever it is pure, and the river EV reproduces from the stated counts. 240 spots: all pass,
+  every push/fold spot agreeing with the chart.
+- **Found on the way:** the page's class `.game` collided with the game-viewer grid ported from the
+  siblings (the same trap as `.play` on the Play page) — the page is `.game-page`.
+
+Next, by the owner's choice: famous hands (each checked against a published source first), then full
+hands against the bots scored decision by decision where the maths allows.
+
 ### The cat in the box — hints and tips, 2026-09-26
 
 The owner's request: tips in some lessons, and a hint when you answer wrong, delivered by a mascot — the

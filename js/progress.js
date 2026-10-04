@@ -85,6 +85,15 @@ class Progress {
       .slice(0, limit)
   }
 
+  // --- games: the scored ten-spot game (js/tools/game.js). A history of scores, newest last; no streak ---
+  recordGame({ score, spots }) {
+    if (!this.state.games) this.state.games = []
+    this.state.games.push({ t: Date.now(), score, spots })
+    if (this.state.games.length > 100) this.state.games.splice(0, this.state.games.length - 100)
+    this._save()
+  }
+  get games() { return this.state.games || [] }
+
   recordPlay({ level, result }) {
     this.state.plays.push({ t: Date.now(), level, result })
     this.addPoints(POINTS[result] || 0)

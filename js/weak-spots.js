@@ -6,7 +6,8 @@
 //
 //   basics/the-cards.rank        a lesson drill      `<dir>/<slug>.<kind>`
 //   preflop.rfi.BTN              the range trainer
-//   pushfold.hu.sb.6-10bb        the push/fold trainer
+//   pushfold.hu.sb.6-10bb        the push/fold trainer (and the game's push/fold spots)
+//   maths.call.river             the game: river calls, all-in calls, bubble calls
 //
 // TWO HONESTIES, both of which cost a line of code and are the reason this is worth having at all:
 //
@@ -42,6 +43,10 @@ export function describeTopic(topic, curriculum) {
     const what = seat === 'sb' ? 'Shoving' : 'Calling a shove'
     return { area: 'Push/fold', label: `${what} at ${String(band).replace('bb', '').replace('-', '–')} big blinds`, href: '#/tools/pushfold' }
   }
+  // the game's own decisions (its opening and push/fold spots share the trainers' keys above)
+  if (topic === 'maths.call.river') return { area: 'Maths', label: 'Calling a river bet with a bluff-catcher', href: '#/lesson/maths/bluffing-and-mdf' }
+  if (topic === 'maths.call.allin') return { area: 'Maths', label: 'Calling an all-in with a draw', href: '#/lesson/maths/pot-odds' }
+  if (topic === 'icm.bubble.call') return { area: 'Stack depth and ICM', label: 'Calling a shove on the bubble', href: '#/lesson/stacks/the-bubble' }
   // a lesson drill: `<dir>/<slug>.<kind>`
   const cut = topic.lastIndexOf('.')
   const path = cut > 0 ? topic.slice(0, cut) : topic
