@@ -135,7 +135,8 @@ export async function mountGame(main) {
         ${d.step.real ? `<p><b>${esc(who)} chose ${esc(label(d.step.real))}${same ? ' — the same as you' : ''}.</b> ${esc(d.step.why)}</p>`
                       : `<p><b>What happened next is disputed.</b> ${esc(hand.gap)} ${esc(d.step.why)}</p>`}
         <p class="gm-lesson"><b>The lesson:</b> ${esc(d.step.lesson)}</p>
-        <p class="gm-small"><b>The maths.</b> ${m.price ? `Calling costs ${m.price.toCall.toLocaleString('en')} into a pot of ${m.price.pot.toLocaleString('en')}, so you need to win ${pct(m.price.need)} of the time. ` : ''}With hindsight — ${esc(them.name)} really held ${esc(cardsGlyph(parseCards(them.hole)))} — your hand wins ${m.exact ? '' : 'about '}${pct(m.equity)} of the time from here${m.exact ? ', every remaining card counted' : ''}. You could not see that at the table; it is here to show what each choice was really up against.</p>
+        ${m.price ? `<p class="gm-small"><b>The price.</b> Calling costs ${m.price.toCall.toLocaleString('en')} to win ${m.price.pot.toLocaleString('en')}, so the call needs to win ${pct(m.price.need)} of the time.</p>` : ''}
+        <p class="gm-small">${esc(them.name)}'s cards stay hidden until the hand is over — you decide with what ${esc(who)} could see.</p>
         ${!same && d.step.real ? `<p class="gm-small">The hand carries on as it really went.</p>` : ''}
       </div>
       <div class="actions"><button class="btn primary" data-go="${last ? 'fend' : 'fnext'}">${last ? 'See how it ended' : 'Next decision'}</button></div>`
@@ -144,17 +145,23 @@ export async function mountGame(main) {
   function famousEnd() {
     dropTable()
     const { hand, seat, steps } = rep
+    const them = hand.seats[1 - seat]
     const end = replay(hand).end
     const label = (d, x) => (d.step.options.find(o => o.id === x) || {}).label || x
     stage.innerHTML = `
       <div class="gm-head"><span class="eyebrow">${esc(hand.title)} · how it ended</span></div>
       <div class="gm-table"></div>
       <p class="gm-prompt">${esc(hand.ending)}</p>
-      <h2 class="gm-h2">Your choices, and theirs</h2>
-      <ol class="gm-review">${steps.map((d, n) => `<li class="${rep.chose[n] === d.step.real ? 'good' : 'other'}">
+      <p class="gm-prompt">${esc(them.name)} held <b>${esc(cardsGlyph(parseCards(them.hole)))}</b>.</p>
+      <h2 class="gm-h2">Your choices, and what you were really up against</h2>
+      <ol class="gm-review">${steps.map((d, n) => {
+        const m = mathsAt(hand, seat, d.state)
+        return `<li class="${rep.chose[n] === d.step.real ? 'good' : 'other'}">
         <p class="gm-small">${esc(d.step.ask)}</p>
         <p>You: <b>${esc(label(d, rep.chose[n]))}</b> · ${esc(hand.seats[seat].name)}: <b>${d.step.real ? esc(label(d, d.step.real)) : 'disputed — see above'}</b></p>
-        <p class="gm-small">${esc(d.step.lesson)}</p></li>`).join('')}</ol>
+        <p class="gm-small"><b>With hindsight:</b> against ${esc(cardsGlyph(parseCards(them.hole)))}, your hand was winning ${m.exact ? '' : 'about '}${(m.equity * 100).toFixed(1)}% of the time at this point${m.exact ? ', every remaining card counted' : ''}.${m.price ? ` The call needed ${(m.price.need * 100).toFixed(1)}%.` : ''}</p>
+        <p class="gm-small">${esc(d.step.lesson)}</p></li>`
+      }).join('')}</ol>
       <details class="more gm-howknow"><summary>How we know this hand</summary><div class="more-body">
         <ul>${hand.sources.map(src => `<li>${esc(src.what)} — <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.by)}</a></li>`).join('')}</ul>
         ${hand.conflicts.length ? `<p class="gm-small"><b>Where the sources disagree, and what we did:</b></p><ul>${hand.conflicts.map(c => `<li class="gm-small">${esc(c)}</li>`).join('')}</ul>` : ''}

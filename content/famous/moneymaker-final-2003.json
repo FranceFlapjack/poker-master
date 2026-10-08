@@ -2,13 +2,25 @@
   "id": "moneymaker-final-2003",
   "title": "The hand that started the poker boom",
   "event": "2003 WSOP Main Event — the final hand, Chris Moneymaker against Sam Farha",
-  "blurb": "The very next hand after the bluff. Bottom two pair against top pair, and $2.5 million on it.",
+  "blurb": "The very next hand after the bluff, with the world title on it.",
   "seats": [
-    { "name": "Moneymaker", "stack": 6600000, "hole": "5d 4s" },
-    { "name": "Farha", "stack": 1800000, "hole": "Jh Td" }
+    {
+      "name": "Moneymaker",
+      "stack": 6600000,
+      "hole": "5d 4s"
+    },
+    {
+      "name": "Farha",
+      "stack": 1800000,
+      "hole": "Jh Td"
+    }
   ],
   "button": 1,
-  "blinds": { "sb": 20000, "bb": 40000, "ante": 5000 },
+  "blinds": {
+    "sb": 20000,
+    "bb": 40000,
+    "ante": 5000
+  },
   "anteType": "each",
   "board": "Js 5s 4c 8d 5h",
   "unknown": null,
@@ -18,10 +30,24 @@
     "Farha has the button this time, so he acts first before the flop and last after it."
   ],
   "actions": [
-    { "seat": 1, "type": "raise", "amount": 100000 },
-    { "seat": 0, "type": "call" },
-    { "seat": 0, "type": "check" },
-    { "seat": 1, "type": "bet", "amount": 175000 }
+    {
+      "seat": 1,
+      "type": "raise",
+      "amount": 100000
+    },
+    {
+      "seat": 0,
+      "type": "call"
+    },
+    {
+      "seat": 0,
+      "type": "check"
+    },
+    {
+      "seat": 1,
+      "type": "bet",
+      "amount": 175000
+    }
   ],
   "pots": [],
   "gap": "From here the accounts differ on the exact betting. What every source agrees on is the end: Farha was all in with his pair of jacks, and Moneymaker called with his two pair.",
@@ -33,9 +59,18 @@
         "1": {
           "ask": "Farha raises to 100,000 from the button. You hold 5♦ 4♠ and a big chip lead. Fold, call, or re-raise?",
           "options": [
-            { "id": "fold", "label": "Fold" },
-            { "id": "call", "label": "Call 60,000 more" },
-            { "id": "raise", "label": "Re-raise" }
+            {
+              "id": "fold",
+              "label": "Fold"
+            },
+            {
+              "id": "call",
+              "label": "Call 60,000 more"
+            },
+            {
+              "id": "raise",
+              "label": "Re-raise"
+            }
           ],
           "notes": {
             "fold": "Safe, and fine at a full table — but heads-up, with a big chip lead and a good price, a cheap flop is reasonable.",
@@ -49,23 +84,38 @@
         "2": {
           "ask": "The flop is J♠ 5♠ 4♣. You have two pair — fives and fours, the bottom two. You act first. Check or bet?",
           "options": [
-            { "id": "check", "label": "Check" },
-            { "id": "bet", "label": "Bet" }
+            {
+              "id": "check",
+              "label": "Check"
+            },
+            {
+              "id": "bet",
+              "label": "Bet"
+            }
           ],
           "notes": {
             "check": "What Moneymaker did. Lets the raiser bet — and Farha has a jack, so he will.",
             "bet": "Gets money in and protects against straight and flush draws, but may fold out the hands you want to get paid by."
           },
           "real": "check",
-          "why": "Moneymaker checked to the player who raised before the flop. With a jack in his hand, Farha was always going to bet.",
+          "why": "Moneymaker checked to the player who raised before the flop. Farha had raised before the flop, so he was likely to bet again.",
           "lesson": "When the other player is likely to bet, checking a strong hand lets them put the money in for you."
         },
         "4": {
           "ask": "Farha bets 175,000. You have bottom two pair; a jack — top pair — is the likeliest thing for him to hold. Fold, call, or move all in?",
           "options": [
-            { "id": "fold", "label": "Fold" },
-            { "id": "call", "label": "Call 175,000" },
-            { "id": "allin", "label": "Move all in" }
+            {
+              "id": "fold",
+              "label": "Fold"
+            },
+            {
+              "id": "call",
+              "label": "Call 175,000"
+            },
+            {
+              "id": "allin",
+              "label": "Move all in"
+            }
           ],
           "notes": {
             "fold": "Two pair is far too strong to fold here.",
@@ -73,17 +123,33 @@
             "allin": "Gets the money in while you are ahead of top pair — and Farha has only about 1.8 million, so it puts his whole tournament on this hand."
           },
           "real": null,
-          "why": "Two pair against top pair is a big favourite on the flop. Whatever the exact order of bets, the money went in with Moneymaker ahead.",
+          "why": "Bottom two pair is well ahead of the hands most likely to bet here, like top pair. Whatever the exact order of bets, the money went in with Moneymaker ahead.",
           "lesson": "When you are well ahead and the other player is short, getting all the chips in now is usually right: their outs only get the chance to come if you let them see more cards cheaply."
         }
       }
     }
   },
   "sources": [
-    { "what": "The hole cards 5♦4♠ and J♥10♦, and the board J♠5♠4♣8♦5♥", "url": "https://en.wikipedia.org/wiki/Chris_Moneymaker", "by": "Wikipedia — Chris Moneymaker (CC BY-SA)" },
-    { "what": "Farha all in with a pair of jacks on the flop, called by Moneymaker's bottom two pair", "url": "https://en.wikipedia.org/wiki/Sam_Farha", "by": "Wikipedia — Sam Farha (CC BY-SA)" },
-    { "what": "Farha raised to 100,000, Moneymaker called; Moneymaker checked the flop, Farha bet 175,000", "url": "https://www.cardplayer.com/poker-news/4658-wsop-history-2003-recap", "by": "CardPlayer — WSOP History: 2003 Recap" },
-    { "what": "The final hand came the hand after the bluff; a J-5-4 flop, bottom two pair against top pair", "url": "https://grantland.com/features/the-oral-history-2003-world-series-poker-which-chris-moneymaker-turned-39-25-million/", "by": "Grantland — When We Held Kings (oral history)" }
+    {
+      "what": "The hole cards 5♦4♠ and J♥10♦, and the board J♠5♠4♣8♦5♥",
+      "url": "https://en.wikipedia.org/wiki/Chris_Moneymaker",
+      "by": "Wikipedia — Chris Moneymaker (CC BY-SA)"
+    },
+    {
+      "what": "Farha all in with a pair of jacks on the flop, called by Moneymaker's bottom two pair",
+      "url": "https://en.wikipedia.org/wiki/Sam_Farha",
+      "by": "Wikipedia — Sam Farha (CC BY-SA)"
+    },
+    {
+      "what": "Farha raised to 100,000, Moneymaker called; Moneymaker checked the flop, Farha bet 175,000",
+      "url": "https://www.cardplayer.com/poker-news/4658-wsop-history-2003-recap",
+      "by": "CardPlayer — WSOP History: 2003 Recap"
+    },
+    {
+      "what": "The final hand came the hand after the bluff; a J-5-4 flop, bottom two pair against top pair",
+      "url": "https://grantland.com/features/the-oral-history-2003-world-series-poker-which-chris-moneymaker-turned-39-25-million/",
+      "by": "Grantland — When We Held Kings (oral history)"
+    }
   ],
   "conflicts": [
     "CardPlayer gives the cards as 5♦4♦ against J♦10♦ on J♠5♠4♠ with a 5♠ river. That puts the 5♠ on the board twice, so its suits are not used. Wikipedia's suits — 5♦4♠ against J♥10♦ on J♠5♠4♣8♦5♥ — have no duplicates and are used here.",

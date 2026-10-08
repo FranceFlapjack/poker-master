@@ -50,6 +50,21 @@ for (const id of index.hands) {
   // the decisions a reader is asked
   for (const [seat, plan] of Object.entries(hand.play || {})) {
     if (!plan.intro) bad(where, `seat ${seat}: no intro`)
+    // NO SPOILERS: the reader decides with what the player could see. The opponent's cards — as glyphs
+    // ("K♠"), codes ("Ks") or ranks ("K-7", "K7") — must not appear in the list, the intro, the facts, or
+    // anything shown before the reader's last decision. (The last one is followed straight by the reveal.)
+    const opp = parseCards(hand.seats[1 - Number(seat)].hole)
+    const R = '23456789TJQKA', G = ['♣', '♦', '♥', '♠'], S = 'cdhs'
+    const r = c => R[c >> 2], tells = [
+      ...opp.map(c => r(c) + G[c & 3]), ...opp.map(c => r(c) + S[c & 3]),
+      `${r(opp[0])}-${r(opp[1])}`, `${r(opp[1])}-${r(opp[0])}`, `${r(opp[0])}${r(opp[1])}`, `${r(opp[1])}${r(opp[0])}`,
+    ].map(x => x.replace('T', '10').includes('10') ? [x, x.replace('T', '10')] : [x]).flat()
+    const keys = Object.keys(plan.steps).map(Number).sort((a, b) => a - b)
+    const early = [hand.blurb, hand.title, plan.intro, ...hand.facts,
+      ...keys.slice(0, -1).flatMap(k => { const st = plan.steps[k]; return [st.ask, st.why, st.lesson, ...Object.values(st.notes || {})] })]
+    for (const text of early) for (const tell of tells) {
+      if (new RegExp(`(^|[^A-Za-z0-9])${tell.replace(/[-]/g, '\\-')}([^A-Za-z0-9]|$)`).test(text || '')) bad(`${where} seat ${seat}`, `gives away ${hand.seats[1 - Number(seat)].name}'s cards ("${tell}") before the end: "${String(text).slice(0, 90)}…"`)
+    }
     for (const d of decisions(hand, Number(seat))) {
       const at = `${where} seat ${seat} step ${d.k}`
       steps++

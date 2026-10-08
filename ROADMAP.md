@@ -663,6 +663,12 @@ what to do — and room to choose differently, because a mistake is something to
 - **Not scored, and the page says why.** "Mistake" only where a source says it: PokerNews criticises
   Farha's turn lead but treats his fold as reasonable, and Seidel has said himself he could have got out
   of his hand more cheaply.
+- **No spoilers** (owner's comment, the same day): you decide with what the player could see. The
+  opponent's cards and the hindsight equity were first shown after every decision — so as Farha you knew
+  Moneymaker's hand by the second — and the hand list and several explanations gave the hands away too.
+  Now the cards and the hindsight come only at the end, decision by decision, and famous-test fails any
+  file that names the opponent's cards (as glyphs, codes or ranks) in the list, the intro, the facts or
+  any explanation before the reader's last decision.
 - **The maths:** the price counts only what you can win — facing an all-in bigger than your stack, the
   uncalled part goes back (caught in testing: Farha's last call first showed 21.4% needed; it is 33.2%).
 
