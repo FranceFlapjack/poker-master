@@ -659,8 +659,12 @@ The owner asked for a sourced sizing lesson, the step before the game can score 
 - **New check:** a drill tagged `math: caller | bluff` with `bet:` and `pot:` is VERIFIED — its answer
   must be the percentage the engine computes. The check caught a wrong figure while the lesson was being
   written (twice the pot needs 40%, not 50%).
-- **Next:** with a sourced rule for opens, the game can score an open's size against it — not yet done;
-  the owner decides.
+- **Then the game scored open sizes** (owner's go-ahead, the same day): when the chart says raise and you
+  do, the size is held to the lesson's band — 2 to 3 big blinds, up to 3.5 from the small blind
+  (Anttonen) — full marks inside it and 25 points off per big blind outside, so 4bb scores 75 and an
+  all-in open 0. Raising when the chart folds is 0 at any size. The page calls it a rule from the
+  lesson's sources, not a solved answer; every other size is still explained, not graded. game-test
+  checks the scale on every opening spot.
 
 ### Famous hands — 2026-10-08
 

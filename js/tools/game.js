@@ -7,7 +7,7 @@
 // solved equilibrium, pot odds, ICM), that the opening chart is not solver output, that bet size is not
 // scored, and that "compared with folding" is the zero every EV is measured from.
 
-import { gamePlan, makeSpot, grade, optionFor, GAME_LENGTH } from '../game/spots.js'
+import { gamePlan, makeSpot, gradeChoice, optionFor, GAME_LENGTH } from '../game/spots.js'
 import { mountTable, mountHands } from '../table.js'
 import { decisions, mathsAt, describeAction, boardNews, replay, stepChoice } from '../game/famous.js'
 import { cardsGlyph, parseCards } from '../engine/cards.js'
@@ -20,7 +20,7 @@ const sign = x => `${x >= 0 ? '+' : '−'}${Math.abs(Math.round(x * 100) / 100).
 const unitWord = u => u === 'bb' ? 'big blinds' : u
 
 const SOURCES = [
-  ['Open or fold', "this app's opening chart — written from general positional principles, not solver output, not GTO. Right is 100, wrong is 0."],
+  ['Open or fold', "this app's opening chart — written from general positional principles, not solver output, not GTO. Right is 100, wrong is 0. When raising is right, the size counts too: 2 to 3 big blinds (3.5 from the small blind) is full marks, and each big blind outside that costs 25 points — the rule the Bet sizing lesson teaches."],
   ['Shove or fold, call a shove', 'the heads-up push/fold equilibrium this app solved, and the EV against it. Heads-up and chips only.'],
   ['Catch a bluff on the river, call an all-in with a draw', 'pot odds against the range or hand the spot states. Exact: nothing can be bet afterwards.'],
   ['The bubble', 'ICM on the stated stacks and payouts. The shover\'s range is a stated assumption.'],
@@ -63,7 +63,7 @@ export async function mountGame(main) {
         <p class="note">So a play that throws away a quarter of the stake on average scores 50, and half of it scores 0. Your score is the average of the ten.</p>
         <ul class="gm-sources">${SOURCES.map(([k, v]) => `<li><b>${esc(k)}</b> — scored by ${esc(v)}</li>`).join('')}</ul>
         <p class="note"><b>Dealt near the line.</b> The spots are dealt near the line on purpose — hands half inside and half outside a range, prices tuned so the answer could go either way — because that is where a decision is worth testing. So your score here is how well you play close spots, not your accuracy at a real table, where most decisions are easy.</p>
-        <p class="note"><b>Not scored: bet size.</b> No lesson teaches a sizing rule and the app has no solver, so opens are offered at one size, 2.5 big blinds, and the size is never graded.</p>
+        <p class="note"><b>Bet size.</b> The size of an open is scored against the <a href="#/lesson/maths/bet-sizing">Bet sizing</a> lesson's rule — a rule from its sources, not a solved answer. Every other size is explained but not graded: scoring it would need a solver, which this app does not have.</p>
       </section>
       ${past.length ? `<section class="panel"><h2>Your last games</h2><p class="note">${past.map(g => `<b>${g.score}%</b> <span class="gm-when">${new Date(g.t).toLocaleDateString()}</span>`).join(' · ')}</p></section>` : ''}
       <div class="actions"><button class="btn primary" data-go="start">Start a game of ten spots</button></div>
@@ -204,7 +204,7 @@ export async function mountGame(main) {
         <p class="gm-prompt">${esc(spot.prompt)}</p>
         <ul class="gm-facts">${spot.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
         <div class="gm-table"></div>
-        <p class="gm-small gm-howto">Act with the buttons under the table — fold, call, or raise with the slider. The size is never scored, only explained.</p>
+        <p class="gm-small gm-howto">Act with the buttons under the table — fold, call, or raise with the slider. An open's size is scored; other sizes are explained, not graded.</p>
         <div class="gm-result" aria-live="polite"></div>`
       // the table's own controls: whatever you do is turned into the decision the spot scores
       view = mountTable(stage.querySelector('.gm-table'), {
@@ -219,7 +219,7 @@ export async function mountGame(main) {
     const k = game.k, spot = game.spots[k]
     if (!spot || game.answers[k]) return
     const id = choice.id
-    const g = grade(spot, id)
+    const g = gradeChoice(spot, choice)
     game.answers[k] = { id, said: choice.said, size: choice.size, why: choice.why, ...g }
     if (view) view.update({ interactive: false })
     sound.unlock()
@@ -229,7 +229,7 @@ export async function mountGame(main) {
     const bestLabel = spot.options.filter(o => spot.best.includes(o.id)).map(o => o.label).join(' or ')
     const last = k === GAME_LENGTH - 1
     stage.querySelector('.gm-result').innerHTML = `
-      <p class="verdict ${g.points == null ? '' : g.best ? 'good' : 'bad'}">You: <b>${esc(choice.said)}</b>. ${g.points == null ? `Not scored — ${esc(choice.why)} The best of the scored plays: ${esc(bestLabel)}.` : `${g.best ? 'Best play' : `The best play was ${esc(bestLabel)}`} — <b>${g.points} points</b>.`}</p>
+      <p class="verdict ${g.points == null ? '' : g.best ? 'good' : 'bad'}">You: <b>${esc(choice.said)}</b>. ${g.points == null ? `Not scored — ${esc(choice.why)} The best of the scored plays: ${esc(bestLabel)}.` : `${g.best ? 'Best play' : g.sizeOff ? `Right to raise — the size was outside ${g.band[0]}–${g.band[1]} big blinds` : `The best play was ${esc(bestLabel)}`} — <b>${g.points} points</b>.`}</p>
       ${choice.size ? `<p class="gm-small">${esc(choice.size)}</p>` : ''}
       <div class="actions"><button class="btn primary" data-go="${last ? 'finish' : 'next'}">${last ? 'See your analysis' : 'Next spot'}</button></div>`
   }
@@ -268,7 +268,7 @@ export async function mountGame(main) {
     return `<li class="${a.points == null ? 'other' : a.best ? 'good' : 'bad'}">
       <div class="gm-rhead"><b>${k + 1}. ${esc(s.title)}</b><span class="gm-pts">${a.points == null ? 'not scored' : `${a.points} points`}</span></div>
       <p class="gm-small">${esc(s.prompt)}</p>
-      <p>You: <b>${esc(a.said || lab(a.id))}</b>${a.best ? ' — the best play.' : ` · Best: <b>${esc(s.best.map(lab).join(' or '))}</b>`}</p>
+      <p>You: <b>${esc(a.said || lab(a.id))}</b>${a.best ? ' — the best play.' : a.sizeOff ? ` · Right to raise; the best size is ${a.band[0]}–${a.band[1]} big blinds.` : ` · Best: <b>${esc(s.best.map(lab).join(' or '))}</b>`}</p>
       ${a.why ? `<p class="gm-small">Not scored: ${esc(a.why)}</p>` : ''}
       ${a.size ? `<p class="gm-small">${esc(a.size)}</p>` : ''}
       ${evRows}

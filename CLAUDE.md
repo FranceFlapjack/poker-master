@@ -86,9 +86,10 @@ come from" must stay answerable by anyone reading the file.
   them with no DOM; `js/tools/game.js` is the page. A spot is SCORED only where the app knows the answer,
   and BUILT to match exactly what scores it: open/fold by the opening chart (right or wrong, no EV),
   push/fold by the solved heads-up chart and the EV against it, river and all-in calls by pot odds against
-  a stated range or hand (exact — nothing can be bet afterwards), the bubble by ICM. **Bet size is not
-  scored** — you choose any size with the table's slider, and the analysis comments on it, but no lesson
-  teaches a sizing rule and there is no solver. Every EV is measured against folding. Spots are dealt near the
+  a stated range or hand (exact — nothing can be bet afterwards), the bubble by ICM. **Only an open's size
+  is scored**, against the Bet sizing lesson's sourced band (2–3 big blinds, 3.5 from the small blind; 25
+  points per big blind outside it) — a rule, and the page says so. Every other size is explained, not
+  graded: that would need a solver. Every EV is measured against folding. Spots are dealt near the
   line on purpose, and the page says the score measures close decisions, not table accuracy.
 - **Famous hands** (`content/famous/*.json`, played from the game page, `js/game/famous.js`): real hands
   replayed decision by decision — what the player did, why, a note on every option, the lesson, and the

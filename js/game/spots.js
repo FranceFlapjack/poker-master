@@ -63,6 +63,33 @@ export function grade(spot, choice) {
   return { points: Math.round(100 * Math.max(0, 1 - 2 * loss / spot.stake)), best: false, loss }
 }
 
+/**
+ * OPEN SIZES, scored against the rule the Bet sizing lesson teaches (content/lessons/maths/bet-sizing.md):
+ * a tournament open of about 2 to 3 big blinds — PokerNews (2.2–2.5x usual), Jonathan Little (2–3x
+ * standard), Miikka Anttonen (up to 3–3.5x from the small blind). A rule from those sources, not a
+ * solved answer, and the page says so. Inside the band is full marks; each big blind outside it costs
+ * OPEN_STEP points, down to 0 — so an all-in open of 50 big blinds scores nothing.
+ */
+export const OPEN_BAND = { min: 2, max: 3, sbMax: 3.5 }
+export const OPEN_STEP = 25
+export function openSizePoints(seat, bb) {
+  const hi = seat === 'SB' ? OPEN_BAND.sbMax : OPEN_BAND.max
+  const off = bb < OPEN_BAND.min ? OPEN_BAND.min - bb : bb > hi ? bb - hi : 0
+  return { points: Math.max(0, Math.round(100 - OPEN_STEP * off)), off, lo: OPEN_BAND.min, hi }
+}
+
+/**
+ * Grade what the reader actually did. As grade(), plus one thing: when the chart says raise and you do,
+ * the SIZE of the open counts too — the decision is right, and the size is held to the lesson's band.
+ */
+export function gradeChoice(spot, choice) {
+  const g = grade(spot, choice.id)
+  if (spot.type !== 'rfi' || choice.id !== 'raise' || !g.best || !(choice.amount > 0)) return g
+  const bb = choice.amount / spot.state.blinds.bb
+  const sz = openSizePoints(spot.seat, bb)
+  return { ...g, points: sz.points, best: sz.off === 0, sizeOff: sz.off, band: [sz.lo, sz.hi] }
+}
+
 /** The kinds and seeds of one game's spots, in order — cheap; the page builds each spot as it is reached. */
 export function gamePlan(seed, n = GAME_LENGTH) {
   const rng = mulberry32(seed >>> 0)
@@ -148,12 +175,12 @@ function rfi(rng, charts) {
   s = foldTo(s, 0)
   const options = [
     { id: 'fold', label: 'Fold', action: { type: 'fold' } },
-    { id: 'raise', label: 'Raise', note: 'any size — the size is not scored', action: { type: 'raise', amount: 500 } },
+    { id: 'raise', label: 'Raise', note: 'the size counts: 2–3 big blinds (3.5 from the small blind)', action: { type: 'raise', amount: 500 } },
   ]
   assertLegal(s, options)
   const open = inRange(w, cell)
   return {
-    state: s, hero: 0, topic: `preflop.rfi.${pos.id}`, source: 'chart',
+    state: s, hero: 0, seat: pos.id, topic: `preflop.rfi.${pos.id}`, source: 'chart',
     title: 'Open or fold',
     prompt: `Everyone has folded to you ${RFI_WHERE[pos.id] || pos.name.toLowerCase()}. ${glyphs(hand)} — raise or fold?`,
     facts: [`Nine-handed, 50 big blinds each, blinds 100/200.`],
@@ -506,7 +533,13 @@ export function optionFor(spot, action) {
   const all = big && action.amount >= big.max
   const said = all ? 'All in' : `${action.type === 'bet' ? 'Bet' : 'Raise to'} ${action.amount.toLocaleString('en')}`
   if (spot.type === 'rfi') {
-    return out('raise', said, `You raised to ${action.amount.toLocaleString('en')}, ${bbOf(action.amount)}. The size is not scored — the course's drills open to 2.5 big blinds, and the chart only says whether to raise.`)
+    const bb = action.amount / s.blinds.bb, sz = openSizePoints(spot.seat, bb)
+    const band = `${sz.lo}–${sz.hi} big blinds`
+    const c = out('raise', said, sz.off === 0
+      ? `You opened to ${action.amount.toLocaleString('en')}, ${bbOf(action.amount)} — inside the ${band} the Bet sizing lesson teaches.`
+      : `You opened to ${action.amount.toLocaleString('en')}, ${bbOf(action.amount)} — ${r1(sz.off)} big blind${sz.off === 1 ? '' : 's'} outside the ${band} the Bet sizing lesson teaches, so the size costs ${100 - sz.points} points when raising is right. (A rule from the lesson's sources, not a solved answer.)`)
+    c.amount = action.amount
+    return c
   }
   if (spot.type === 'shove') {
     if (all) return out('shove', 'All in')

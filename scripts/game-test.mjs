@@ -12,7 +12,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { makeSpot, makeGame, grade, optionFor, TYPES, GAME_LENGTH } from '../js/game/spots.js'
+import { makeSpot, makeGame, grade, gradeChoice, optionFor, openSizePoints, TYPES, GAME_LENGTH } from '../js/game/spots.js'
 import { legalActions, applyAction } from '../js/engine/rules.js'
 import { evaluate, compare, HIGH_CARD } from '../js/engine/evaluator.js'
 import { parseRange, cellCombos, idx } from '../js/engine/ranges.js'
@@ -116,6 +116,17 @@ for (const type of TYPES) {
         if (g.points != null && (g.points < 0 || g.points > 100)) bad(where, `${t.type} scores ${g.points}`)
         if (!c.said) bad(where, `${t.type}: no words for what the reader did`)
       }
+    }
+    // open sizes: scored against the Bet sizing lesson's band, only when raising is right
+    if (type === 'rfi') {
+      const bb = s.state.blinds.bb, big = legalActions(s.state).find(a => a.type === 'raise')
+      const pts = n => gradeChoice(s, optionFor(s, { type: 'raise', amount: Math.min(big.max, Math.round(n * bb)) })).points
+      if (s.best.includes('raise')) {
+        if (pts(2) !== 100 || pts(2.5) !== 100) bad(where, `a 2 or 2.5 big blind open scores ${pts(2)} / ${pts(2.5)}, not 100`)
+        if (s.seat === 'SB' ? pts(3.5) !== 100 : pts(4) !== 75) bad(where, `the size rule is off: ${s.seat} at ${s.seat === 'SB' ? 3.5 : 4}bb scores ${s.seat === 'SB' ? pts(3.5) : pts(4)}`)
+        if (pts(50) !== 0) bad(where, `an all-in open scores ${pts(50)}, not 0`)
+        for (let n = 3; n < 12; n += 0.5) if (pts(n + 0.5) > pts(n)) bad(where, `a bigger open (${n + 0.5}bb) scores more than ${n}bb`)
+      } else if (pts(2.5) !== 0) bad(where, `raising when the chart folds scores ${pts(2.5)}, not 0`)
     }
     for (const id of s.best) answers[type][id] = (answers[type][id] || 0) + 1
   }
