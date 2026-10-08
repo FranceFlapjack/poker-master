@@ -104,11 +104,12 @@ function feltFor(n, round) {
  * can keep off it. A round table's board cards are drawn a little smaller — its felt is small, and at
  * full size five cards all but fill it.
  */
-function middleLayout(s, m, round) {
+function middleLayout(s, m, round, unknown = null) {
   const cardH = round ? Math.round(m.boardH * 0.86) : m.boardH
   const cardW = Math.round(cardH * 0.72)
   const pot = potTotal(s)
-  const potText = pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
+  // a replay of a real hand whose chip counts no source records shows the pot as unknown, not invented
+  const potText = unknown ? 'POT —' : pot > 0 ? `POT ${chips(pot)}` : s.result ? `POT ${chips(s.result.total)} — PAID` : null
   const hasBoard = s.board.length > 0
   const lines = []
   let w = 0
@@ -203,6 +204,8 @@ function measure(str, size, weight = 400, spacingEm = 0) {
  * @param {(action:{type:string, amount?:number}) => void} [opts.onAction]
  * @param {boolean} [opts.reveal]      show every hole card (a finished hand, or a teaching spot)
  * @param {boolean} [opts.showBB]      label stacks in big blinds as well as chips
+ * @param {{shown?:number[]}} [opts.unknownChips]  a replay of a real hand whose chip counts no source
+ *        records: stacks and the pot show as unknown, and a bet shows its amount only if it is in `shown`
  * @param {Record<number, string|{src:string, ink?:number[], size?:number[]}>} [opts.avatars]  seat →
  *        artwork. Presentation only, deliberately not part of the engine's seat record: `rules.js` should
  *        never carry anything a renderer invented. Seats with no entry get the built-in figure, so a
@@ -331,8 +334,10 @@ export function mountTable(host, opts) {
     }
     g.append(text(p.name, { class: 'seat-name', x: rx, y: base, style: px(m.name) }))
 
-    const bbText = o.showBB && s.blinds.bb ? `${inBigBlinds(p.stack, s.blinds.bb)} bb` : ''
-    if (p.stack <= 0) {
+    const bbText = o.showBB && s.blinds.bb && !o.unknownChips ? `${inBigBlinds(p.stack, s.blinds.bb)} bb` : ''
+    if (o.unknownChips) {
+      g.append(text(p.stack <= 0 ? 'ALL IN' : '—', { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
+    } else if (p.stack <= 0) {
       g.append(text('ALL IN', { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
     } else if (col.twoLine && bbText) {
       g.append(text(chips(p.stack), { class: 'seat-detail', x, y: y + col.stackBase, 'text-anchor': 'middle', style: px(m.stack) }))
@@ -440,7 +445,7 @@ export function mountTable(host, opts) {
     }
     for (const st of seats) { st.x = st.t * st.dir.x; st.y = st.t * st.dir.y }
 
-    const mid = middleLayout(s, m, round)
+    const mid = middleLayout(s, m, round, o.unknownChips)
 
     // Wagers sit on an ellipse inset from the felt edge, at each seat's own angle — in front of the
     // player, the same depth from the rail at every seat. Where that spot is on the board (a round
@@ -453,7 +458,9 @@ export function mountTable(host, opts) {
     const clash = (A, B) => A.x1 < B.x2 && B.x1 < A.x2 && A.y1 < B.y2 && B.y1 < A.y2
     s.seats.forEach((p, k) => {
       if (!(p.committed > 0)) return
-      const label = chips(p.committed)
+      // unknown chip counts: only an amount a source records is shown
+      const known = o.unknownChips && (o.unknownChips.shown || []).includes(p.committed)
+      const label = !o.unknownChips || known ? chips(p.committed) : p.allIn ? 'ALL IN' : '—'
       const b = { k, label, w: measure(label, m.bet, 700, 0.02) }
       const base = seatAngle(k, n, hero)
       // slide away from the horizontal axis first: that is the direction that leaves the board behind.

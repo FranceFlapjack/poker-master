@@ -590,6 +590,26 @@ svg.pk-cards { display: block; }
 .gm-ev tr.best td { color: var(--good); font-weight: 600; }
 .gm-ev tr.mine td:first-child::after { content: " · yours"; color: var(--ink-3); font-weight: 400; }
 
+/* the famous-hand replays: a choice that differs from the real one is not wrong, so it is marked in ink,
+   not in the red a scored mistake gets */
+.gm-hands { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.gm-hands > li { padding: var(--s-3) 0; border-bottom: 1px solid var(--line); }
+.gm-hands > li > b { display: block; font-size: var(--fs-2); }
+.gm-hands .gm-small { display: block; margin: 2px 0; }
+.gm-hands .actions { margin-top: var(--s-2); }
+.gm-story { list-style: none; padding: 0 0 0 var(--s-3); margin: 0 0 var(--s-3); border-left: 2px solid var(--line-2); font-size: var(--fs-1); color: var(--ink-2); max-width: 720px; }
+.gm-story li { margin-bottom: 3px; }
+.gm-story b { color: var(--ink); }
+.gm-opts .opt.mine, .gm-opts .opt.mine[disabled] { color: var(--ink); font-weight: 600; }
+.gm-opts .opt.mine .mark { color: var(--ink); }
+.gm-explain { max-width: 720px; margin-bottom: var(--s-3); }
+.gm-explain p { margin: 0 0 var(--s-2); font-size: var(--fs-2); line-height: 1.55; }
+.gm-explain .gm-small { font-size: var(--fs-1); color: var(--ink-2); }
+.gm-lesson { padding-left: var(--s-3); border-left: 2px solid var(--accent); }
+.gm-review > li.other { border-left-color: var(--line-2); }
+.gm-howknow { max-width: 760px; margin-bottom: var(--s-5); }
+.gm-howknow li { font-size: var(--fs-1); margin-bottom: var(--s-1); }
+
 /* ---------- tools: calculators, not lessons ---------- */
 .lessons.tools { border-top: 1px solid var(--line); margin-top: var(--s-2); padding-top: var(--s-2); }
 .tool-link .tick { border-radius: 50%; }

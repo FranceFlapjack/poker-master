@@ -1,0 +1,206 @@
+{
+  "id": "moneymaker-bluff-2003",
+  "title": "The bluff of the century",
+  "event": "2003 WSOP Main Event — heads-up, Chris Moneymaker against Sam Farha",
+  "blurb": "An amateur who qualified online against one of the most feared pros in the game. King-high, a draw on the turn, and a river that missed everything.",
+  "seats": [
+    { "name": "Moneymaker", "stack": 5700000, "hole": "Ks 7h" },
+    { "name": "Farha", "stack": 2700000, "hole": "Qs 9h" }
+  ],
+  "button": 0,
+  "blinds": { "sb": 20000, "bb": 40000, "ante": 5000 },
+  "anteType": "each",
+  "board": "9s 2d 6s 8s 3h",
+  "unknown": null,
+  "facts": [
+    "Blinds 20,000/40,000 with a 5,000 ante. Heads-up, so Moneymaker's button is also the small blind and he acts first before the flop, last after it.",
+    "Stacks are about 5.7 million (Moneymaker) and 2.7 million (Farha): CardPlayer gives the counts after this hand, 6.6 million and 1.8 million, and the chips Farha put in are added back."
+  ],
+  "actions": [
+    { "seat": 0, "type": "raise", "amount": 100000 },
+    { "seat": 1, "type": "call" },
+    { "seat": 1, "type": "check" },
+    { "seat": 0, "type": "check" },
+    { "seat": 1, "type": "bet", "amount": 300000 },
+    { "seat": 0, "type": "raise", "amount": 800000 },
+    { "seat": 1, "type": "call" },
+    { "seat": 1, "type": "check" },
+    { "seat": 0, "type": "allin" },
+    { "seat": 1, "type": "fold" }
+  ],
+  "pots": [
+    { "before": 4, "pot": 210000, "source": "PokerNews: Farha bets 300,000 \"into the 210,000 pot\"." }
+  ],
+  "ending": "Farha thought for a long time — by his own account about twenty minutes, most of which the broadcast did not show — and folded his pair of nines. Moneymaker had king-high. The pot moved him to about 6.6 million against 1.8 million, and the tournament ended on the very next hand.",
+  "play": {
+    "1": {
+      "intro": "You are Sam Farha, a top professional, heads-up for the world championship against an amateur. You hold Q♠ 9♥ in the big blind.",
+      "steps": {
+        "1": {
+          "ask": "Moneymaker raises to 100,000 from the button. You hold Q♠ 9♥. What do you do?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 60,000 more" },
+            { "id": "raise", "label": "Re-raise" }
+          ],
+          "notes": {
+            "fold": "Too tight heads-up. With only one opponent, a hand like queen-nine is well above average, and you are getting a good price to see a flop.",
+            "call": "What Farha did. A cheap call keeps the pot small with a decent but not premium hand.",
+            "raise": "Reasonable too — heads-up, queen-nine is often the best hand. It builds a bigger pot with a hand that does not love one."
+          },
+          "real": "call",
+          "why": "Heads-up, almost any hand with a queen is worth seeing a flop for at this price. Farha called rather than re-raising, keeping the pot manageable.",
+          "lesson": "Heads-up, hands go up in value: there is only one other hand to beat, so a queen-nine you would fold at a full table is a call here."
+        },
+        "2": {
+          "ask": "The flop is 9♠ 2♦ 6♠. You have top pair — nines with a queen kicker. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet about half the pot" }
+          ],
+          "notes": {
+            "check": "What Farha did. Checking can trap a player who will bet a worse hand, but it also lets a drawing hand see the next card for free.",
+            "bet": "Charges the draws — two spades are out — while you are ahead. Top pair is a hand that likes the pot to grow a little."
+          },
+          "real": "check",
+          "why": "Moneymaker, by his own account, read the check as a plan to check and call with top pair rather than build a big pot against him. Both players checked, and the turn came free.",
+          "lesson": "A free card is not free for you: the player with the draw gets to try again without paying. Top pair on a board with a flush draw usually wants to make draws pay."
+        },
+        "4": {
+          "ask": "The turn is the 8♠ — now three spades and four cards near a straight. You still have top pair. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet 300,000" }
+          ],
+          "notes": {
+            "check": "Keeps the pot small on a board that just got scary for a single pair.",
+            "bet": "What Farha did — 300,000 into a 210,000 pot. A large bet that represents strength but builds a big pot with only one pair."
+          },
+          "real": "bet",
+          "why": "Farha led out big. PokerNews's analysis argues he \"really shouldn't be leading\" after checking the flop — a one-pair hand on a board like this would rather keep the pot under control.",
+          "lesson": "When the board gets more dangerous, one pair gets weaker. Betting big into it invites exactly the raise you do not want to face."
+        },
+        "6": {
+          "ask": "Moneymaker raises to 800,000. Top pair on a board with three spades and a possible straight. Call, fold, or move all in?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 500,000 more" },
+            { "id": "allin", "label": "Move all in" }
+          ],
+          "notes": {
+            "fold": "Gives up a lot of chips with top pair against a player who could be raising a draw.",
+            "call": "What Farha did. Keeps his options open for the river, at a high price.",
+            "allin": "Ends the hand now and denies the draws their river card — but against a flush or a straight you are close to drawing dead."
+          },
+          "real": "call",
+          "why": "Farha called and waited for the river. The raise could mean a made flush or straight — or a big draw like the one Moneymaker actually held.",
+          "lesson": "A raise on a scary board narrows the other player's hand to two kinds: very strong, or a draw. A single pair beats only the draws."
+        },
+        "7": {
+          "ask": "The river is the 3♥ — a blank. The flush and the straight did not get there. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet" }
+          ],
+          "notes": {
+            "check": "What Farha did. Lets a missed draw bluff — and gets you to a decision you may not want.",
+            "bet": "Gets value from a worse pair and takes the bluff away. But a flush or straight made on the turn would raise you."
+          },
+          "real": "check",
+          "why": "Farha checked, which handed the initiative back to Moneymaker.",
+          "lesson": "Checking the river gives a player who missed one last chance to bluff. Sometimes that is the plan; know that it is."
+        },
+        "9": {
+          "ask": "Moneymaker moves all in — you would have to put in all your remaining chips, about 1.8 million. Call or fold?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call all in" }
+          ],
+          "notes": {
+            "fold": "What Farha did. He laid down the best hand.",
+            "call": "Would have won the pot and the chip lead — with hindsight. At the time, it risked his tournament against a range full of flushes and straights."
+          },
+          "real": "fold",
+          "why": "PokerNews's analysis does not call the fold a mistake: an all-in here tells you he holds a straight or better, or nothing at all — and against that, one pair is only a bluff catcher. Farha said afterwards that he talked himself out of the call.",
+          "lesson": "A bluff catcher can only beat a bluff. The question is not \"is my hand good?\" but \"how often is this a bluff?\" — and you will sometimes fold the winner. That is part of the game, not proof the fold was wrong."
+        }
+      }
+    },
+    "0": {
+      "intro": "You are Chris Moneymaker, an accountant who won his seat online, heads-up for the world championship against Sam Farha. You hold K♠ 7♥ on the button.",
+      "steps": {
+        "0": {
+          "ask": "You are on the button with K♠ 7♥. You act first. Fold, limp, or raise?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Just call the big blind" },
+            { "id": "raise", "label": "Raise to 100,000" }
+          ],
+          "notes": {
+            "fold": "Too tight. Heads-up, king-seven is well above average.",
+            "call": "Plays a smaller pot, but gives up the chance to win the blinds right away.",
+            "raise": "What Moneymaker did. Heads-up, raising most hands from the button is standard."
+          },
+          "real": "raise",
+          "why": "Heads-up, the button raises a wide range: there is only one player to get past, and you act last after the flop.",
+          "lesson": "Heads-up, raise a lot from the button. A king with any kicker is a strong hand when there is only one opponent."
+        },
+        "3": {
+          "ask": "The flop is 9♠ 2♦ 6♠ and Farha checks. You have king-high with the K♠ — one spade. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check behind" },
+            { "id": "bet", "label": "Bet about half the pot" }
+          ],
+          "notes": {
+            "check": "What Moneymaker did. Takes a free card with king-high and a backdoor flush draw.",
+            "bet": "A continuation bet often wins the pot right away — but Farha has a nine and is not going anywhere."
+          },
+          "real": "check",
+          "why": "Moneymaker checked behind and took the free card.",
+          "lesson": "When you check behind, you see the next card for free — useful with a hand that can improve."
+        },
+        "5": {
+          "ask": "The turn is the 8♠. You now have a flush draw (four spades with the king) and an open-ended straight draw (a 5 or a 10). Farha bets 300,000. Fold, call, or raise?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 300,000" },
+            { "id": "raise", "label": "Raise to 800,000" }
+          ],
+          "notes": {
+            "fold": "Throws away a big draw with many outs.",
+            "call": "Sees the river at a fair price for a draw this strong.",
+            "raise": "What Moneymaker did — a semi-bluff. It can win the pot now, and it can still make the best hand on the river."
+          },
+          "real": "raise",
+          "why": "A raise with a big draw is called a semi-bluff: if Farha folds you win now, and if he calls you still have outs. PokerNews notes this line differs from what players would usually choose today.",
+          "lesson": "Semi-bluff with strong draws: you win if they fold, and you can still win if they call and you hit."
+        },
+        "8": {
+          "ask": "The river is the 3♥. You missed everything — king-high. Farha checks. Check, or move all in?",
+          "options": [
+            { "id": "check", "label": "Check — give up" },
+            { "id": "allin", "label": "Move all in" }
+          ],
+          "notes": {
+            "check": "Your king-high almost never wins a showdown. Checking means you have lost the hand.",
+            "allin": "What Moneymaker did. The only way to win: make Farha fold a better hand."
+          },
+          "real": "allin",
+          "why": "PokerNews describes the all-in as telegraphing a \"polarized\" range: a straight or better, or nothing. Moneymaker had nothing — and that is exactly why it could work. His story on the turn (the raise) matched a made hand.",
+          "lesson": "A bluff only works when the story makes sense. Your bets on earlier streets must match the strong hand you are pretending to have."
+        }
+      }
+    }
+  },
+  "sources": [
+    { "what": "Cards, suits, board, every bet, blinds and ante, and the turn pot of 210,000", "url": "https://www.pokernews.com/strategy/analyzing-moneymaker-bluff-of-the-century-against-farha-35218.htm", "by": "PokerNews — Analyzing Moneymaker's 'Bluff of the Century' Against Farha" },
+    { "what": "Every bet amount confirmed, and the chip counts after the hand (6.6 million and 1.8 million)", "url": "https://www.cardplayer.com/poker-news/4658-wsop-history-2003-recap", "by": "CardPlayer — WSOP History: 2003 Recap" },
+    { "what": "K-7 against Q-9, a 9-6-2 flop with two spades, the eight of spades giving Moneymaker a flush draw and an open-ended straight draw, the river all-in; Farha's own account of the fold", "url": "https://grantland.com/features/the-oral-history-2003-world-series-poker-which-chris-moneymaker-turned-39-25-million/", "by": "Grantland — When We Held Kings (oral history)" },
+    { "what": "King-high bluff, Farha folds a pair of nines", "url": "https://en.wikipedia.org/wiki/Chris_Moneymaker", "by": "Wikipedia — Chris Moneymaker (CC BY-SA)" },
+    { "what": "Three spades on the board, king-high, Farha's top pair of nines", "url": "https://www.flushdraw.net/news/this-date-in-poker-chris-moneymaker-wins-wsop-main-event-2003/", "by": "FlushDraw — This Date in Poker" }
+  ],
+  "conflicts": [
+    "CardPlayer gives the hand as K♦7♦ against Q♠9♠ on 9♠6♦2♠ 8♠ 3♠. That cannot be right: it puts the 9♠ in Farha's hand and on the flop, and four spades on the board. PokerNews's suits have no duplicates and match Grantland's account — two spades on the flop, the 8♠ giving Moneymaker a flush draw — so they are used here.",
+    "PokerNews says the players began heads-up with 4.6 million and 3.7 million. Those are the counts at the start of heads-up play, not at this hand: they do not add up with CardPlayer's counts after it. The stacks here are worked back from CardPlayer's after-hand counts."
+  ]
+}

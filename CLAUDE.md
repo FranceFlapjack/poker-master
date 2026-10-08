@@ -63,6 +63,7 @@ node scripts/engine-test.mjs
 node scripts/verify-drills.mjs
 node scripts/check-charts.mjs
 node scripts/game-test.mjs        # the game's spots: hero to act, legal options, best is best, chart agreement
+node scripts/famous-test.mjs      # famous hands: no duplicate cards, every action legal, stated pots match, sources
 ```
 
 `check-charts.mjs` recomputes every percentage in `content/charts/` from the range notation itself and
@@ -88,6 +89,13 @@ come from" must stay answerable by anyone reading the file.
   a stated range or hand (exact — nothing can be bet afterwards), the bubble by ICM. **Bet size is not
   scored** — no lesson teaches a sizing rule. Every EV is measured against folding. Spots are dealt near the
   line on purpose, and the page says the score measures close decisions, not table accuracy.
+- **Famous hands** (`content/famous/*.json`, played from the game page, `js/game/famous.js`): real hands
+  replayed decision by decision — what the player did, why, a note on every option, the lesson, and the
+  maths (the price where the pot is known; equity WITH HINDSIGHT, labelled so). **Not scored.** Every hand
+  is checked against published sources before it goes in, with a note on each conflict between them.
+  **Nothing on screen may show a number the sources do not give**: unrecorded stacks and pots show as "—"
+  (`unknown`), and disputed betting stops the replay at that decision (`gap`). Call a play a mistake only
+  where a source does.
 - `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and
   `content/lessons/<track>/<slug>.md` exists.
 

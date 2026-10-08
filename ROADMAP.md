@@ -641,6 +641,31 @@ New check: a drill tagged `chart: <seat>` is VERIFIED — verify-drills requires
 in that seat with everyone before folded, and the answer to be a raise exactly when the chart opens the
 hand there. Deliberate mistakes (a wrong answer, a hero one seat off) are both caught.
 
+### Famous hands — 2026-10-08
+
+The owner's request: famous hands in the game, an explanation at every step — why the player did it,
+what to do — and room to choose differently, because a mistake is something to learn from.
+
+- **Three hands, four seats to play:** the bluff of the century (2003 — as Farha or as Moneymaker), the
+  final hand of 2003 (as Moneymaker), and Chan's trap from Rounders (1988 — as Seidel).
+- **Each was checked against published sources first** — PokerNews, CardPlayer, Grantland's oral
+  history, Wikipedia, Upswing Poker and others — and the sources disagreed in places that matter. Two
+  gave suits that cannot be right (the same card twice); the duplicate check that caught them now runs
+  in `scripts/famous-test.mjs` on every file, with each conflict and what we did written into the file.
+- **Nothing on screen shows a number the sources do not give.** The 1988 stacks, blinds and final
+  all-in are recorded nowhere we found, so the table shows "—" for them (a new `unknownChips` option in
+  `js/table.js`), and only the recorded 40,000 and 90,000 bets appear. The 2003 final hand's betting
+  after Farha's 175,000 bet is disputed, so the replay stops at that decision and says so.
+- **Single-sourced, and said so in the files:** the bluff hand's blinds and ante (PokerNews); the stacks
+  around it (worked back from CardPlayer's counts after the hand); the final hand's suits (Wikipedia) and
+  its 100,000 / 175,000 bets (CardPlayer); the 1988 bet sizes (Upswing and CardPlayer agree) and suits
+  (CardPlayer). The 2003 final hand's blind level is assumed unchanged from the hand before.
+- **Not scored, and the page says why.** "Mistake" only where a source says it: PokerNews criticises
+  Farha's turn lead but treats his fold as reasonable, and Seidel has said himself he could have got out
+  of his hand more cheaply.
+- **The maths:** the price counts only what you can win — facing an all-in bigger than your stack, the
+  uncalled part goes back (caught in testing: Farha's last call first showed 21.4% needed; it is 33.2%).
+
 ### The cat in the box — hints and tips, 2026-09-26
 
 The owner's request: tips in some lessons, and a hint when you answer wrong, delivered by a mascot — the

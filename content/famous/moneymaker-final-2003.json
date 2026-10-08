@@ -1,0 +1,92 @@
+{
+  "id": "moneymaker-final-2003",
+  "title": "The hand that started the poker boom",
+  "event": "2003 WSOP Main Event — the final hand, Chris Moneymaker against Sam Farha",
+  "blurb": "The very next hand after the bluff. Bottom two pair against top pair, and $2.5 million on it.",
+  "seats": [
+    { "name": "Moneymaker", "stack": 6600000, "hole": "5d 4s" },
+    { "name": "Farha", "stack": 1800000, "hole": "Jh Td" }
+  ],
+  "button": 1,
+  "blinds": { "sb": 20000, "bb": 40000, "ante": 5000 },
+  "anteType": "each",
+  "board": "Js 5s 4c 8d 5h",
+  "unknown": null,
+  "facts": [
+    "Stacks about 6.6 million and 1.8 million — CardPlayer's counts after the bluff, which Moneymaker's own account says came the hand before.",
+    "Blinds shown as 20,000/40,000 with a 5,000 ante, the level of the hand before. No source gives the level for this hand, so that is an assumption.",
+    "Farha has the button this time, so he acts first before the flop and last after it."
+  ],
+  "actions": [
+    { "seat": 1, "type": "raise", "amount": 100000 },
+    { "seat": 0, "type": "call" },
+    { "seat": 0, "type": "check" },
+    { "seat": 1, "type": "bet", "amount": 175000 }
+  ],
+  "pots": [],
+  "gap": "From here the accounts differ on the exact betting. What every source agrees on is the end: Farha was all in with his pair of jacks, and Moneymaker called with his two pair.",
+  "ending": "The turn was the 8♦ and the river the 5♥, giving Moneymaker a full house — fives full of fours — against Farha's two pair. He won the world championship and $2.5 million, and the amateur-wins-online story that followed is what people call the poker boom.",
+  "play": {
+    "0": {
+      "intro": "You are Chris Moneymaker, a big chip leader after the bluff of the century. You hold 5♦ 4♠ in the big blind.",
+      "steps": {
+        "1": {
+          "ask": "Farha raises to 100,000 from the button. You hold 5♦ 4♠ and a big chip lead. Fold, call, or re-raise?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 60,000 more" },
+            { "id": "raise", "label": "Re-raise" }
+          ],
+          "notes": {
+            "fold": "Safe, and fine at a full table — but heads-up, with a big chip lead and a good price, a cheap flop is reasonable.",
+            "call": "What Moneymaker did. A small price to see a flop with a hand that can make straights and two pairs.",
+            "raise": "Re-raising five-four is mostly a bluff; with a chip lead there is no need to build a big pot before the flop."
+          },
+          "real": "call",
+          "why": "Moneymaker called. Heads-up, from the big blind, a small connected hand gets a good price and can hit the flop hard — exactly as it did.",
+          "lesson": "Big blind, heads-up, small raise: you can defend with many hands, because you already have chips in the pot."
+        },
+        "2": {
+          "ask": "The flop is J♠ 5♠ 4♣. You have two pair — fives and fours, the bottom two. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet" }
+          ],
+          "notes": {
+            "check": "What Moneymaker did. Lets the raiser bet — and Farha has a jack, so he will.",
+            "bet": "Gets money in and protects against straight and flush draws, but may fold out the hands you want to get paid by."
+          },
+          "real": "check",
+          "why": "Moneymaker checked to the player who raised before the flop. With a jack in his hand, Farha was always going to bet.",
+          "lesson": "When the other player is likely to bet, checking a strong hand lets them put the money in for you."
+        },
+        "4": {
+          "ask": "Farha bets 175,000. You have bottom two pair; a jack — top pair — is the likeliest thing for him to hold. Fold, call, or move all in?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 175,000" },
+            { "id": "allin", "label": "Move all in" }
+          ],
+          "notes": {
+            "fold": "Two pair is far too strong to fold here.",
+            "call": "Keeps him betting, but lets him see the turn and river for a small price.",
+            "allin": "Gets the money in while you are ahead of top pair — and Farha has only about 1.8 million, so it puts his whole tournament on this hand."
+          },
+          "real": null,
+          "why": "Two pair against top pair is a big favourite on the flop. Whatever the exact order of bets, the money went in with Moneymaker ahead.",
+          "lesson": "When you are well ahead and the other player is short, getting all the chips in now is usually right: their outs only get the chance to come if you let them see more cards cheaply."
+        }
+      }
+    }
+  },
+  "sources": [
+    { "what": "The hole cards 5♦4♠ and J♥10♦, and the board J♠5♠4♣8♦5♥", "url": "https://en.wikipedia.org/wiki/Chris_Moneymaker", "by": "Wikipedia — Chris Moneymaker (CC BY-SA)" },
+    { "what": "Farha all in with a pair of jacks on the flop, called by Moneymaker's bottom two pair", "url": "https://en.wikipedia.org/wiki/Sam_Farha", "by": "Wikipedia — Sam Farha (CC BY-SA)" },
+    { "what": "Farha raised to 100,000, Moneymaker called; Moneymaker checked the flop, Farha bet 175,000", "url": "https://www.cardplayer.com/poker-news/4658-wsop-history-2003-recap", "by": "CardPlayer — WSOP History: 2003 Recap" },
+    { "what": "The final hand came the hand after the bluff; a J-5-4 flop, bottom two pair against top pair", "url": "https://grantland.com/features/the-oral-history-2003-world-series-poker-which-chris-moneymaker-turned-39-25-million/", "by": "Grantland — When We Held Kings (oral history)" }
+  ],
+  "conflicts": [
+    "CardPlayer gives the cards as 5♦4♦ against J♦10♦ on J♠5♠4♠ with a 5♠ river. That puts the 5♠ on the board twice, so its suits are not used. Wikipedia's suits — 5♦4♠ against J♥10♦ on J♠5♠4♣8♦5♥ — have no duplicates and are used here.",
+    "The betting after Farha's 175,000 bet is garbled in CardPlayer and absent from the other sources. The replay stops at that decision and says so, rather than inventing the bets in between."
+  ]
+}

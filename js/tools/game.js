@@ -8,7 +8,9 @@
 // scored, and that "compared with folding" is the zero every EV is measured from.
 
 import { gamePlan, makeSpot, grade, GAME_LENGTH } from '../game/spots.js'
-import { mountTable } from '../table.js'
+import { mountTable, mountHands } from '../table.js'
+import { decisions, mathsAt, describeAction, boardNews, replay } from '../game/famous.js'
+import { cardsGlyph, parseCards } from '../engine/cards.js'
 import { avatarsForSeats } from '../avatars.js'
 import { progress } from '../progress.js'
 import { sound } from '../sound.js'
@@ -31,13 +33,16 @@ export async function mountGame(main) {
     fetch('content/charts/pushfold-hu.json').then(r => r.json()),
   ])
   const charts = { rfi, pushfold }
+  // the famous hands: content/famous/, each checked by scripts/famous-test.mjs
+  const famousIndex = await fetch('content/famous/index.json').then(r => r.json())
+  const famous = await Promise.all(famousIndex.hands.map(id => fetch(`content/famous/${id}.json`).then(r => r.json())))
 
   main.innerHTML = `
     <div class="page tool game-page">
       <header class="hero">
         <span class="eyebrow">Tournament · game</span>
         <h1>Test yourself</h1>
-        <p>Ten spots from what the course teaches, each scored by the maths behind it. Play the right move every time and you score 100%.</p>
+        <p>Ten spots from what the course teaches, each scored by the maths behind it — or a famous hand, replayed one decision at a time.</p>
       </header>
       <div id="stage"></div>
     </div>`
@@ -61,7 +66,109 @@ export async function mountGame(main) {
         <p class="note"><b>Not scored: bet size.</b> No lesson teaches a sizing rule and the app has no solver, so opens are offered at one size, 2.5 big blinds, and the size is never graded.</p>
       </section>
       ${past.length ? `<section class="panel"><h2>Your last games</h2><p class="note">${past.map(g => `<b>${g.score}%</b> <span class="gm-when">${new Date(g.t).toLocaleDateString()}</span>`).join(' · ')}</p></section>` : ''}
-      <div class="actions"><button class="btn primary" data-go="start">Start a game</button></div>`
+      <div class="actions"><button class="btn primary" data-go="start">Start a game of ten spots</button></div>
+      <section class="panel gm-famous">
+        <h2>Famous hands</h2>
+        <p class="note">Real hands from the World Series, replayed decision by decision. At each one you choose; then you see what the player really did, why, what each option would have meant, and the maths. <b>Not scored</b>: the players could see only their own cards, so most of these spots have no single right answer — and choosing differently from a world champion is how you find out what they were thinking.</p>
+        <ul class="gm-hands">${famous.map((h, n) => `<li>
+          <b>${esc(h.title)}</b><span class="gm-small">${esc(h.event)}</span>
+          <p class="gm-small">${esc(h.blurb)}</p>
+          <div class="actions">${Object.keys(h.play).map(seat => `<button class="btn" data-famous="${n}" data-seat="${seat}">Play as ${esc(h.seats[seat].name)}</button>`).join(' ')}</div>
+        </li>`).join('')}</ul>
+      </section>`
+  }
+
+  // --- a famous hand ---
+  let rep = null
+  function startFamous(n, seat) {
+    const hand = famous[n]
+    rep = { hand, seat, steps: decisions(hand, seat), frames: replay(hand).frames, i: 0, chose: [] }
+    famousStep()
+  }
+
+  function famousStep() {
+    dropTable()
+    const { hand, seat, steps, frames, i } = rep
+    const d = steps[i]
+    // what happened since the last decision: the actions, and any cards dealt in between
+    const from = i === 0 ? 0 : steps[i - 1].k
+    const lines = []
+    for (let j = from; j < Math.min(d.k, hand.actions.length); j++) {
+      const before = frames[j], after = frames[j + 1] || replay(hand).end
+      lines.push(esc(describeAction(hand, hand.actions[j], before)).replace(hand.seats[seat].name, `${hand.seats[seat].name} (you)`))
+      for (const news of boardNews(before, after)) lines.push(`<b>${news.label}:</b> ${esc(cardsGlyph(news.cards))}`)
+    }
+    stage.innerHTML = `
+      <div class="gm-head"><span class="eyebrow">${esc(hand.title)} · as ${esc(hand.seats[seat].name)} · decision ${i + 1} of ${steps.length}</span></div>
+      ${i === 0 ? `<p class="gm-prompt">${esc(hand.play[seat].intro)}</p><ul class="gm-facts">${hand.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+      ${lines.length ? `<ul class="gm-story">${lines.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
+      <div class="gm-table"></div>
+      <p class="gm-prompt">${esc(d.step.ask)}</p>
+      <div class="gm-opts">${d.step.options.map((o, n) => `<button class="opt" data-fopt="${o.id}"><span class="mark">${String.fromCharCode(65 + n)}</span><span class="t">${esc(o.label)}</span></button>`).join('')}</div>
+      <div class="gm-result" aria-live="polite"></div>`
+    view = mountTable(stage.querySelector('.gm-table'), {
+      state: d.state, hero: seat, unknownChips: hand.unknown || undefined,
+      avatars: avatarsForSeats(hand.seats.length, { hero: seat }),
+    })
+  }
+
+  function famousAnswer(id) {
+    const { hand, seat, steps, i } = rep
+    const d = steps[i]
+    if (rep.chose[i]) return
+    rep.chose[i] = id
+    sound.unlock()
+    const label = x => (d.step.options.find(o => o.id === x) || {}).label || x
+    stage.querySelectorAll('.gm-opts .opt').forEach(b => {
+      b.disabled = true
+      if (b.dataset.fopt === d.step.real) b.classList.add('right')
+      else if (b.dataset.fopt === id) b.classList.add('mine')
+    })
+    const m = mathsAt(hand, seat, d.state)
+    const pct = x => `${(x * 100).toFixed(1)}%`
+    const who = hand.seats[seat].name, them = hand.seats[1 - seat]
+    const same = id === d.step.real
+    const last = i === steps.length - 1
+    stage.querySelector('.gm-result').innerHTML = `
+      <div class="gm-explain">
+        <p><b>You chose ${esc(label(id))}.</b> ${esc(d.step.notes[id])}</p>
+        ${d.step.real ? `<p><b>${esc(who)} chose ${esc(label(d.step.real))}${same ? ' — the same as you' : ''}.</b> ${esc(d.step.why)}</p>`
+                      : `<p><b>What happened next is disputed.</b> ${esc(hand.gap)} ${esc(d.step.why)}</p>`}
+        <p class="gm-lesson"><b>The lesson:</b> ${esc(d.step.lesson)}</p>
+        <p class="gm-small"><b>The maths.</b> ${m.price ? `Calling costs ${m.price.toCall.toLocaleString('en')} into a pot of ${m.price.pot.toLocaleString('en')}, so you need to win ${pct(m.price.need)} of the time. ` : ''}With hindsight — ${esc(them.name)} really held ${esc(cardsGlyph(parseCards(them.hole)))} — your hand wins ${m.exact ? '' : 'about '}${pct(m.equity)} of the time from here${m.exact ? ', every remaining card counted' : ''}. You could not see that at the table; it is here to show what each choice was really up against.</p>
+        ${!same && d.step.real ? `<p class="gm-small">The hand carries on as it really went.</p>` : ''}
+      </div>
+      <div class="actions"><button class="btn primary" data-go="${last ? 'fend' : 'fnext'}">${last ? 'See how it ended' : 'Next decision'}</button></div>`
+  }
+
+  function famousEnd() {
+    dropTable()
+    const { hand, seat, steps } = rep
+    const end = replay(hand).end
+    const label = (d, x) => (d.step.options.find(o => o.id === x) || {}).label || x
+    stage.innerHTML = `
+      <div class="gm-head"><span class="eyebrow">${esc(hand.title)} · how it ended</span></div>
+      <div class="gm-table"></div>
+      <p class="gm-prompt">${esc(hand.ending)}</p>
+      <h2 class="gm-h2">Your choices, and theirs</h2>
+      <ol class="gm-review">${steps.map((d, n) => `<li class="${rep.chose[n] === d.step.real ? 'good' : 'other'}">
+        <p class="gm-small">${esc(d.step.ask)}</p>
+        <p>You: <b>${esc(label(d, rep.chose[n]))}</b> · ${esc(hand.seats[seat].name)}: <b>${d.step.real ? esc(label(d, d.step.real)) : 'disputed — see above'}</b></p>
+        <p class="gm-small">${esc(d.step.lesson)}</p></li>`).join('')}</ol>
+      <details class="more gm-howknow"><summary>How we know this hand</summary><div class="more-body">
+        <ul>${hand.sources.map(src => `<li>${esc(src.what)} — <a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.by)}</a></li>`).join('')}</ul>
+        ${hand.conflicts.length ? `<p class="gm-small"><b>Where the sources disagree, and what we did:</b></p><ul>${hand.conflicts.map(c => `<li class="gm-small">${esc(c)}</li>`).join('')}</ul>` : ''}
+      </div></details>
+      <div class="actions"><button class="btn primary" data-go="intro">Back to the game</button></div>`
+    const host = stage.querySelector('.gm-table')
+    if (hand.gap) {
+      // the betting after the gap is not recorded, so the end is shown as cards only — no chips invented
+      const names = hand.seats.map(x => x.name)
+      view = mountHands(host, { board: parseCards(hand.board), hands: hand.seats.map(x => parseCards(x.hole)), caption: names.map((nm, k) => `${String.fromCharCode(65 + k)} — ${nm}`).join(' · ') })
+    } else {
+      view = mountTable(host, { state: end, hero: seat, reveal: true, unknownChips: hand.unknown || undefined, avatars: avatarsForSeats(hand.seats.length, { hero: seat }) })
+    }
+    window.scrollTo({ top: 0 })
   }
 
   // --- a game ---
@@ -158,6 +265,10 @@ export async function mountGame(main) {
   }
 
   stage.addEventListener('click', e => {
+    const fh = e.target.closest('[data-famous]')
+    if (fh) return startFamous(Number(fh.dataset.famous), Number(fh.dataset.seat))
+    const fo = e.target.closest('[data-fopt]')
+    if (fo) return famousAnswer(fo.dataset.fopt)
     const o = e.target.closest('[data-opt]')
     if (o) return answer(o.dataset.opt)
     const b = e.target.closest('[data-go]')
@@ -167,6 +278,8 @@ export async function mountGame(main) {
     else if (go === 'next') { game.k++; show() }
     else if (go === 'finish') finish()
     else if (go === 'intro') intro()
+    else if (go === 'fnext') { rep.i++; famousStep() }
+    else if (go === 'fend') famousEnd()
   })
 
   intro()

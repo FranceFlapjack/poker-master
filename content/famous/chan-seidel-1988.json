@@ -1,0 +1,110 @@
+{
+  "id": "chan-seidel-1988",
+  "title": "The trap from Rounders",
+  "event": "1988 WSOP Main Event — the final hand, Johnny Chan against Erik Seidel",
+  "blurb": "Top pair against a hidden straight. The hand is famous because the film Rounders shows it — and because Seidel, who went on to a great career, has talked about what he would do differently.",
+  "seats": [
+    { "name": "Seidel", "stack": 1000000, "hole": "Qc 7d" },
+    { "name": "Chan", "stack": 1000000, "hole": "Jc 9c" }
+  ],
+  "button": 1,
+  "blinds": { "sb": 5000, "bb": 10000, "ante": 0 },
+  "anteType": "none",
+  "board": "Qs Td 8d 2s 6d",
+  "unknown": { "chips": true, "shown": [40000, 90000] },
+  "facts": [
+    "Our sources do not record the stacks, the blinds, or the size of the final all-in, so the table does not show them. The flop bets — 40,000, and the raise to 90,000 — are recorded and shown.",
+    "Heads-up, Chan had the button: he called the big blind before the flop and Seidel checked, so after the flop Seidel acts first."
+  ],
+  "actions": [
+    { "seat": 1, "type": "call" },
+    { "seat": 0, "type": "check" },
+    { "seat": 0, "type": "check" },
+    { "seat": 1, "type": "bet", "amount": 40000 },
+    { "seat": 0, "type": "raise", "amount": 90000 },
+    { "seat": 1, "type": "call" },
+    { "seat": 0, "type": "check" },
+    { "seat": 1, "type": "check" },
+    { "seat": 0, "type": "allin" },
+    { "seat": 1, "type": "call" }
+  ],
+  "pots": [],
+  "ending": "Chan called at once and showed J♣ 9♣ — a straight since the flop, the best possible hand. He won his second world championship in a row. Seidel finished second, and years later told PokerNews he thought he could have got away from the hand without losing his whole stack.",
+  "play": {
+    "0": {
+      "intro": "You are Erik Seidel, heads-up for the 1988 world championship against the reigning champion, Johnny Chan. You hold Q♣ 7♦ in the big blind.",
+      "steps": {
+        "2": {
+          "ask": "Chan just called before the flop, and you checked. The flop is Q♠ 10♦ 8♦ — you have top pair, queens, with a weak kicker. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet" }
+          ],
+          "notes": {
+            "check": "What Seidel did. A modest hand on a connected board; checking keeps the pot small.",
+            "bet": "Charges the many draws on this board — jacks, nines and diamonds all connect with it."
+          },
+          "real": "check",
+          "why": "Seidel checked. Q-10-8 with two diamonds is a board where many hands have a straight, two pair, or a big draw — top pair with a seven is not a hand that wants a big pot.",
+          "lesson": "Connected boards with two of a suit are dangerous for one pair. The more ways the board can be beaten, the less your pair is worth."
+        },
+        "4": {
+          "ask": "Chan bets 40,000. You still have top pair, weak kicker. Fold, call, or raise?",
+          "options": [
+            { "id": "fold", "label": "Fold" },
+            { "id": "call", "label": "Call 40,000" },
+            { "id": "raise", "label": "Raise to 90,000" }
+          ],
+          "notes": {
+            "fold": "Too weak a fold for top pair against a small bet.",
+            "call": "Sees the turn at a small price and keeps the pot controlled.",
+            "raise": "What Seidel did. It finds out where he stands — but a raise is only good if worse hands call it, and on this board many hands that call are better."
+          },
+          "real": "raise",
+          "why": "Seidel raised to 90,000. Chan, holding the best possible hand, did not raise back: he only called, acting reluctant, to keep Seidel believing his pair was good.",
+          "lesson": "When a strong player only calls your raise on a dangerous board, think about what they could be hiding. Slow-playing the nuts looks exactly like this."
+        },
+        "6": {
+          "ask": "The turn is the 2♠, a blank. You act first. Check or bet?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "bet", "label": "Bet" }
+          ],
+          "notes": {
+            "check": "What Seidel did. Keeps the pot from growing with a one-pair hand.",
+            "bet": "Gets value if Chan has a worse queen or a draw — but builds the pot against a range that has you beaten often."
+          },
+          "real": "check",
+          "why": "Seidel checked, and Chan checked behind — passing up a bet with the best hand to keep the trap set for the river.",
+          "lesson": "A check from a player who called your raise is not always weakness. With the best hand, giving you a free card can be the bait."
+        },
+        "8": {
+          "ask": "The river is the 6♦. You act first, with top pair. Check, or move all in?",
+          "options": [
+            { "id": "check", "label": "Check" },
+            { "id": "allin", "label": "Move all in" }
+          ],
+          "notes": {
+            "check": "Takes the hand to a cheap showdown. If Chan bets, you can decide then with more information.",
+            "allin": "What Seidel did. An all-in with one pair only makes money if Chan calls with a worse hand — and the hands that call an all-in here mostly beat a queen with a seven."
+          },
+          "real": "allin",
+          "why": "Seidel moved all in and Chan called instantly with the straight. Seidel has since said he believes he could have got out of the hand without losing everything — the all-in risked the whole tournament with a hand that only beat a bluff.",
+          "lesson": "Do not bet everything with a hand that only wins when they are bluffing. Ask: which worse hands call this? If the answer is almost none, check."
+        }
+      }
+    }
+  },
+  "sources": [
+    { "what": "J♣9♣ against Q♣7♦; Chan limped and Seidel checked; the flop Q♠10♦8♦, Chan's 40,000 bet and Seidel's raise to 90,000; the 2♠ turn checked through; the 6♦ river, Seidel all in, Chan's call", "url": "https://www.cardplayer.com/poker-news/4525-wsop-history-1988-recap", "by": "CardPlayer — WSOP History: 1988 Recap" },
+    { "what": "The same action, and the order: Seidel checks to Chan on the flop and the turn", "url": "https://upswingpoker.com/erik-seidel-poker-results-hands/", "by": "Upswing Poker — Erik Seidel: results and memorable hands" },
+    { "what": "Chan flopped a straight, Seidel top pair; Seidel's all-in, Chan's call; Seidel's reflection that he could have got away from the hand", "url": "https://www.pokernews.com/news/2019/03/poker-moments-erik-seidel-johnny-chan-eye-to-the-sky-33438.htm", "by": "PokerNews — Poker Moments: Erik Seidel looks back on Johnny Chan" },
+    { "what": "J-9 suited flops a straight; Chan bets, Seidel re-raises, Chan only calls; the turn checked; Seidel all in on the river", "url": "https://paulphuapoker.com/johnny-chan-traps-wsop/", "by": "Paul Phua Poker — Johnny Chan traps a second world championship" },
+    { "what": "Q-10-8 flop, J-9 against Q-7, the 2 turn checked, the 6 river, Seidel all in", "url": "https://www.macpokeronline.com/world-series-of-poker/1988-main-event/", "by": "MacPokerOnline — 1988 WSOP Main Event" }
+  ],
+  "conflicts": [
+    "Upswing Poker gives the flop as Q♣8♦10♥ and Seidel's hand as Q♣7♥ — the Q♣ twice, so its suits are not used. CardPlayer's suits have no duplicates and are used here.",
+    "One search summary had Seidel limping and Chan checking before the flop. CardPlayer states the opposite (Chan limped, Seidel checked), and Upswing's order — Seidel checking first on the flop and turn — agrees with CardPlayer, so that is used.",
+    "No source we found records the stacks, the blinds or the size of the river all-in. The table hides those numbers instead of inventing them."
+  ]
+}

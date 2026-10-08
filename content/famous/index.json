@@ -1,0 +1,4 @@
+{
+  "note": "The famous hands, in the order the game lists them. Each id is a file in this folder; scripts/famous-test.mjs checks every one.",
+  "hands": ["moneymaker-bluff-2003", "moneymaker-final-2003", "chan-seidel-1988"]
+}
