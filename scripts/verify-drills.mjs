@@ -27,6 +27,7 @@ import { spotFromParams, solveDrill } from '../js/spot.js'
 import { allLessons, lessonPath } from '../js/curriculum.js'
 import { parseCards, cardStr } from '../js/engine/cards.js'
 import { parseRange, handToCell, cellName } from '../js/engine/ranges.js'
+import { requiredEquity, alpha } from '../js/engine/ev.js'
 import { evaluate, describe, CATEGORY_NAMES, STRAIGHT_FLUSH } from '../js/engine/evaluator.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -57,7 +58,7 @@ function anteProblem(p) {
   return null
 }
 const VERBOSE = process.argv.includes('-v')
-let fails = 0, verified = 0, unverified = 0, tables = 0, charted = 0, chartChecked = 0
+let fails = 0, verified = 0, unverified = 0, tables = 0, charted = 0, chartChecked = 0, mathChecked = 0
 const bad = (where, msg) => { fails++; console.log(`FAIL  ${where}\n      ${msg}`) }
 
 const ENGINE_DECIDES = new Set(['showdown', 'rank', 'legal'])
@@ -188,6 +189,19 @@ for (const lesson of allLessons(curriculum)) {
             }
           }
         }
+        // `math: caller | bluff` with `bet:` and `pot:` — a sizing question the engine answers, so it is
+        // VERIFIED: the answer must state the percentage the engine computes (to one decimal or whole).
+        if (p.math) {
+          const bet = Number(p.bet), pot = Number(p.pot)
+          const want = p.math === 'caller' ? requiredEquity(bet, pot + bet) : p.math === 'bluff' ? alpha(bet, pot) : null
+          const said = String(solved.options[solved.correct])
+          const ok = want != null && [want * 100].some(x => said.includes(`${x.toFixed(1)}%`) || said.includes(`${Math.round(x)}%`) && Math.abs(x - Math.round(x)) < 0.05)
+          if (want == null) bad(where, `\`math: ${p.math}\` — use caller or bluff`)
+          else if (!(bet > 0 && pot > 0)) bad(where, 'a math drill needs `bet` and `pot`')
+          else if (!ok) bad(where, `the engine gives ${(want * 100).toFixed(1)}% for ${p.math} at ${bet} into ${pot}, but the answer is "${said}"`)
+          else { mathChecked++; if (VERBOSE) console.log(`ok    ${where} — math: ${p.math} ${bet} into ${pot} = ${(want * 100).toFixed(1)}%`) }
+          return
+        }
         if (!p.why) bad(where, 'a judgement drill must say `why`, or the reader learns nothing from being right')
         if (p.chart) return
         unverified++
@@ -201,6 +215,7 @@ console.log(`\n${fails ? `${fails} FAILED, ` : ''}${tables} table${tables === 1 
   `${verified} drill${verified === 1 ? '' : 's'} verified against the engine, ` +
   (charted ? `${charted} charted hand${charted === 1 ? '' : 's'} evaluated, ` : '') +
   (chartChecked ? `${chartChecked} open-or-fold drill${chartChecked === 1 ? '' : 's'} checked against the opening chart, ` : '') +
+  (mathChecked ? `${mathChecked} sizing drill${mathChecked === 1 ? '' : 's'} checked against the engine, ` : '') +
   `${unverified} judgement drill${unverified === 1 ? '' : 's'} checked but NOT verified`)
 if (unverified && !fails) console.log('(a judgement drill has no ground truth — its answer is the author\'s opinion)')
 process.exit(fails ? 1 : 0)

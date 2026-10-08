@@ -556,6 +556,25 @@ svg.pk-cards { display: block; }
   .hands-wrap { max-width: 100%; }
 }
 
+/* ---------- bet sizing (```sizing, js/sizing-block.js) ---------- */
+.sizingblock { margin: var(--s-5) 0 var(--s-6); max-width: 620px; }
+.sz-table { border-collapse: collapse; width: 100%; font-size: var(--fs-2); }
+.sz-table th { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); text-align: left; padding: 0 var(--s-3) var(--s-2) 0; border-bottom: 1px solid var(--line-2); }
+.sz-table td { padding: 7px var(--s-3) 7px 0; border-bottom: 1px solid var(--line); }
+.sz-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.sz-try { margin: var(--s-4) 0 var(--s-2); padding: var(--s-3); background: var(--surface-2); }
+.sz-try label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s-2); }
+.sz-try input[type=range] { width: 100%; accent-color: var(--accent); }
+.sz-live { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-2) 0; line-height: 1.5; }
+.sz-live b { color: var(--ink); }
+.sz-bars { display: grid; gap: 4px; }
+.sz-bar { display: block; height: 8px; background: var(--line); }
+.sz-bar i { display: block; height: 100%; transition: width 160ms ease; }
+.sz-bar.call i { background: var(--accent); }
+.sz-bar.bluff i { background: var(--rg-call); }
+.sz-note { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-2) 0 0; line-height: 1.5; }
+.sizingblock figcaption { font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--s-2); }
+
 /* ---------- the game (js/tools/game.js) ---------- */
 .game-page .gm-formula { font-family: var(--font-mono); font-size: var(--fs-1); padding: var(--s-2) var(--s-3); background: var(--surface-2); margin: 0 0 var(--s-3); }
 .game-page .gm-sources { font-size: var(--fs-1); color: var(--ink-2); padding-left: 1.1em; margin: 0 0 var(--s-3); }

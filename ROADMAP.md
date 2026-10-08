@@ -641,6 +641,27 @@ New check: a drill tagged `chart: <seat>` is VERIFIED — verify-drills requires
 in that seat with everyone before folded, and the answer to be a raise exactly when the chart opens the
 hand there. Deliberate mistakes (a wrong answer, a hero one seat off) are both caught.
 
+### Bet sizing — a lesson, 2026-10-09
+
+The owner asked for a sourced sizing lesson, the step before the game can score the size you choose.
+"Bet sizing" closes the Maths section.
+
+- **Every number is computed as the page draws**, by a new ```sizing block (js/sizing-block.js) over the
+  engine's betSizing / requiredEquity / alpha — a table of common sizes and a slider for any size
+  (`show: postflop`), and the break-even figures for an open with antes (`show: steal`). Nothing is
+  typed in, so nothing can drift. The open figures reproduce Upswing's published 44 / 47 / 50 / 55%.
+- **The conventions are sourced and paraphrased:** tournament opens of about 2 to 2.5 big blinds
+  (PokerNews; Jonathan Little, PokerCoaching; Miikka Anttonen, Upswing — who also sizes up from later
+  seats and the small blind), re-raises of about 3× in position and 4× out (Little), and after the flop
+  small on dry boards and bigger on wet ones, betting smaller the more often you bet (Little, one short
+  quotation; PokerNews on bigger turn and river bets). 888poker's guide could not be read (a regional
+  block) and is not used.
+- **New check:** a drill tagged `math: caller | bluff` with `bet:` and `pot:` is VERIFIED — its answer
+  must be the percentage the engine computes. The check caught a wrong figure while the lesson was being
+  written (twice the pot needs 40%, not 50%).
+- **Next:** with a sourced rule for opens, the game can score an open's size against it — not yet done;
+  the owner decides.
+
 ### Famous hands — 2026-10-08
 
 The owner's request: famous hands in the game, an explanation at every step — why the player did it,
