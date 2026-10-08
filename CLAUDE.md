@@ -87,7 +87,8 @@ come from" must stay answerable by anyone reading the file.
   and BUILT to match exactly what scores it: open/fold by the opening chart (right or wrong, no EV),
   push/fold by the solved heads-up chart and the EV against it, river and all-in calls by pot odds against
   a stated range or hand (exact — nothing can be bet afterwards), the bubble by ICM. **Bet size is not
-  scored** — no lesson teaches a sizing rule. Every EV is measured against folding. Spots are dealt near the
+  scored** — you choose any size with the table's slider, and the analysis comments on it, but no lesson
+  teaches a sizing rule and there is no solver. Every EV is measured against folding. Spots are dealt near the
   line on purpose, and the page says the score measures close decisions, not table accuracy.
 - **Famous hands** (`content/famous/*.json`, played from the game page, `js/game/famous.js`): real hands
   replayed decision by decision — what the player did, why, a note on every option, the lesson, and the

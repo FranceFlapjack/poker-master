@@ -169,7 +169,8 @@
           "notes": {
             "fold": "Gives up a lot of chips with top pair against a player who could be raising a draw.",
             "call": "What Farha did. Keeps his options open for the river, at a high price.",
-            "allin": "Ends the hand now and denies the draws their river card — but against a flush or a straight you are close to drawing dead."
+            "allin": "Ends the hand now and denies the draws their river card — but against a flush or a straight you are close to drawing dead.",
+            "raise": "A re-raise short of all in commits a lot of chips with one pair on a board that has just got dangerous — and leaves you facing an all-in you may not want to call."
           },
           "real": "call",
           "why": "Farha called and waited for the river. The raise could mean a made flush or straight — or a big draw.",
@@ -304,7 +305,8 @@
           ],
           "notes": {
             "check": "Your king-high almost never wins a showdown. Checking means you have lost the hand.",
-            "allin": "What Moneymaker did. The only way to win: make Farha fold a better hand."
+            "allin": "What Moneymaker did. The only way to win: make Farha fold a better hand.",
+            "bet": "A smaller bluff risks less, but against top pair it rarely gets a fold — the threat of losing everything is what made Farha think so long."
           },
           "real": "allin",
           "why": "PokerNews describes the all-in as telegraphing a \"polarized\" range: a straight or better, or nothing. Moneymaker had nothing — and that is exactly why it could work. His story on the turn (the raise) matched a made hand.",

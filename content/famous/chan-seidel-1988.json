@@ -163,7 +163,8 @@
           ],
           "notes": {
             "check": "Takes the hand to a cheap showdown. If Chan bets, you can decide then with more information.",
-            "allin": "What Seidel did. An all-in with one pair only makes money if Chan calls with a worse hand — and the hands that call an all-in here mostly beat a queen with a seven."
+            "allin": "What Seidel did. An all-in with one pair only makes money if Chan calls with a worse hand — and the hands that call an all-in here mostly beat a queen with a seven.",
+            "bet": "A smaller bet risks less than an all-in — but it is still a bet that mostly gets called by hands that beat you, and raised by the best of them."
           },
           "real": "allin",
           "why": "Seidel moved all in and Chan called instantly with the straight. Seidel has since said he believes he could have got out of the hand without losing everything — the all-in risked the whole tournament with a hand that only beat a bluff.",

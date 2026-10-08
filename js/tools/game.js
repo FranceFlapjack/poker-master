@@ -7,9 +7,9 @@
 // solved equilibrium, pot odds, ICM), that the opening chart is not solver output, that bet size is not
 // scored, and that "compared with folding" is the zero every EV is measured from.
 
-import { gamePlan, makeSpot, grade, GAME_LENGTH } from '../game/spots.js'
+import { gamePlan, makeSpot, grade, optionFor, GAME_LENGTH } from '../game/spots.js'
 import { mountTable, mountHands } from '../table.js'
-import { decisions, mathsAt, describeAction, boardNews, replay } from '../game/famous.js'
+import { decisions, mathsAt, describeAction, boardNews, replay, stepChoice } from '../game/famous.js'
 import { cardsGlyph, parseCards } from '../engine/cards.js'
 import { avatarsForSeats } from '../avatars.js'
 import { progress } from '../progress.js'
@@ -102,37 +102,40 @@ export async function mountGame(main) {
       <div class="gm-head"><span class="eyebrow">${esc(hand.title)} · as ${esc(hand.seats[seat].name)} · decision ${i + 1} of ${steps.length}</span></div>
       ${i === 0 ? `<p class="gm-prompt">${esc(hand.play[seat].intro)}</p><ul class="gm-facts">${hand.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
       ${lines.length ? `<ul class="gm-story">${lines.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
-      <div class="gm-table"></div>
       <p class="gm-prompt">${esc(d.step.ask)}</p>
-      <div class="gm-opts">${d.step.options.map((o, n) => `<button class="opt" data-fopt="${o.id}"><span class="mark">${String.fromCharCode(65 + n)}</span><span class="t">${esc(o.label)}</span></button>`).join('')}</div>
+      <div class="gm-table"></div>
+      <p class="gm-small gm-howto">Act with the buttons under the table — any size you like. Nothing is scored.</p>
       <div class="gm-result" aria-live="polite"></div>`
     view = mountTable(stage.querySelector('.gm-table'), {
-      state: d.state, hero: seat, unknownChips: hand.unknown || undefined,
+      state: d.state, hero: seat, unknownChips: hand.unknown || undefined, interactive: true,
+      onAction: a => famousAnswer(stepChoice(hand, d, a)),
       avatars: avatarsForSeats(hand.seats.length, { hero: seat }),
     })
   }
 
-  function famousAnswer(id) {
+  function famousAnswer(choice) {
     const { hand, seat, steps, i } = rep
     const d = steps[i]
     if (rep.chose[i]) return
-    rep.chose[i] = id
+    rep.chose[i] = choice
+    const id = choice.id
     sound.unlock()
+    if (view) view.update({ interactive: false })
     const label = x => (d.step.options.find(o => o.id === x) || {}).label || x
-    stage.querySelectorAll('.gm-opts .opt').forEach(b => {
-      b.disabled = true
-      if (b.dataset.fopt === d.step.real) b.classList.add('right')
-      else if (b.dataset.fopt === id) b.classList.add('mine')
-    })
+    const canCheck = d.state.currentBet - d.state.seats[seat].committed <= 0
+    const note = d.step.notes[id] || (id === 'fold' && canCheck ? 'Folding when you can check for free gives the pot away for nothing — checking costs no chips and keeps you in the hand.' : '')
     const m = mathsAt(hand, seat, d.state)
     const pct = x => `${(x * 100).toFixed(1)}%`
     const who = hand.seats[seat].name, them = hand.seats[1 - seat]
     const same = id === d.step.real
+    // the same kind of action at a clearly different size: say so, rather than "the same as you"
+    const sameKindOnly = same && !!choice.size && !/^About the size/.test(choice.size)
     const last = i === steps.length - 1
     stage.querySelector('.gm-result').innerHTML = `
       <div class="gm-explain">
-        <p><b>You chose ${esc(label(id))}.</b> ${esc(d.step.notes[id])}</p>
-        ${d.step.real ? `<p><b>${esc(who)} chose ${esc(label(d.step.real))}${same ? ' — the same as you' : ''}.</b> ${esc(d.step.why)}</p>`
+        <p><b>You chose ${esc(choice.said)}.</b> ${sameKindOnly ? '' : esc(note)}</p>
+        ${choice.size ? `<p class="gm-small">${esc(choice.size)}</p>` : ''}
+        ${d.step.real ? `<p><b>${esc(who)} chose ${esc(label(d.step.real))}${sameKindOnly ? ' — the same kind of play as yours, at a different size' : same ? ' — the same as you' : ''}.</b> ${esc(d.step.why)}</p>`
                       : `<p><b>What happened next is disputed.</b> ${esc(hand.gap)} ${esc(d.step.why)}</p>`}
         <p class="gm-lesson"><b>The lesson:</b> ${esc(d.step.lesson)}</p>
         ${m.price ? `<p class="gm-small"><b>The price.</b> Calling costs ${m.price.toCall.toLocaleString('en')} to win ${m.price.pot.toLocaleString('en')}, so the call needs to win ${pct(m.price.need)} of the time.</p>` : ''}
@@ -156,9 +159,9 @@ export async function mountGame(main) {
       <h2 class="gm-h2">Your choices, and what you were really up against</h2>
       <ol class="gm-review">${steps.map((d, n) => {
         const m = mathsAt(hand, seat, d.state)
-        return `<li class="${rep.chose[n] === d.step.real ? 'good' : 'other'}">
+        return `<li class="${rep.chose[n].id === d.step.real ? 'good' : 'other'}">
         <p class="gm-small">${esc(d.step.ask)}</p>
-        <p>You: <b>${esc(label(d, rep.chose[n]))}</b> · ${esc(hand.seats[seat].name)}: <b>${d.step.real ? esc(label(d, d.step.real)) : 'disputed — see above'}</b></p>
+        <p>You: <b>${esc(rep.chose[n].said)}</b> · ${esc(hand.seats[seat].name)}: <b>${d.step.real ? esc(label(d, d.step.real)) : 'disputed — see above'}</b></p>
         <p class="gm-small"><b>With hindsight:</b> against ${esc(cardsGlyph(parseCards(them.hole)))}, your hand was winning ${m.exact ? '' : 'about '}${(m.equity * 100).toFixed(1)}% of the time at this point${m.exact ? ', every remaining card counted' : ''}.${m.price ? ` The call needed ${(m.price.need * 100).toFixed(1)}%.` : ''}</p>
         <p class="gm-small">${esc(d.step.lesson)}</p></li>`
       }).join('')}</ol>
@@ -198,36 +201,36 @@ export async function mountGame(main) {
       const running = done.length ? Math.round(done.reduce((s, a) => s + a.points, 0) / done.length) : null
       stage.innerHTML = `
         <div class="gm-head"><span class="eyebrow">Spot ${k + 1} of ${GAME_LENGTH} · ${esc(spot.title)}</span>${running != null ? `<span class="gm-running">${running}% so far</span>` : ''}</div>
-        <div class="gm-table"></div>
         <p class="gm-prompt">${esc(spot.prompt)}</p>
         <ul class="gm-facts">${spot.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-        <div class="gm-opts">${spot.options.map((o, i) => `<button class="opt" data-opt="${o.id}"><span class="mark">${String.fromCharCode(65 + i)}</span><span class="t">${esc(o.label)}${o.note ? `<small>${esc(o.note)}</small>` : ''}</span></button>`).join('')}</div>
+        <div class="gm-table"></div>
+        <p class="gm-small gm-howto">Act with the buttons under the table — fold, call, or raise with the slider. The size is never scored, only explained.</p>
         <div class="gm-result" aria-live="polite"></div>`
+      // the table's own controls: whatever you do is turned into the decision the spot scores
       view = mountTable(stage.querySelector('.gm-table'), {
-        state: spot.state, hero: spot.hero,
+        state: spot.state, hero: spot.hero, interactive: true,
+        onAction: a => answer(optionFor(spot, a)),
         avatars: avatarsForSeats(spot.state.seats.length, { hero: spot.hero }),
       })
     }, 30)
   }
 
-  function answer(id) {
+  function answer(choice) {
     const k = game.k, spot = game.spots[k]
     if (!spot || game.answers[k]) return
+    const id = choice.id
     const g = grade(spot, id)
-    game.answers[k] = { id, ...g }
+    game.answers[k] = { id, said: choice.said, size: choice.size, why: choice.why, ...g }
+    if (view) view.update({ interactive: false })
     sound.unlock()
     if (g.best) sound.play('success')
     // the trainers' topic keys where the skill is the same, so a weakness shows once wherever it was drilled
     if (g.points != null) progress.recordDrill(`game#${game.seed}#${k}`, { firstAttempt: true, topic: spot.topic, correct: g.points >= 90 })
-    stage.querySelectorAll('.gm-opts .opt').forEach(b => {
-      b.disabled = true
-      if (spot.best.includes(b.dataset.opt)) b.classList.add('right')
-      else if (b.dataset.opt === id) b.classList.add('wrong')
-    })
     const bestLabel = spot.options.filter(o => spot.best.includes(o.id)).map(o => o.label).join(' or ')
     const last = k === GAME_LENGTH - 1
     stage.querySelector('.gm-result').innerHTML = `
-      <p class="verdict ${g.best ? 'good' : 'bad'}">${g.best ? 'Best play' : `The best play was ${esc(bestLabel)}`} — <b>${g.points} points</b>.</p>
+      <p class="verdict ${g.points == null ? '' : g.best ? 'good' : 'bad'}">You: <b>${esc(choice.said)}</b>. ${g.points == null ? `Not scored — ${esc(choice.why)} The best of the scored plays: ${esc(bestLabel)}.` : `${g.best ? 'Best play' : `The best play was ${esc(bestLabel)}`} — <b>${g.points} points</b>.`}</p>
+      ${choice.size ? `<p class="gm-small">${esc(choice.size)}</p>` : ''}
       <div class="actions"><button class="btn primary" data-go="${last ? 'finish' : 'next'}">${last ? 'See your analysis' : 'Next spot'}</button></div>`
   }
 
@@ -235,19 +238,20 @@ export async function mountGame(main) {
   function finish() {
     dropTable()
     const scored = game.answers.filter(a => a.points != null)
-    const score = Math.round(scored.reduce((s, a) => s + a.points, 0) / scored.length)
+    const score = scored.length ? Math.round(scored.reduce((s, a) => s + a.points, 0) / scored.length) : 0
+    const unscored = GAME_LENGTH - scored.length
     const bestCount = game.answers.filter(a => a.best).length
     progress.recordGame({ score, spots: GAME_LENGTH })
     // the weakest kind of spot, as a next step
     const byTitle = {}
-    game.spots.forEach((s, k) => { (byTitle[s.title] = byTitle[s.title] || { pts: [], lesson: s.lesson }).pts.push(game.answers[k].points) })
+    game.spots.forEach((s, k) => { if (game.answers[k].points != null) (byTitle[s.title] = byTitle[s.title] || { pts: [], lesson: s.lesson }).pts.push(game.answers[k].points) })
     const worst = Object.entries(byTitle).map(([t, v]) => ({ t, avg: v.pts.reduce((a, b) => a + b, 0) / v.pts.length, lesson: v.lesson })).sort((a, b) => a.avg - b.avg)[0]
     stage.innerHTML = `
       <section class="gm-score">
         <span class="eyebrow">Your score</span>
         <div class="gm-big">${score}%</div>
         <p class="note">These spots were dealt near the line, so this measures close decisions, not your accuracy at a real table, where most decisions are easy.</p>
-        <p class="note">The best play in ${bestCount} of ${GAME_LENGTH} spots.${worst && worst.avg < 100 ? ` Your weakest kind of spot: <b>${esc(worst.t)}</b>, ${Math.round(worst.avg)} points. To go over it: <a href="${worst.lesson.href}">${esc(worst.lesson.title)}</a>.` : ' Every spot played the best way.'}</p>
+        <p class="note">The best play in ${bestCount} of ${GAME_LENGTH} spots${unscored ? ` (${unscored} not scored — see below)` : ''}.${worst && worst.avg < 100 ? ` Your weakest kind of spot: <b>${esc(worst.t)}</b>, ${Math.round(worst.avg)} points. To go over it: <a href="${worst.lesson.href}">${esc(worst.lesson.title)}</a>.` : ' Every spot played the best way.'}</p>
       </section>
       <h2 class="gm-h2">The analysis</h2>
       <ol class="gm-review">${game.spots.map((s, k) => review(s, game.answers[k], k)).join('')}</ol>
@@ -261,10 +265,12 @@ export async function mountGame(main) {
       ? `<div class="grinder-only"><table class="gm-ev"><tbody>${s.options.map(o => `<tr class="${s.best.includes(o.id) ? 'best' : ''}${o.id === a.id ? ' mine' : ''}"><td>${esc(o.label)}</td><td class="num">${o.id === 'fold' ? '0 (the zero)' : `${sign(s.ev[o.id])} ${esc(unitWord(s.unit))}`}</td></tr>`).join('')}</tbody></table>
          <p class="gm-small">On average, compared with folding. At stake: ${Math.round(s.stake * 100) / 100} ${esc(unitWord(s.unit))}.</p></div>`
       : ''
-    return `<li class="${a.best ? 'good' : 'bad'}">
-      <div class="gm-rhead"><b>${k + 1}. ${esc(s.title)}</b><span class="gm-pts">${a.points} points</span></div>
+    return `<li class="${a.points == null ? 'other' : a.best ? 'good' : 'bad'}">
+      <div class="gm-rhead"><b>${k + 1}. ${esc(s.title)}</b><span class="gm-pts">${a.points == null ? 'not scored' : `${a.points} points`}</span></div>
       <p class="gm-small">${esc(s.prompt)}</p>
-      <p>You: <b>${esc(lab(a.id))}</b>${a.best ? ' — the best play.' : ` · Best: <b>${esc(s.best.map(lab).join(' or '))}</b>`}</p>
+      <p>You: <b>${esc(a.said || lab(a.id))}</b>${a.best ? ' — the best play.' : ` · Best: <b>${esc(s.best.map(lab).join(' or '))}</b>`}</p>
+      ${a.why ? `<p class="gm-small">Not scored: ${esc(a.why)}</p>` : ''}
+      ${a.size ? `<p class="gm-small">${esc(a.size)}</p>` : ''}
       ${evRows}
       <p>${esc(s.answer)}</p>
       <p class="gm-small">Scored by ${esc(s.scoredBy)}. Learn it: <a href="${s.lesson.href}">${esc(s.lesson.title)}</a>.</p>

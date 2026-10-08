@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { parseCards } from '../js/engine/cards.js'
-import { potTotal } from '../js/engine/rules.js'
+import { potTotal, legalActions } from '../js/engine/rules.js'
 import { replay, decisions, mathsAt } from '../js/game/famous.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -76,6 +76,19 @@ for (const id of index.hands) {
       } else if (d.step.real !== null || !hand.gap) bad(at, 'a decision with no recorded action must have `real: null` and the hand a `gap`')
       if (d.step.real && !ids.includes(d.step.real)) bad(at, `the real action "${d.step.real}" is not among the options`)
       for (const o of ids) if (!d.step.notes || !d.step.notes[o]) bad(at, `no note for option "${o}"`)
+      // the reader acts at the table, so whatever is legal there needs an explanation
+      const legalKinds = new Set(legalActions(d.state).map(a => a.type))
+      for (const kind of legalKinds) {
+        // folding when a check is free is never sensible; the page has one standard line for it
+        if (kind === 'fold' && legalKinds.has('check')) continue
+        if (!d.step.notes[kind] && !(kind === 'raise' || kind === 'bet') ) bad(at, `\`${kind}\` is legal here but has no note`)
+        if ((kind === 'raise' || kind === 'bet') && !d.step.notes[kind] && !d.step.notes.allin) bad(at, `a ${kind} is legal here but neither \`${kind}\` nor \`allin\` has a note`)
+        if ((kind === 'raise' || kind === 'bet') && !d.step.notes[kind]) {
+          // only all-in is explained: a smaller bet or raise would fall back to the all-in note — flag it
+          const big = legalActions(d.state).find(a => a.type === kind)
+          if (big.min < big.max) bad(at, `a ${kind} smaller than all in is legal here but has no \`${kind}\` note`)
+        }
+      }
       if (!d.step.ask || !d.step.why || !d.step.lesson) bad(at, 'every step needs ask, why and lesson')
       const m = mathsAt(hand, Number(seat), d.state)
       if (!(m.equity >= 0 && m.equity <= 1)) bad(at, `hindsight equity ${m.equity}`)

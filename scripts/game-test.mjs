@@ -12,7 +12,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { makeSpot, makeGame, grade, TYPES, GAME_LENGTH } from '../js/game/spots.js'
+import { makeSpot, makeGame, grade, optionFor, TYPES, GAME_LENGTH } from '../js/game/spots.js'
 import { legalActions, applyAction } from '../js/engine/rules.js'
 import { evaluate, compare, HIGH_CARD } from '../js/engine/evaluator.js'
 import { parseRange, cellCombos, idx } from '../js/engine/ranges.js'
@@ -102,6 +102,20 @@ for (const type of TYPES) {
       const P = 2 * s.state.seats[0].total / 200, S = s.stake
       const want = eq * (P + 2 * S) - S
       if (Math.abs(want - s.ev.call) > 1e-9) bad(where, `call EV ${s.ev.call} but counting the rivers gives ${want}`)
+    }
+    // every action the table offers — fold, check, call, the smallest raise and all in — becomes either a
+    // scored option or an unscored one with a reason, and never an error
+    for (const a of legalActions(s.state)) {
+      const tries = a.type === 'raise' || a.type === 'bet' ? [{ type: a.type, amount: a.min }, { type: a.type, amount: a.max }] : [{ type: a.type }]
+      for (const t of tries) {
+        let c
+        try { c = optionFor(s, t) } catch (e) { bad(where, `${t.type} ${t.amount ?? ''}: ${e.message}`); continue }
+        if (c.id == null && !c.why) bad(where, `${t.type} ${t.amount ?? ''} is unscored without a reason`)
+        if (c.id != null && c.id !== 'limp' && !s.options.some(o => o.id === c.id)) bad(where, `${t.type} maps to "${c.id}", not an option`)
+        const g = grade(s, c.id)
+        if (g.points != null && (g.points < 0 || g.points > 100)) bad(where, `${t.type} scores ${g.points}`)
+        if (!c.said) bad(where, `${t.type}: no words for what the reader did`)
+      }
     }
     for (const id of s.best) answers[type][id] = (answers[type][id] || 0) + 1
   }

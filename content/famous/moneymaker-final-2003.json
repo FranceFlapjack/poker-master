@@ -120,7 +120,8 @@
           "notes": {
             "fold": "Two pair is far too strong to fold here.",
             "call": "Keeps him betting, but lets him see the turn and river for a small price.",
-            "allin": "Gets the money in while you are ahead of top pair — and Farha has only about 1.8 million, so it puts his whole tournament on this hand."
+            "allin": "Gets the money in while you are ahead of top pair — and Farha has only about 1.8 million, so it puts his whole tournament on this hand.",
+            "raise": "A raise short of all in builds the pot while you are ahead — and with Farha this short, it leaves him little choice but to put the rest in."
           },
           "real": null,
           "why": "Bottom two pair is well ahead of the hands most likely to bet here, like top pair. Whatever the exact order of bets, the money went in with Moneymaker ahead.",

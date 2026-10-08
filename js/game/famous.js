@@ -115,3 +115,35 @@ export function boardNews(prev, next) {
   for (let n = prev.board.length + 1; n <= next.board.length; n++) if (names[n]) out.push(n)
   return out.map(n => ({ label: names[n], cards: n === 3 ? next.board.slice(0, 3) : [next.board[n - 1]] }))
 }
+
+/**
+ * What the reader did at the table, as the step's option and a sentence about the size. Any size can be
+ * chosen; sizes are never graded, only compared with what the real player did — and only where the
+ * sources record the amounts.
+ *
+ * @returns {{id: string, said: string, size: string|null}}
+ */
+export function stepChoice(hand, d, action) {
+  const notes = d.step.notes || {}
+  const s = d.state
+  const big = legalActions(s).find(a => a.type === 'raise' || a.type === 'bet')
+  const known = amt => !hand.unknown || (hand.unknown.shown || []).includes(amt)
+  if (action.type === 'fold' || action.type === 'check' || action.type === 'call') {
+    return { id: action.type, said: action.type[0].toUpperCase() + action.type.slice(1), size: null }
+  }
+  const all = big && action.amount >= big.max
+  const kind = action.type === 'bet' ? 'bet' : 'raise'
+  const id = all && notes.allin ? 'allin' : notes[kind] ? kind : 'allin'
+  const said = all ? 'All in' : action.unsized || !known(action.amount) ? (kind === 'bet' ? 'Bet' : 'Raise')
+    : `${kind === 'bet' ? 'Bet' : 'Raise to'} ${action.amount.toLocaleString('en')}`
+  let size = null
+  const real = d.real
+  if (real && (real.type === 'bet' || real.type === 'raise') && real.amount && known(real.amount) && !all && !action.unsized && known(action.amount)) {
+    const who = hand.seats[real.seat].name
+    const ratio = action.amount / real.amount
+    size = ratio > 0.95 && ratio < 1.05
+      ? `About the size ${who} chose (${real.amount.toLocaleString('en')}).`
+      : `${who} ${real.type === 'bet' ? 'bet' : 'raised to'} ${real.amount.toLocaleString('en')} — yours was ${ratio > 1 ? 'bigger' : 'smaller'}, about ${ratio.toFixed(1)}× theirs. Sizes are not graded; the size changes what the other player is being asked to call.`
+  }
+  return { id, said, size }
+}

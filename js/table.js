@@ -492,6 +492,30 @@ export function mountTable(host, opts) {
     const raise = acts.find(a => a.type === 'raise' || a.type === 'bet')
     let amount = raise ? raise.min : 0
 
+    // A replay whose chip counts no source records: a slider would print sizes built from invented
+    // stacks, so the choices are plain buttons, with an amount only where a source records it.
+    if (o.unknownChips) {
+      const known = amt => (o.unknownChips.shown || []).includes(amt)
+      for (const a of acts) {
+        if (a.type === 'raise' || a.type === 'bet') continue
+        const b = document.createElement('button')
+        b.className = 'btn' + (a.type === 'call' ? ' primary' : '')
+        b.textContent = a.type === 'call' ? `Call${known(p.committed + a.amount) || known(a.amount) ? ` ${chips(a.amount)}` : ''}` : a.type[0].toUpperCase() + a.type.slice(1)
+        b.addEventListener('click', () => o.onAction && o.onAction({ type: a.type }))
+        bar.append(b)
+      }
+      if (raise) {
+        for (const [label, value] of [[raise.type === 'bet' ? 'Bet' : 'Raise', raise.min], ['All in', raise.max]]) {
+          const b = document.createElement('button')
+          b.className = 'btn'
+          b.textContent = label
+          b.addEventListener('click', () => o.onAction && o.onAction({ type: raise.type, amount: value, unsized: value !== raise.max }))
+          bar.append(b)
+        }
+      }
+      return bar
+    }
+
     for (const a of acts) {
       if (a.type === 'raise' || a.type === 'bet') continue
       const b = document.createElement('button')

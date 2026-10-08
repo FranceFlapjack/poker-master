@@ -54,6 +54,7 @@ const SIGMA = 2                                 // two standard errors: inside t
  * spots have no EV: right is 100, wrong is 0. Unscored spots return null and do not count.
  */
 export function grade(spot, choice) {
+  if (choice == null) return { points: null, best: false, loss: null }          // outside what the spot scores
   if (!spot.scored) return { points: null, best: spot.best.includes(choice), loss: null }
   if (spot.best.includes(choice)) return { points: 100, best: true, loss: 0 }
   if (spot.source === 'chart') return { points: 0, best: false, loss: null }
@@ -147,7 +148,7 @@ function rfi(rng, charts) {
   s = foldTo(s, 0)
   const options = [
     { id: 'fold', label: 'Fold', action: { type: 'fold' } },
-    { id: 'raise', label: 'Raise to 500', note: '2.5 big blinds — the size is not scored', action: { type: 'raise', amount: 500 } },
+    { id: 'raise', label: 'Raise', note: 'any size — the size is not scored', action: { type: 'raise', amount: 500 } },
   ]
   assertLegal(s, options)
   const open = inRange(w, cell)
@@ -160,7 +161,7 @@ function rfi(rng, charts) {
     best: [open ? 'raise' : 'fold'],
     answer: `${cellName(cell.i, cell.j)} is ${open ? 'inside' : 'outside'} the ${pos.name.toLowerCase()} opening range, ${pos.pct}% of hands: ${pos.range}.`,
     scoredBy: "this app's opening chart — written from general positional principles, not solver output, and not GTO",
-    lesson: { href: '#/lesson/ranges/opening-charts', title: 'Opening charts, and where they come from' },
+    lesson: { href: '#/lesson/ranges/opening-charts', title: 'Opening charts — what to raise from each seat' },
   }
 }
 
@@ -471,4 +472,51 @@ function bubble(rng, charts) {
     scoredBy: 'ICM (Malmuth–Harville) on the stated stacks and payouts — exact for those, with the shove range an assumption',
     lesson: { href: '#/lesson/stacks/the-bubble', title: 'The bubble' },
   }
+}
+
+// --- what you did at the table, as the decision that is scored -------------------------------------
+
+/**
+ * The table hands back a real action — fold, check, call, or a bet or raise of any size. This turns it
+ * into the option the spot scores, and a sentence about the size. The SIZE IS NEVER GRADED: no lesson
+ * teaches a sizing rule and there is no solver. Where an action falls outside what the spot's maths
+ * covers — a limp or a small raise when the model is shove-or-fold, a raise with a bluff-catcher — it
+ * is not scored, and `why` says so.
+ *
+ * @returns {{id: string|null, said: string, size: string|null, why: string|null}}
+ */
+export function optionFor(spot, action) {
+  const s = spot.state, p = s.seats[spot.hero]
+  const legal = legalActions(s)
+  const big = legal.find(a => a.type === 'raise' || a.type === 'bet')
+  const bbOf = n => `${r1(n / s.blinds.bb)} big blinds`
+  const others = s.seats.filter((x, i) => i !== spot.hero && !x.folded)
+  const allInFacing = others.length && others.every(x => x.allIn)
+  const out = (id, said, size = null, why = null) => ({ id, said, size, why })
+
+  if (action.type === 'fold') return out('fold', 'Fold')
+  if (action.type === 'check') return out(spot.options.some(o => o.id === 'check') ? 'check' : null, 'Check')
+  if (action.type === 'call') {
+    if (spot.options.some(o => o.id === 'call')) return out('call', 'Call')
+    if (spot.type === 'rfi') return out('limp', 'Just call (limp)', null, 'The opening chart raises or folds — it never just calls — so a limp is scored as neither of its answers.')
+    if (spot.type === 'shove') return out(null, 'Just call (limp)', null, 'This spot is scored by the push/fold solution, where the only plays are all in or fold. A limp is outside that model, so it is not scored.')
+    return out(null, 'Call', null, 'Not one of the plays this spot scores.')
+  }
+  // a bet or a raise, of whatever size
+  const all = big && action.amount >= big.max
+  const said = all ? 'All in' : `${action.type === 'bet' ? 'Bet' : 'Raise to'} ${action.amount.toLocaleString('en')}`
+  if (spot.type === 'rfi') {
+    return out('raise', said, `You raised to ${action.amount.toLocaleString('en')}, ${bbOf(action.amount)}. The size is not scored — the course's drills open to 2.5 big blinds, and the chart only says whether to raise.`)
+  }
+  if (spot.type === 'shove') {
+    if (all) return out('shove', 'All in')
+    return out(null, said, null, `At ${bbOf(p.stack + p.committed)} the push/fold solution has only two plays, all in or fold. A smaller raise is outside that model, so it is not scored — and at these depths it usually commits you anyway.`)
+  }
+  if (allInFacing && spot.options.some(o => o.id === 'call')) {
+    return out('call', said, 'Raising over an all-in is the same as calling: nobody can put in more, so the extra comes straight back.')
+  }
+  if (spot.type === 'river') {
+    return out(null, said, null, 'A raise is not scored here. With a hand that beats only bluffs, a raise gets called by the hands that beat you and folds out the bluffs you were hoping to catch — the spot is built as call or fold.')
+  }
+  return out(null, said, null, 'Not one of the plays this spot scores.')
 }

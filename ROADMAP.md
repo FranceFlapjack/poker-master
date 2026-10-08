@@ -669,6 +669,13 @@ what to do — and room to choose differently, because a mistake is something to
   Now the cards and the hindsight come only at the end, decision by decision, and famous-test fails any
   file that names the opponent's cards (as glyphs, codes or ranks) in the list, the intro, the facts or
   any explanation before the reader's last decision.
+- **Fold, call, raise with a slider** (owner's request, 2026-10-08), in the game and the replays alike:
+  you act with the table's own controls, any size. The decision is scored as before; THE SIZE IS NEVER
+  GRADED — scoring a size needs a solver. The analysis comments on it instead: in the game, the size in
+  big blinds (and for an open, that the drills use 2.5bb); in a replay, against the size the real player
+  chose. A play outside what a spot's maths covers — a limp or a small raise when the model is
+  shove-or-fold, a raise with a bluff-catcher — is not scored, and the page says why. For the 1988 hand,
+  with no stacks recorded, the controls are plain buttons with no amounts.
 - **The maths:** the price counts only what you can win — facing an all-in bigger than your stack, the
   uncalled part goes back (caught in testing: Farha's last call first showed 21.4% needed; it is 33.2%).
 
