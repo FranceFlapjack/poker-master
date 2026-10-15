@@ -896,3 +896,15 @@ svg.pk-cards { display: block; }
 .sidebar-footer .credit a { color: var(--ink-3); text-decoration: none; }
 .sidebar-footer .credit a:hover { color: var(--accent); }
 /* cmx-20260927-dec0fc469f71 */
+
+/* The welcome's card (js/card-spin.js): hairlines in the welcome ink behind the word, on a corner, turning */
+.wl-card { position: absolute; inset: 0; z-index: -1; pointer-events: none; display: grid; place-items: center; perspective: 1600px; }
+.wl-card-spin, .wl-card-tilt { transform-style: preserve-3d; }
+.wl-card-tilt { position: relative; height: min(72vh, 80vw); aspect-ratio: 72 / 100; }
+.wl-card-side { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.wl-card-side.back { transform: rotateY(180deg); }
+.wl-card-edge { fill: none; stroke: var(--wl-ink); stroke-opacity: .4; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.wl-card-ink text { fill: none; stroke: var(--wl-ink); stroke-opacity: .4; stroke-width: 1px; vector-effect: non-scaling-stroke; text-anchor: middle; font-weight: 300; }
+.wl-card-ink.red text { stroke: var(--suit-red); stroke-opacity: .9; }
+#wl-card-lattice path { fill: none; stroke: var(--wl-ink); stroke-opacity: .28; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.wl-card-lattice { fill: url(#wl-card-lattice); stroke: var(--wl-ink); stroke-opacity: .28; stroke-width: 1px; vector-effect: non-scaling-stroke; }

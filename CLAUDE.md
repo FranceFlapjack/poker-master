@@ -42,7 +42,10 @@ names must match their references exactly — Pages is case-sensitive, a Mac is 
   game's word in heavy type fitted edge to edge, MASTER small beneath it, in the app's `--accent`; scroll
   down to enter. Shared exactly like `family.js`: identical in every app, knows nothing about any one
   game — Chess Master and Go Master carry the same two files since 2026-09-27, each on its own accent.
-  Shown once per app (`<app>-master.welcomed`); `#/welcome` shows it again. A change to either file is a
+  Shown once per app (`<app>-master.welcomed`); `#/welcome` shows it again.
+  Each app adds its own background from its `app.js` into the root `mountWelcome` returns, so the shared
+  files stay identical: Chess draws a knight's tour; Poker (`js/card-spin.js`, owner's choice 2026-10-15)
+  turns one hairline card standing on a corner, its face the next card of an engine-shuffled deck. A change to either file is a
   change to the series: copy it to all three.
 
 ## Run
