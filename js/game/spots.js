@@ -235,6 +235,7 @@ function pfSpot(rng, charts, seat) {
     const shoveNet = (1 - cont) * 1 + cont * (eq * 2 * depth - depth)
     const ev = { fold: 0, shove: shoveNet + 0.5 }
     const noise = SIGMA * cont * 2 * depth * se
+    if (onTheLine(ev, noise, 2 * noise + cont * 2 * depth * CHART_EQ, chartSays ? 'shove' : 'fold')) return null
     const options = [
       { id: 'fold', label: 'Fold', action: { type: 'fold' } },
       { id: 'shove', label: `All in for ${depth} big blinds`, action: { type: 'raise', amount: depth * BB } },
@@ -257,6 +258,7 @@ function pfSpot(rng, charts, seat) {
   const callNet = eq * 2 * depth - depth
   const ev = { fold: 0, call: callNet + 1 }
   const noise = SIGMA * 2 * depth * se
+  if (onTheLine(ev, noise, 2 * noise + 2 * depth * CHART_EQ, chartSays ? 'call' : 'fold')) return null
   const options = [
     { id: 'fold', label: 'Fold', action: { type: 'fold' } },
     { id: 'call', label: `Call ${depth - 1} big blinds more`, action: { type: 'call' } },
@@ -291,6 +293,18 @@ function pickWeighted(rng, combos) {
   return combos[combos.length - 1]
 }
 
+/**
+ * A hand on the solve's line, where the EV here comes out a little the other way from the chart: the
+ * chart cannot be sure there either (its equities were sampled, about ±0.8%, and it skips card removal
+ * — js/engine/pushfold.js), so such a hand is dealt again rather than scored against a guess. `near` is
+ * twice this spot's tie band plus that ±0.8% at this stake; a wider gap is not noise, and stays for
+ * game-test to catch.
+ */
+const CHART_EQ = 0.008
+function onTheLine(ev, noise, near, chart) {
+  const top = Math.max(...Object.values(ev))
+  return ev[chart] < top - noise && ev[chart] >= top - near
+}
 /** Every option within `noise` of the top EV counts as best. */
 function bestOf(ev, noise, prefer) {
   const top = Math.max(...Object.values(ev))
