@@ -21,7 +21,7 @@ body {
 a { color: inherit; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
 a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
-h1 { font-size: var(--fs-4); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+h1 { font-size: var(--fs-title); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }   /* the story's display style, one step down (was small caps) */
 h2 { font-size: var(--fs-0); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-top: var(--s-7); margin-bottom: var(--s-3); }
 h3 { font-size: var(--fs-2); font-weight: 600; margin-top: var(--s-6); margin-bottom: var(--s-2); }
 p { margin: 0 0 var(--s-4); }
@@ -44,7 +44,7 @@ button { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
   padding: 6px 14px; border: 1px solid var(--line-2); background: transparent; color: var(--ink);
-  cursor: pointer; transition: border-color 150ms, background 150ms;
+  cursor: pointer; transition: border-color 150ms, background 150ms; text-decoration: none;   /* an <a class="btn"> is a button, not a link */
 }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 8px 22px; font-size: 12px; letter-spacing: 0.1em; }
@@ -145,7 +145,7 @@ button { font: inherit; color: inherit; }
 .sidebar-footer { padding: var(--s-4) var(--s-5) var(--s-5); border-top: 1px solid var(--line); }
 .sidebar-tools { display: flex; align-items: center; justify-content: flex-start; gap: var(--s-2); margin-top: var(--s-3); }
 
-.main { padding: var(--s-8) var(--s-7); min-width: 0; }
+.main { padding: var(--main-pad-y) var(--main-pad-x) var(--s-8); min-width: 0; }
 .page { max-width: var(--page-w); margin: 0; }
 .prose { max-width: var(--measure); }
 /* lesson body: text keeps the reading measure, boards and game viewers may use the full page width; everything centred */
@@ -164,12 +164,44 @@ button { font: inherit; color: inherit; }
 .card { border: 1px solid var(--line); padding: var(--s-5); background: var(--surface); }
 .continue { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); margin-bottom: var(--s-6); }
 .continue h3 { margin: var(--s-1) 0 0; }
-.track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s-4); }
-.track-card { text-decoration: none; display: flex; flex-direction: column; gap: var(--s-2); min-height: 140px; transition: border-color 150ms; }
-.track-card:hover { border-color: var(--accent); }
-.track-card h3 { margin: 0; }
-.track-card p { color: var(--ink-2); font-size: var(--fs-1); margin: 0; flex: 1; }
-.track-card .meta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+@media (max-width: 760px) { .continue { flex-direction: column; align-items: stretch; } .continue .btn { text-align: center; } }   /* phones: the button under the title, full width */
+/* flip cards (the course's sections and the tools, flipCard() in js/app.js): the front is a playing card's face —
+   rank and suit, the label and the title; on hover (or keyboard focus) it turns over to its navy back with the
+   description. Rows are three wide (one on phones). The link itself never moves, so the pointer cannot fall off
+   a card mid-turn. Modelled on Chess Master's flip cards, 2026-10-27. */
+.track-grid, .tool-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
+.tool-row { margin: var(--s-4) 0 var(--s-6); }
+@media (max-width: 760px) { .track-grid, .tool-row { grid-template-columns: minmax(0, 1fr); } }
+.flip-card, .flip-card:hover { display: grid; text-decoration: none; color: var(--ink); perspective: 1600px; }
+.flip-card .flip { display: grid; transform-style: preserve-3d; transition: transform .85s cubic-bezier(.45, .05, .2, 1); will-change: transform; }   /* a slow start and a soft landing */
+.flip-card .face { grid-area: 1 / 1; display: flex; flex-direction: column; gap: var(--s-2); min-height: 236px; padding: var(--s-5); box-sizing: border-box; border-radius: var(--card-radius); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.flip-card .front { background: var(--card-face); border: 1px solid var(--card-edge); color: var(--suit-black); }
+.flip-card .front .eyebrow { color: var(--ink-2); }
+.flip-pip { display: block; margin: auto; text-align: center; font-size: 64px; line-height: 1; }   /* the card's rank over its suit, as a table card draws them */
+.flip-pip b { display: block; font-size: 52px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+.flip-card .front.red .flip-pip { color: var(--suit-red); }
+.flip-card .front h3 { margin: 0; font-size: var(--fs-4); font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: var(--ink); }
+.flip-card .back { transform: rotateY(180deg); color: var(--accent-ink); border: 1px solid var(--accent-deep);
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 9px), var(--accent); }   /* the card back's lattice, as on the welcome card */
+.flip-card .back b { font-size: var(--fs-3); font-weight: 800; letter-spacing: -0.01em; }
+.flip-card .back p { margin: 0; flex: 1; font-size: var(--fs-2); line-height: 1.5; opacity: .9; }
+.flip-card .back .meta { font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; opacity: .75; }
+.flip-card .back .go { font-weight: 700; letter-spacing: 0.04em; }
+.flip-card:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+@media (hover: hover) {
+  .flip-card:hover .flip, .flip-card:focus-visible .flip { transform: rotateY(180deg); transition-delay: 60ms; }   /* the short delay: a pointer passing over does not set off a row of turns */
+}
+@media (hover: none) {   /* touch: nothing turns over; a short card (title beside the rank and suit) with the description under it */
+  .flip-card .face { grid-area: auto; min-height: 0; padding: var(--s-4) var(--s-5); }
+  .flip-card .front { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s-4); align-items: center; border-radius: var(--card-radius) var(--card-radius) 0 0; }
+  .flip-card .front .eyebrow { grid-area: 1 / 1; align-self: end; }
+  .flip-card .front h3 { grid-area: 2 / 1; align-self: start; }
+  .flip-pip { grid-area: 1 / 2 / 3 / 3; margin: 0; font-size: 40px; }
+  .flip-pip b { font-size: 32px; margin-bottom: 2px; }
+  .flip-card .back { transform: none; border-radius: 0 0 var(--card-radius) var(--card-radius); }
+  .flip-card .back b { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .flip-card .flip { transition: none; } }
 .switch-row { display: flex; align-items: center; gap: var(--s-3); margin: var(--s-6) 0 var(--s-4); font-size: var(--fs-1); color: var(--ink-2); }
 .switch { position: relative; width: 34px; height: 18px; border-radius: 9px; background: var(--line-2); border: 0; cursor: pointer; padding: 0; transition: background 150ms; }
 .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 150ms; }
@@ -359,8 +391,7 @@ details.more > .more-body { padding-bottom: var(--s-4); }
   .scrim.open { display: block; }
   .topbar { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 10; }
   .topbar .brand { padding: 0; }
-  .main { padding: var(--s-5) var(--s-4) var(--s-8); }
-  h1 { font-size: var(--fs-3); }
+  :root { --main-pad-y: var(--s-5); --main-pad-x: var(--s-4); }
 
   /* phones: thumbs, not pointers — taller buttons, and the words above the board so that feedback is visible while tapping */
   .btn, .icon-btn { min-height: 40px; }
@@ -746,14 +777,6 @@ svg.pk-cards { display: block; }
 .trainer .hand .pc + .pc { margin-left: 0.35em; }
 .trainer .actions { display: flex; gap: var(--s-2); margin-bottom: var(--s-3); }
 
-/* the trainers, on the home page's part card — a grid so five of them stay scannable */
-.part-tools { list-style: none; margin: var(--s-4) 0 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-3) var(--s-4); }
-.part-tools a { display: block; text-decoration: none; color: inherit; }
-.part-tools b { display: block; font-size: var(--fs-2); font-weight: 600; }
-.part-tools span { display: block; font-size: var(--fs-1); color: var(--ink-2); margin-top: 2px; }
-.part-tools a:hover b { text-decoration: underline; }
-
 /* the weak-spot report: worst first, with the sample size always visible next to the percentage */
 .report .wlist { list-style: none; margin: var(--s-3) 0 0; padding: 0; }
 .report .wrow a { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label area" "bar bar" "pct n"; gap: 2px var(--s-3);
@@ -908,3 +931,113 @@ svg.pk-cards { display: block; }
 .wl-card-ink.red text { stroke: var(--suit-red); stroke-opacity: .9; }
 #wl-card-lattice path { fill: none; stroke: var(--wl-ink); stroke-opacity: .28; stroke-width: 1px; vector-effect: non-scaling-stroke; }
 .wl-card-lattice { fill: url(#wl-card-lattice); stroke: var(--wl-ink); stroke-opacity: .28; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+
+/* home: the course under the story */
+.home-course > h2 { font-size: var(--fs-5); font-weight: 800; letter-spacing: -0.01em; text-transform: none; color: var(--ink); margin: var(--s-7) 0 var(--s-4); }
+.home-course > h2:first-child { margin-top: 0; }
+
+/* ---------- the story (js/story.js): the home's dark entry, after Chess Master's. It re-points the ordinary
+   tokens, so the buttons and the grid inside need no styles of their own. Every class is story-prefixed. */
+.story {
+  --bg: var(--story-bg); --surface: var(--story-bg); --ink: var(--story-ink); --ink-2: var(--story-dim); --ink-3: rgba(246, 241, 231, .55);
+  --line: var(--story-line); --line-2: rgba(246, 241, 231, .32);
+  --accent: var(--story-ink); --accent-ink: var(--story-bg); --accent-deep: #ffffff;
+  --heat-cold: rgba(246, 241, 231, .07);
+  background: var(--bg); color: var(--ink);
+  margin: calc(-1 * var(--main-pad-y)) calc(-1 * var(--main-pad-x)) var(--s-7);
+}
+.story a { color: var(--ink); }
+.story-scene { min-height: 88vh; padding: 10vh max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; }
+.story-scene + .story-scene { border-top: 1px solid var(--line); }
+.story-split, .story-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 5vw; align-items: center; }
+@media (max-width: 900px) { .story-split, .story-hero { grid-template-columns: minmax(0, 1fr); } }
+.story-scene > * { opacity: 0; transform: translateY(22px); transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
+.story-scene.story-in > * { opacity: 1; transform: none; }
+.story-in > :nth-child(2) { transition-delay: .1s; } .story-in > :nth-child(3) { transition-delay: .2s; } .story-in > :nth-child(4) { transition-delay: .3s; }
+.story-kicker { font-size: var(--fs-label); font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 var(--s-4); }
+.story-title, .story-h { font-weight: var(--fw-display); letter-spacing: var(--track-display); line-height: var(--lh-display); text-transform: none; color: var(--ink); margin: 0 0 var(--s-5); }
+.story-title { font-size: clamp(40px, 5.2vw, 84px); }
+.story-h { font-size: var(--fs-display-2); max-width: 15ch; }
+.story-title em, .story-h em { font-style: normal; color: var(--signal); }   /* gold text: only here, on the dark ground */
+.story-lead, .story-body { font-size: clamp(16px, 1.5vw, 20px); line-height: 1.5; color: var(--ink-2); max-width: 34em; margin: 0; }
+.story-body b { color: var(--ink); }
+.story-after { margin-top: var(--s-6); }
+.story-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-6); }
+.story-cta .btn { padding: 12px 20px; font-size: 12px; }
+.story-figure { margin: 0; }
+.story-figure figcaption { margin-top: var(--s-4); color: var(--ink-2); font-size: var(--fs-1); max-width: 30em; }
+.story-figure figcaption b { color: var(--signal); font-size: var(--fs-4); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.story-again { margin-top: var(--s-4); }
+.story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
+.story-hint { font-size: var(--fs-1); color: var(--ink-3); margin: var(--s-3) 0 0; }
+.story-count { list-style: none; padding: 0; margin: var(--s-3) 0 0; display: grid; gap: var(--s-4); }
+.story-count li { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 6px; margin: 0; }   /* number, then its bar, then the words: nothing can overlap */
+.story-count b { font-size: clamp(26px, 3.6vw, 52px); font-weight: var(--fw-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.story-count li:last-child b { color: var(--signal); }
+.story-count i { display: block; height: 10px; background: var(--ink); width: 0; transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
+.story-count li:last-child i { background: var(--signal); }
+.story-in .story-count i { width: calc(var(--w) * 100%); }
+.story-count span { color: var(--ink-2); font-size: var(--fs-1); }
+.story-odds i { min-width: 3px; }   /* one in 221 is a sliver, but it is there */
+.story-chips { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); }
+.story-chip { min-width: 40px; height: 40px; padding: 0 12px; font: inherit; font-size: var(--fs-2); font-weight: 600; color: var(--ink-2); background: none; border: 1px solid var(--line-2); border-radius: 999px; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; }
+.story-chip.on { background: var(--ink); color: var(--story-bg); border-color: var(--ink); }
+.story-chip:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+/* the 169 as a heatmap: the dimmest square is the weakest hand at this table size, gold the strongest */
+.story-grid { max-width: 520px; width: 100%; }
+svg.sg { display: block; width: 100%; height: auto; }
+.sg-sq { fill: color-mix(in srgb, var(--heat-hot) calc(var(--v) * 100%), var(--heat-cold)); }
+.sg-name, .sg-num { fill: var(--ink); text-anchor: middle; dominant-baseline: central; font-family: var(--font-sans); pointer-events: none; }
+.sg-name { font-size: .27px; font-weight: 600; }
+.sg-num { font-size: .22px; opacity: .8; }
+.sg-hot .sg-name, .sg-hot .sg-num { fill: var(--story-bg); }   /* dark ink on the bright squares, cream on the dim ones */
+/* cards in hairlines, as on the welcome; a dealt card turns face up */
+.story-deal, .story-row { display: flex; gap: var(--s-3); }
+.story-deal { gap: var(--s-4); }
+.sc { width: clamp(96px, 12vw, 150px); aspect-ratio: 72 / 100; perspective: 900px; }
+.sc-turn { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(180deg); transition: transform .7s cubic-bezier(.45, .05, .2, 1); }
+.sc.up .sc-turn { transform: none; }
+.sc-side { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.sc-back { transform: rotateY(180deg); border: 1px solid var(--line-2); border-radius: 8px;
+  background: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 9px); background-clip: content-box; padding: 6px; }
+.sc-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.story-row .sc-svg { width: clamp(52px, 6.4vw, 84px); height: auto; }
+.story-board { margin-top: var(--s-4); }
+.sc-edge { fill: none; stroke: var(--ink); stroke-opacity: .5; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.sc-svg text { text-anchor: middle; font-family: var(--font-sans); font-weight: 500; }
+.sc-ink { fill: var(--ink); }
+.sc-red { fill: var(--suit-red); }
+.story-time { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
+.story-time li { padding: var(--s-4) var(--s-4) 0 0; position: relative; margin: 0; }
+.story-time li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+.story-time li:last-child::before { background: var(--signal); }
+.story-time b { display: block; font-size: clamp(20px, 2.2vw, 30px); font-weight: var(--fw-display); letter-spacing: -.02em; }
+.story-time span { display: block; color: var(--ink-2); font-size: var(--fs-1); line-height: 1.45; margin-top: 6px; }
+@media (max-width: 760px) {
+  .story-time { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--line-2); }
+  .story-time li { padding: 0 0 var(--s-5) var(--s-5); }
+  .story-time li::before { top: 6px; left: -5px; }
+  .story-row { gap: var(--s-2); }
+  .story-chips { gap: 6px; }
+  .story-chip { min-width: 36px; height: 36px; padding: 0; }   /* all eight on one line at 375px */
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-scene > * { opacity: 1; transform: none; transition: none; }
+  .story-count i, .sc-turn { transition: none; }
+}
+
+/* immersive: the story home takes the whole screen; the sidebar becomes the phone's drawer, opened from a
+   slim bar in the story's colours — as in Chess Master (owner 2026-10-27) */
+html.immersive .app { grid-template-columns: minmax(0, 1fr); }
+html.immersive aside.mascot { display: none; }   /* no cat on the home page; it is back on every other page */
+html.immersive .sidebar { position: fixed; inset: 0 auto 0 0; width: min(var(--sidebar-w), 86vw); transform: translateX(-100%); transition: transform 200ms; z-index: 20; }
+html.immersive .sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0, 0, 0, 0.2); }   /* shadow only when open, or it leaks onto the page edge */
+html.immersive .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 15; display: none; }
+html.immersive .scrim.open { display: block; }
+html.immersive .topbar { display: flex; align-items: center; gap: 10px; height: var(--bar-h); padding: 0 var(--main-pad-x); position: sticky; top: 0; z-index: 10; background: var(--story-bg); color: var(--story-ink); border-bottom: 1px solid var(--story-line); }
+html.immersive .topbar .brand { padding: 0; }
+html.immersive .topbar .icon-btn { color: inherit; background: none; }
+html.immersive .topbar .brand-text { color: inherit; }
+html.immersive .topbar .logo { background: var(--story-ink); }   /* the logo keeps its own navy and white, on a cream tile */
+html.immersive .home-course { max-width: var(--home-w); margin-inline: auto; }
+html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }   /* landing on the cards: the heading clears the sticky bar */

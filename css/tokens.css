@@ -43,7 +43,7 @@
   --surface-2: #f5f5f5;
   --ink: #111111;
   --ink-2: #555555;
-  --ink-3: #aaaaaa;
+  --ink-3: #767676;   /* was #aaa (2.3:1, failed); 4.5:1 on white — the series' design-system pass, 2026-10-28 */
   --line: #e6e6e6;
   --line-2: #cccccc;
 
@@ -53,6 +53,23 @@
   --accent-ink: #ffffff;
   --accent-soft: #e1e6ef;
   --accent-deep: #0a1f3d;
+
+  /* signal: the ONE highlight, for "look here" — a story highlight, the hot end of a heatmap, a focus ring.
+     Brass gold (owner 2026-10-28): red already means hearts and diamonds on every card, so a red "look here"
+     would read as a suit. Gold TEXT only on the dark story; on the light pages, gold only for dots, bars
+     and heatmap marks — gold text on white is too faint to read. Never for a wrong answer (that is --bad). */
+  --signal: #d9a441;
+
+  /* the story: the home's dark entry in the brand navy, cream ink. A .story block re-points the ordinary
+     tokens at these, so buttons, cards and grids inside it need no styles of their own. */
+  --story-bg: #0f2d57;
+  --story-ink: #f6f1e7;
+  --story-dim: rgba(246, 241, 231, 0.72);
+  --story-line: rgba(246, 241, 231, 0.16);
+
+  /* heatmaps: a cell's share of the hottest cell, mixed from cold to hot */
+  --heat-cold: #f1ece2;
+  --heat-hot: var(--signal);
 
   /* the family bubble on the logo (Apple-style glass, the one rounded, translucent element of the shell) */
   --bubble-radius: 22px;
@@ -183,6 +200,13 @@
   --fs-4: 22px;
   --fs-5: 28px;
   --lh: 1.6;
+  --fs-label: 11px;                         /* small uppercase labels: the smallest size text may be */
+  --fs-title: clamp(28px, 3.2vw, 40px);     /* a page's own title: the story's display style, one step down */
+  --fs-display: clamp(44px, 8vw, 120px);    /* the story's headline */
+  --fs-display-2: clamp(32px, 5vw, 72px);   /* a chapter headline, a big number */
+  --fw-display: 900;
+  --track-display: -0.035em;
+  --lh-display: 0.95;
   --measure: 640px;
   --track: 0.1em;   /* letter-spacing for uppercase labels */
 
@@ -198,6 +222,11 @@
   --radius: 0;
   --radius-lg: 0;
   --sidebar-w: 260px;
+  --main-pad-y: var(--s-8);   /* the main column's padding; a full-bleed block cancels exactly this */
+  --main-pad-x: var(--s-7);
+  --tap: 44px;                /* the smallest tap target on a touch screen */
+  --bar-h: 44px;              /* the slim top bar (phones, and the full-screen home): one tap target tall */
+  --home-w: 1080px;           /* the home's content width: the story's scenes and the course line up on it */
   --page-w: 900px;
 
   /* activity grid levels: paper to theme navy */

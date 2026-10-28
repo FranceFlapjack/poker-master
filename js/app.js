@@ -9,6 +9,7 @@ import { weakSpotReport } from './weak-spots.js'
 import { mascot, catHeadHTML } from './mascot.js'
 import { mountWelcome } from './welcome.js'
 import { mountCardSpin } from './card-spin.js'
+import { mountStory } from './story.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -30,6 +31,19 @@ async function boot() {
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
   mountFamily('poker')
+  // The logo replays the whole welcome: the curtain, then the story from its top (#/welcome does both); the series
+  // bubble still opens on hover. Caught on the way down, at .brand, so family.js's own click on the logo (which
+  // toggles the bubble) never runs — family.js stays as shared. As in Chess Master, 2026-10-27.
+  document.querySelectorAll('.brand').forEach(brand => {
+    const logo = brand.querySelector('.logo-btn')
+    logo.setAttribute('aria-label', 'Poker Master: replay the welcome'); logo.removeAttribute('aria-haspopup')
+    brand.addEventListener('click', e => { if (logo.contains(e.target)) { e.stopPropagation(); location.hash = '#/welcome' } }, true)
+    // the name goes to the course cards (#/course); clicked while already there, it scrolls back to them
+    brand.querySelector('.brand-text').addEventListener('click', e => {
+      if (location.hash !== '#/course') return
+      e.preventDefault(); toggleSidebar(false); $('#course')?.scrollIntoView({ behavior: 'smooth' })
+    })
+  })
   // the cat's own switch, beside the sound: hints and tips go inline when it is off
   const cat = $('#cat')
   cat.innerHTML = catHeadHTML(20)
@@ -120,6 +134,7 @@ function route() {
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
+  document.documentElement.classList.remove('immersive')
   if (unmountPage) { try { unmountPage() } catch (_) {} ; unmountPage = null }
   mascot.hide()   // a hint belongs to the page it was given on
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
@@ -129,62 +144,70 @@ function route() {
   current = null
   renderSidebar()
   showHome(main)
+  if (hash === '#/course') $('#course').scrollIntoView()   // the name in the top bar lands on the cards, past the story
+  else window.scrollTo({ top: 0 })                         // the home (and the welcome) start at the top of the story
 }
+
+// A card that turns over (css .flip-card): a playing card's face on the front — rank and suit, the label and the
+// title — and its navy back carrying the description. Text arrives escaped.
+const flipCard = ({ href, label, card, title, blurb, meta = '', go }) => {
+  const red = /[♥♦]/.test(card), [rank, suit] = [card.slice(0, -1), card.slice(-1)]
+  return `<a class="flip-card" href="${href}"><div class="flip">
+  <div class="face front${red ? ' red' : ''}"><span class="eyebrow">${label}</span><span class="flip-pip" aria-hidden="true"><b>${rank}</b>${suit}</span><h3>${title}</h3></div>
+  <div class="face back"><b aria-hidden="true">${title}</b><p>${blurb}</p>${meta ? `<span class="meta">${meta}</span>` : ''}<span class="go">${go} →</span></div>
+</div></a>`
+}
+// the course runs down from the ace, the tools carry on from the ten — red and black alternating, as a dealt run would
+const SECTION_CARD = { basics: 'A♠', ranges: 'K♥', stacks: 'Q♣', maths: 'J♦' }
+const TOOL_CARD = { play: '10♠', game: '9♥', ranges: '8♣', pushfold: '7♦', odds: '6♠', icm: '5♥' }
 
 function showHome(main) {
   document.title = 'Poker Master'
+  document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
   const lessons = courseLessons()
   const last = progress.state.lastLesson && lessons.find(l => lessonId(l.dir, l.slug) === progress.state.lastLesson)
   const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.dir, l.slug)))
   const cont = last && !progress.isLessonDone(progress.state.lastLesson) ? last : next
+  const grinder = !progress.beginner
+  // a returning reader continues; a new one picks a door by what they already know (Beginner) or goes straight in (Grinder)
+  const test = { href: '#/tools/game', label: 'Test yourself' }
+  const tour = lessons.find(l => l.ready && l.dir !== 'basics')
+  const cta = last && cont === last
+    ? { href: `#/lesson/${cont.dir}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, today: 'Pick up where you left off', secondary: test }
+    : grinder || !cont
+      ? { href: tour ? `#/lesson/${tour.dir}/${tour.slug}` : '#/tools/game', label: 'Start the tournament course', today: 'Start the tournament course', secondary: test }
+      : { href: `#/lesson/${cont.dir}/${cont.slug}`, label: 'New to poker? Start here', today: 'Your first lesson takes five minutes', secondary: tour && { href: `#/lesson/${tour.dir}/${tour.slug}`, label: 'I know the rules' } }
 
+  const sections = parts().flatMap(part => groupsOf(part).map(g => ({ ...g, part })))
+  const tools = parts().flatMap(toolsOf)
   main.innerHTML = `
-    <div class="page">
-      <section class="hero">
-        <span class="eyebrow">A course, not a feed</span>
-        <h1>Learn the hand before you learn the odds.</h1>
-        <p>No-limit hold'em, from the first deal through to the maths a tournament actually asks of you. Every lesson puts a table in the text so you act on the spot rather than read about it, and every drill is checked against the app's own engine before it ships.</p>
-      </section>
+    <div id="story"></div>
+    <div class="page home-course" id="course">
+      <h2>The course</h2>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.part)}</div></div><a class="btn primary" href="#/lesson/${cont.dir}/${cont.slug}">Open lesson</a></div>` : ''}
-      ${weakSpotReport(curriculum)}
-      ${parts().map(part => partCard(part)).join('')}
+      <div class="track-grid">
+        ${sections.map(g => {
+          const ready = g.lessons.filter(l => l.ready).length
+          const done = g.lessons.filter(l => progress.isLessonDone(lessonId(g.id, l.slug))).length
+          const first = g.lessons.find(l => l.ready)
+          return flipCard({ href: first ? `#/lesson/${g.id}/${first.slug}` : '#/course', label: esc(g.part.beginner ? 'Start here' : g.part.title), card: SECTION_CARD[g.id] || 'A♠',
+            title: esc(g.title), blurb: esc(g.blurb || ''), meta: `${g.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}`,
+            go: done && done === ready ? 'Review' : done ? 'Continue' : 'Start' })
+        }).join('')}
+      </div>
       <div class="switch-row">
         <button class="switch" id="beginner" role="switch" aria-checked="${progress.beginner}" aria-label="Beginner mode"></button>
-        <span>New to poker? <em>Beginner</em> shows the Basics part. Turn it off once you are past it and only the tournament material remains.</span>
+        <span>New to poker? <em>Beginner</em> shows the Basics and keeps the jargon down. Turn it off once you are past it: only the tournament material remains, and the numbers come in full.</span>
+      </div>
+      ${weakSpotReport(curriculum)}
+      <h2>Tools</h2>
+      <div class="tool-row">
+        ${tools.map(t => flipCard({ href: `#/tools/${t.slug}`, label: 'Tool', card: TOOL_CARD[t.slug] || '2♣', title: esc(t.title), blurb: esc(t.blurb || ''), go: 'Open' })).join('')}
       </div>
     </div>`
-  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; applyMode(); showHome(main); renderSidebar() })
-}
-
-function partCard(part) {
-  const groups = groupsOf(part)
-  const all = groups.flatMap(g => g.lessons.map(l => ({ ...l, dir: g.id })))
-  const ready = all.filter(l => l.ready)
-  const done = all.filter(l => progress.isLessonDone(lessonId(l.dir, l.slug))).length
-  const first = all.find(l => l.ready)
-  const meta = `${all.length} lessons · ${ready.length} ready${done ? ` · ${done} done` : ''}`
-
-  const inner = groups.length > 1
-    ? `<ul class="part-sections">${groups.map(g => {
-        const r = g.lessons.filter(l => l.ready).length
-        return `<li><b>${esc(g.title)}</b> <span>${esc(g.blurb || '')}</span> <em>${g.lessons.length} lessons${r ? `, ${r} ready` : ''}</em></li>`
-      }).join('')}</ul>`
-    : ''
-
-  // The trainers were reachable only from the sidebar, which buried half of what this part is for — in
-  // Grinder mode the tools ARE the app, and a home page that lists only lessons misrepresents it.
-  const tools = toolsOf(part)
-  const toolRow = tools.length
-    ? `<ul class="part-tools">${tools.map(t => `<li><a href="#/tools/${t.slug}"><b>${esc(t.title)}</b><span>${esc(t.blurb || '')}</span></a></li>`).join('')}</ul>`
-    : ''
-
-  return `<section class="card part-card">
-    <span class="eyebrow">${esc(part.title)}</span>
-    <p>${esc(part.blurb || '')}</p>
-    ${inner}
-    ${toolRow}
-    <div class="part-foot"><span class="meta">${meta}</span>${first ? `<a class="btn" href="#/lesson/${first.dir}/${first.slug}">Open</a>` : '<span class="meta">Not written yet</span>'}</div>
-  </section>`
+  const stopStory = mountStory(main.querySelector('#story'), { cta, grinder })
+  unmountPage = stopStory   // the story's loops stop when the page changes
+  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; applyMode(); stopStory(); showHome(main); renderSidebar(); main.querySelector('#course').scrollIntoView() })
 }
 
 /** Tools are loaded on demand: the equity sandbox pulls in the whole engine and most readers never open it. */
