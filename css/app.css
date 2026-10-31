@@ -1035,3 +1035,9 @@ html.immersive .topbar .brand-text { color: inherit; }
 html.immersive .topbar .logo { background: var(--story-ink); }   /* the logo keeps its own navy and white, on a cream tile */
 html.immersive .home-course { max-width: var(--home-w); margin-inline: auto; }
 html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }   /* landing on the cards: the heading clears the sticky bar */
+
+/* a card opening its page (js/app.js): the card grows into the page's title while the rest cross-fades */
+::view-transition-group(opening) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+::view-transition-old(opening), ::view-transition-new(opening) { height: 100%; object-fit: cover; }
+::view-transition-old(opening) { animation-duration: .25s; }   /* the card is gone before it is stretched far */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
