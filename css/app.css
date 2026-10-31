@@ -190,6 +190,10 @@ button { font: inherit; color: inherit; }
 .flip-card:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
 @media (hover: hover) {
   .flip-card:hover .flip, .flip-card:focus-visible .flip { transform: rotateY(180deg); transition-delay: 60ms; }   /* the short delay: a pointer passing over does not set off a row of turns */
+  /* playing-card shape, upright (owner 2026-10-31: "a card shape instead" of the landscape box) — four to a row
+     at the home's width, fewer as the window narrows */
+  .track-grid, .tool-row { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .flip-card .face { min-height: 0; aspect-ratio: 72 / 100; }
 }
 @media (hover: none) {   /* touch: nothing turns over; a short card (title beside the rank and suit) with the description under it */
   .flip-card .face { grid-area: auto; min-height: 0; padding: var(--s-4) var(--s-5); }
