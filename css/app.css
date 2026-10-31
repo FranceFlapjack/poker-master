@@ -1041,3 +1041,8 @@ html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }  
 ::view-transition-old(opening), ::view-transition-new(opening) { height: 100%; object-fit: cover; }
 ::view-transition-old(opening) { animation-duration: .25s; }   /* the card is gone before it is stretched far */
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+/* the sidebar, parked off-screen on the full-screen home, slides out into its column as the card opens its page:
+   named, so the browser moves it from one place to the other instead of fading it in. Desktop only: on a phone
+   it is a closed drawer on both pages, so there is nothing to move */
+@media (min-width: 761px) { .sidebar { view-transition-name: sidebar; } }
+::view-transition-group(sidebar) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }

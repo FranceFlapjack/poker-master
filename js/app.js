@@ -69,6 +69,7 @@ async function boot() {
     // the update above, so the click always opens the page
     const guard = setTimeout(() => t.skipTransition(), 1000)
     t.updateCallbackDone.finally(() => clearTimeout(guard))
+    t.ready.catch(() => {})   // a skipped transition rejects `ready`; the page has still opened
     t.finished.finally(() => { const head = $('#main .lesson-head, #main .hero'); if (head) head.style.viewTransitionName = '' })   // one name per page, or the next transition is skipped
   })
   $('#menu').addEventListener('click', () => toggleSidebar())
