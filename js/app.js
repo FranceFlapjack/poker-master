@@ -51,14 +51,17 @@ async function boot() {
   paintCat(); cat.addEventListener('click', () => { mascot.enabled = !mascot.enabled })
   mascot.mount()   // the cat lives in its corner from the start, quiet until it has something to say
   document.addEventListener('mascot-toggle', paintCat)
-  // A course or tool card grows into the title of the page it opens, as the page fades in (owner 2026-10-31: "more
+  // A course or tool card (or a button) grows into the title of the page it opens, as the page fades in (owner 2026-10-31: "more
   // interesting but not too much"). The browser's View Transitions; a plain jump where there are none, or where
   // motion is reduced, or for a click meant for a new tab.
   $('#main').addEventListener('click', e => {
-    const a = e.target.closest('a.flip-card')
-    if (!a || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return
+    // every way off the home into a lesson or a tool: the cards, the story's buttons, the Continue card (owner 2026-10-31)
+    const a = e.target.closest('a[href^="#/lesson/"], a[href^="#/tools/"]')
+    if (!a || !document.documentElement.classList.contains('immersive')) return
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return
     e.preventDefault()
-    a.style.viewTransitionName = 'opening'
+    const from = a.closest('.flip-card, .continue') || a   // what grows into the title: the whole card, or the button itself
+    from.style.viewTransitionName = 'opening'
     const t = document.startViewTransition(async () => {
       history.pushState(null, '', a.getAttribute('href'))   // pushState fires no hashchange, so the page is drawn once, here
       await route()
