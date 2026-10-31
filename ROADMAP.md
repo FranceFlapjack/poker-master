@@ -788,14 +788,17 @@ reduced-motion rules checked by applying them directly, since the Browser pane c
 
 Chess Master's redesign of 2026-10-27, carried over at the owner's request. The home is full screen
 (`html.immersive`, set by an inline script in `index.html` before the first paint): a slim navy bar, the sidebar as
-a drawer, no cat. `js/story.js` tells poker in six dark scenes: a real two-card deal and where that hand stands
-among the 169; the counts (52 → 1,326 → 19,600 → 2,598,960); the 13×13 grid as a heatmap against 1–8 players;
-four odds; Moneymaker's 2003 river, without Farha's cards; a sourced timeline (1970, 2003, 2017, 2019). Every
-number comes from `js/story-facts.js` and is checked in `scripts/engine-test.mjs` ("story"). The highlight is
+a drawer, no cat. `js/story.js` is **"Your hand"** (owner 2026-10-31, after trying a draft; it replaced a
+first version that copied Chess's scene-after-scene layout): each visitor is dealt one real hand, the cards stay
+pinned while the words scroll, and each step deals a street — the hand's rank among the 169, then at the flop,
+turn and river the engine names the hand and works out its chance against one random hand (sampled, "about").
+Then Moneymaker's 2003 river, without Farha's cards, and a sourced timeline (1970, 2003, 2017, 2019). The fixed
+numbers come from `js/story-facts.js` and are checked in `scripts/engine-test.mjs` ("story"). The highlight is
 `--signal`, brass gold #d9a441 (owner 2026-10-28): gold text only on the dark story; on light pages, only for
 dots, bars and heatmap marks. Sections and tools are flip cards: a playing card's face (A♠ K♥ Q♣ J♦ for the
 course, 10♠ down to 5♥ for the tools), turning over to the navy back with the lattice. Beginner and Grinder see
-the same story; Grinder gets combination counts, equity in every square, and a tournament-first button.
+the same story; Grinder gets the hand's combination count, a note that the chance is equity, and a
+tournament-first button. Course and tool cards stand upright in a playing card's shape on desktop.
 The logo replays the welcome; the name goes to `#/course`. Page titles use `--fs-title`; `--ink-3` is #767676.
 
 ## What is left after Phase 6

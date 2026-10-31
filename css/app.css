@@ -940,77 +940,64 @@ svg.pk-cards { display: block; }
 .home-course > h2 { font-size: var(--fs-5); font-weight: 800; letter-spacing: -0.01em; text-transform: none; color: var(--ink); margin: var(--s-7) 0 var(--s-4); }
 .home-course > h2:first-child { margin-top: 0; }
 
-/* ---------- the story (js/story.js): the home's dark entry, after Chess Master's. It re-points the ordinary
-   tokens, so the buttons and the grid inside need no styles of their own. Every class is story-prefixed. */
+/* ---------- the story (js/story.js): the home's dark entry — "Your hand", dealt a street per scroll step. It
+   re-points the ordinary tokens, so the buttons inside need no styles of their own. Every class is story-prefixed. */
 .story {
   --bg: var(--story-bg); --surface: var(--story-bg); --ink: var(--story-ink); --ink-2: var(--story-dim); --ink-3: rgba(246, 241, 231, .55);
   --line: var(--story-line); --line-2: rgba(246, 241, 231, .32);
   --accent: var(--story-ink); --accent-ink: var(--story-bg); --accent-deep: #ffffff;
-  --heat-cold: rgba(246, 241, 231, .07);
   background: var(--bg); color: var(--ink);
   margin: calc(-1 * var(--main-pad-y)) calc(-1 * var(--main-pad-x)) var(--s-7);
 }
 .story a { color: var(--ink); }
 .story-scene { min-height: 88vh; padding: 10vh max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; }
-.story-scene + .story-scene { border-top: 1px solid var(--line); }
-.story-split, .story-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 5vw; align-items: center; }
-@media (max-width: 900px) { .story-split, .story-hero { grid-template-columns: minmax(0, 1fr); } }
 .story-scene > * { opacity: 0; transform: translateY(22px); transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
 .story-scene.story-in > * { opacity: 1; transform: none; }
 .story-in > :nth-child(2) { transition-delay: .1s; } .story-in > :nth-child(3) { transition-delay: .2s; } .story-in > :nth-child(4) { transition-delay: .3s; }
 .story-kicker { font-size: var(--fs-label); font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 var(--s-4); }
 .story-title, .story-h { font-weight: var(--fw-display); letter-spacing: var(--track-display); line-height: var(--lh-display); text-transform: none; color: var(--ink); margin: 0 0 var(--s-5); }
-.story-title { font-size: clamp(40px, 5.2vw, 84px); }
-.story-h { font-size: var(--fs-display-2); max-width: 15ch; }
+.story-title { font-size: clamp(44px, 6.4vw, 96px); }
+.story-h { font-size: clamp(32px, 4.4vw, 60px); max-width: 15ch; }
 .story-title em, .story-h em { font-style: normal; color: var(--signal); }   /* gold text: only here, on the dark ground */
-.story-lead, .story-body { font-size: clamp(16px, 1.5vw, 20px); line-height: 1.5; color: var(--ink-2); max-width: 34em; margin: 0; }
+.story-lead, .story-body { font-size: clamp(16px, 1.5vw, 19px); line-height: 1.55; color: var(--ink-2); max-width: 32em; margin: 0 0 var(--s-3); }
 .story-body b { color: var(--ink); }
-.story-after { margin-top: var(--s-6); }
-.story-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-6); }
+.story-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 .story-cta .btn { padding: 12px 20px; font-size: 12px; }
-.story-figure { margin: 0; }
-.story-figure figcaption { margin-top: var(--s-4); color: var(--ink-2); font-size: var(--fs-1); max-width: 30em; }
-.story-figure figcaption b { color: var(--signal); font-size: var(--fs-4); font-variant-numeric: tabular-nums; margin-right: 4px; }
-.story-again { margin-top: var(--s-4); }
 .story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
-.story-hint { font-size: var(--fs-1); color: var(--ink-3); margin: var(--s-3) 0 0; }
-.story-count { list-style: none; padding: 0; margin: var(--s-3) 0 0; display: grid; gap: var(--s-4); }
-.story-count li { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 6px; margin: 0; }   /* number, then its bar, then the words: nothing can overlap */
-.story-count b { font-size: clamp(26px, 3.6vw, 52px); font-weight: var(--fw-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-.story-count li:last-child b { color: var(--signal); }
-.story-count i { display: block; height: 10px; background: var(--ink); width: 0; transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
-.story-count li:last-child i { background: var(--signal); }
-.story-in .story-count i { width: calc(var(--w) * 100%); }
-.story-count span { color: var(--ink-2); font-size: var(--fs-1); }
-.story-odds i { min-width: 3px; }   /* one in 221 is a sliver, but it is there */
-.story-chips { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); }
-.story-chip { min-width: 40px; height: 40px; padding: 0 12px; font: inherit; font-size: var(--fs-2); font-weight: 600; color: var(--ink-2); background: none; border: 1px solid var(--line-2); border-radius: 999px; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; }
-.story-chip.on { background: var(--ink); color: var(--story-bg); border-color: var(--ink); }
-.story-chip:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
-/* the 169 as a heatmap: the dimmest square is the weakest hand at this table size, gold the strongest */
-.story-grid { max-width: 520px; width: 100%; }
-svg.sg { display: block; width: 100%; height: auto; }
-.sg-sq { fill: color-mix(in srgb, var(--heat-hot) calc(var(--v) * 100%), var(--heat-cold)); }
-.sg-name, .sg-num { fill: var(--ink); text-anchor: middle; dominant-baseline: central; font-family: var(--font-sans); pointer-events: none; }
-.sg-name { font-size: .27px; font-weight: 600; }
-.sg-num { font-size: .22px; opacity: .8; }
-.sg-hot .sg-name, .sg-hot .sg-num { fill: var(--story-bg); }   /* dark ink on the bright squares, cream on the dim ones */
-/* cards in hairlines, as on the welcome; a dealt card turns face up */
-.story-deal, .story-row { display: flex; gap: var(--s-3); }
-.story-deal { gap: var(--s-4); }
-.sc { width: clamp(96px, 12vw, 150px); aspect-ratio: 72 / 100; perspective: 900px; }
+/* the hand: words scroll on the left, the cards stay pinned on the right (on a phone, pinned on top) */
+.story-hand { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5vw; padding: 0 max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); border-top: 1px solid var(--line); }
+.story-steps { padding: 6vh 0 24vh; }
+.story-step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; opacity: .25; transition: opacity .5s; }
+.story-step.on { opacity: 1; }
+.story-stage { position: sticky; top: var(--bar-h); height: calc(100vh - var(--bar-h)); display: flex; flex-direction: column; justify-content: center; gap: var(--s-4); }
+.story-label { font-size: var(--fs-label); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 6px; }
+.story-row { display: flex; gap: 10px; }
+.sc { width: clamp(46px, 5.6vw, 76px); aspect-ratio: 72 / 100; perspective: 700px; font-size: clamp(11px, 1.3vw, 17px); }
+.story-hole .sc { width: clamp(64px, 7.6vw, 104px); font-size: clamp(14px, 1.7vw, 22px); }
 .sc-turn { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(180deg); transition: transform .7s cubic-bezier(.45, .05, .2, 1); }
 .sc.up .sc-turn { transform: none; }
-.sc-side { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
-.sc-back { transform: rotateY(180deg); border: 1px solid var(--line-2); border-radius: 8px;
-  background: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 9px); background-clip: content-box; padding: 6px; }
-.sc-svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.story-row .sc-svg { width: clamp(52px, 6.4vw, 84px); height: auto; }
-.story-board { margin-top: var(--s-4); }
-.sc-edge { fill: none; stroke: var(--ink); stroke-opacity: .5; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.sc-svg text { text-anchor: middle; font-family: var(--font-sans); font-weight: 500; }
-.sc-ink { fill: var(--ink); }
-.sc-red { fill: var(--suit-red); }
+#ss-board .sc:nth-child(2) .sc-turn { transition-delay: .12s; } #ss-board .sc:nth-child(3) .sc-turn { transition-delay: .24s; }   /* the flop turns left to right */
+.sc-side { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 7px; box-sizing: border-box; }
+.sc-back { transform: rotateY(180deg); border: 1px solid var(--line-2); padding: 5px; background-clip: content-box;
+  background-image: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 8px), repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 8px); }   /* the lattice back, as on the welcome card */
+.sc-front { border: 1px solid rgba(246, 241, 231, .55); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+.sc-front b { font-size: 2.1em; font-weight: 500; }
+.sc-front i { font-style: normal; font-size: 1.9em; margin-top: .1em; }
+.sc-front.red { color: var(--suit-red); }
+.story-read { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 22px; align-items: end; margin-top: var(--s-2); }
+.story-big { font-size: clamp(48px, 6vw, 88px); font-weight: var(--fw-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: .9; }
+.story-delta { font-size: var(--fs-2); font-weight: 700; color: var(--ink-2); min-height: 1.2em; }
+.story-delta.up { color: var(--signal); }
+.story-made { font-size: var(--fs-3); font-weight: 700; }
+.story-meter { grid-column: 1 / -1; height: 8px; background: var(--line); }
+.story-meter i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .7s cubic-bezier(.2, .8, .2, 1); }
+.story-sub { grid-column: 1 / -1; font-size: var(--fs-1); color: var(--ink-2); }
+.story-mini { display: flex; gap: 14px; align-items: center; font-size: var(--fs-1); color: var(--ink-2); opacity: .25; transition: opacity .4s; }
+.story-mini.on { opacity: 1; }
+.story-mini svg { width: 132px; flex: none; }
+.story-mini rect { fill: rgba(246, 241, 231, .08); }
+.story-mini rect.me { fill: var(--signal); }
+.story-again { align-self: flex-start; }
 .story-time { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
 .story-time li { padding: var(--s-4) var(--s-4) 0 0; position: relative; margin: 0; }
 .story-time li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
@@ -1018,16 +1005,19 @@ svg.sg { display: block; width: 100%; height: auto; }
 .story-time b { display: block; font-size: clamp(20px, 2.2vw, 30px); font-weight: var(--fw-display); letter-spacing: -.02em; }
 .story-time span { display: block; color: var(--ink-2); font-size: var(--fs-1); line-height: 1.45; margin-top: 6px; }
 @media (max-width: 760px) {
+  .story-hand { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .story-stage { order: -1; height: auto; padding: var(--s-3) 0; gap: var(--s-2); background: var(--bg); z-index: 4; border-bottom: 1px solid var(--line); }
+  .story-steps { padding-top: 2vh; }
+  .story-step { min-height: 72vh; }
+  .story-mini, .story-again { display: none; }   /* the phone's pinned strip keeps to the cards and the number; the steps carry the rest */
+  .story-big { font-size: 40px; }
   .story-time { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--line-2); }
   .story-time li { padding: 0 0 var(--s-5) var(--s-5); }
   .story-time li::before { top: 6px; left: -5px; }
-  .story-row { gap: var(--s-2); }
-  .story-chips { gap: 6px; }
-  .story-chip { min-width: 36px; height: 36px; padding: 0; }   /* all eight on one line at 375px */
 }
 @media (prefers-reduced-motion: reduce) {
   .story-scene > * { opacity: 1; transform: none; transition: none; }
-  .story-count i, .sc-turn { transition: none; }
+  .sc-turn, .story-meter i, .story-step { transition: none; }
 }
 
 /* immersive: the story home takes the whole screen; the sidebar becomes the phone's drawer, opened from a

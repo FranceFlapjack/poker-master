@@ -653,24 +653,14 @@ section('pushfold')
 // js/story.js states these in its copy; each one is checked here, so the home cannot claim what the maths does not give
 section('story')
 {
-  const { COUNTS, SHAPES, ODDS, gridAgainst } = await import('../js/story-facts.js')
+  const { COUNTS, ODDS, gridAgainst } = await import('../js/story-facts.js')
   eq(COUNTS.starting, 1326, 'story: 1,326 starting hands')
   eq(COUNTS.flops, 19600, 'story: 19,600 flops for one hand')
-  eq(COUNTS.fiveCard, 2598960, 'story: 2,598,960 five-card hands')
-  eq(SHAPES.pair.cells + SHAPES.suited.cells + SHAPES.offsuit.cells, 169, 'story: 169 kinds')
-  eq([SHAPES.pair.cells, SHAPES.suited.cells, SHAPES.offsuit.cells].join(), '13,78,78', 'story: 13 pairs, 78 suited, 78 offsuit')
-  eq([SHAPES.pair.combos, SHAPES.suited.combos, SHAPES.offsuit.combos].join(), '78,312,936', 'story: their combinations')
-  eq(Math.round(ODDS.aces), 221, 'story: aces 1 in 221')
-  eq(Math.round(ODDS.pair), 17, 'story: a pair 1 in 17')
   eq(Math.round(ODDS.flushDraw * 100), 35, 'story: a flush draw arrives 35% by the river')
-  const aa = equityExact([H('As Ah'), H('Ks Kh')], [], [], { maxRunouts: Infinity })
-  near(aa.equity[0], ODDS.acesVsKings, 0.00005, 'story: aces beat kings 82.64% (the constant matches the full enumeration)')
-  for (let k = 1; k <= 8; k++) {
-    const g = gridAgainst(k), byRank = r => g.find(c => c.rank === r).name
-    eq(byRank(1), 'AA', `story: aces are the best hand against ${k}`)
-    eq(byRank(169), k < 4 ? '32o' : '72o', `story: the weakest hand against ${k} is ${k < 4 ? '3-2' : '7-2'} offsuit`)
-    if (k > 1) ok(g.find(c => c.name === '76s').rank < gridAgainst(1).find(c => c.name === '76s').rank, `story: 7-6 suited climbs against ${k}`)
-  }
+  const g = gridAgainst(1), ranks = g.map(c => c.rank).sort((a, b) => a - b)
+  eq(g.length, 169, 'story: 169 kinds of starting hand')
+  ok(ranks.every((r, k) => r === k + 1), 'story: the ranks run 1 to 169, each once')
+  eq(g.find(c => c.rank === 1).name, 'AA', 'story: aces rank first')
 }
 
 // ---------------------------------------------------------------- report
