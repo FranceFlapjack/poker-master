@@ -1037,11 +1037,17 @@ html.immersive .topbar .logo rect[fill] { fill: var(--story-bg); }   /* the fron
 html.immersive .home-course { max-width: var(--home-w); margin-inline: auto; }
 html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }   /* landing on the cards: the heading clears the sticky bar */
 
-/* a card opening its page (js/app.js): the card grows into the page's title while the rest cross-fades */
+/* a card opening its page (js/app.js): the card grows into the page's head, its title flies into the h1, the text rises in */
 ::view-transition-group(opening) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
 ::view-transition-old(opening), ::view-transition-new(opening) { height: 100%; object-fit: cover; }
 ::view-transition-old(opening) { animation-duration: .25s; }   /* the card is gone before it is stretched far */
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+::view-transition-group(opening-title) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+::view-transition-old(opening-title), ::view-transition-new(opening-title) { height: 100%; object-fit: contain; object-position: left top; }   /* scaled, never stretched */
+::view-transition-old(opening-title) { animation-duration: .3s; }
+/* the page's text rises in behind the title, landing as the card does */
+::view-transition-old(root) { animation-duration: .2s; }
+::view-transition-new(root) { animation: opening-rise .4s .1s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes opening-rise { from { opacity: 0; transform: translateY(16px); } }
 /* the sidebar, parked off-screen on the full-screen home, slides out into its column as the card opens its page:
    named, so the browser moves it from one place to the other instead of fading it in. Desktop only: on a phone
    it is a closed drawer on both pages, so there is nothing to move */

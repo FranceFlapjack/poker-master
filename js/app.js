@@ -62,18 +62,24 @@ async function boot() {
     e.preventDefault()
     const from = a.closest('.flip-card, .continue') || a   // what grows into the title: the whole card, or the button itself
     from.style.viewTransitionName = 'opening'
+    // the title the reader sees on the card flies on its own into the page's h1, so the words stay words while the box grows
+    // (a turned card shows its back, whose title is the <b>)
+    const title = from.matches('.flip-card') ? from.querySelector(from.matches(':hover, :focus-visible') ? '.back b' : '.front h3') : from.querySelector('h3')
+    if (title) title.style.viewTransitionName = 'opening-title'
+    const named = () => [$('#main .lesson-head, #main .hero'), $('#main :is(.lesson-head, .hero) h1')]
     const t = document.startViewTransition(async () => {
       history.pushState(null, '', a.getAttribute('href'))   // pushState fires no hashchange, so the page is drawn once, here
       await route()
-      const head = $('#main .lesson-head, #main .hero')
+      const [head, h1] = named()
       if (head) head.style.viewTransitionName = 'opening'
+      if (h1 && title) h1.style.viewTransitionName = 'opening-title'
     })
     // a tab drawing no frames (hidden, or a stalled browser) never starts the transition; skipping it still runs
     // the update above, so the click always opens the page
     const guard = setTimeout(() => t.skipTransition(), 1000)
     t.updateCallbackDone.finally(() => clearTimeout(guard))
     t.ready.catch(() => {})   // a skipped transition rejects `ready`; the page has still opened
-    t.finished.finally(() => { const head = $('#main .lesson-head, #main .hero'); if (head) head.style.viewTransitionName = '' })   // one name per page, or the next transition is skipped
+    t.finished.finally(() => named().forEach(el => { if (el) el.style.viewTransitionName = '' }))   // one name per page, or the next transition is skipped
   })
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
