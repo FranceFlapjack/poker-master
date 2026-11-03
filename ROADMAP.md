@@ -784,7 +784,7 @@ word (within 0.6px at 410px type), and its fallback for browsers whose canvas ca
 against the native one (identical). Keyboard, the cue button, a slow drag (settles back) and a flick (enters) each checked; the
 reduced-motion rules checked by applying them directly, since the Browser pane cannot emulate the query.
 
-## The story home — 2026-10-28 (branch `draft/story`, not merged)
+## The story home — 2026-10-28, published 2026-11-03
 
 Chess Master's redesign of 2026-10-27, carried over at the owner's request. The home is full screen
 (`html.immersive`, set by an inline script in `index.html` before the first paint): a slim navy bar, the sidebar as
@@ -800,6 +800,10 @@ course, 10♠ down to 5♥ for the tools), turning over to the navy back with th
 the same story; Grinder gets the hand's combination count, a note that the chance is equity, and a
 tournament-first button. Course and tool cards stand upright in a playing card's shape on desktop.
 The logo replays the welcome; the name goes to `#/course`. Page titles use `--fs-title`; `--ink-3` is #767676.
+Every link from the home into a lesson or a tool (cards, story buttons, the Continue card) opens it with a View
+Transition (owner 2026-10-31 to 11-03): the card grows into the page's head, its title flies into the h1, the page
+text rises in, and on desktop the sidebar slides out into its column. Chromium only; elsewhere, or with reduced
+motion, a plain jump. On the dark bar the logo is cream lines, no tile.
 
 ## What is left after Phase 6
 
