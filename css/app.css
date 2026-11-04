@@ -334,6 +334,13 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 .lesson-body th.num { font-family: var(--font-sans); }
 /* the first column is the row's label even when it holds a number, so it stays left and anchors the row */
 .lesson-body tr > .num:first-child { text-align: left; }
+/* phones: closer columns so the wide tables fit; one that still cannot scrolls by itself, never the page */
+@media (max-width: 760px) {
+  .lesson-body table { display: block; max-width: 100%; overflow-x: auto; }
+  .lesson-body th, .lesson-body td { padding-right: 10px; }
+  .lesson-body td.num, .lesson-body th.num { padding-right: 8px; }
+  .lesson-body th { letter-spacing: 0.04em; }
+}
 
 
 /* ---------- play page ---------- */
