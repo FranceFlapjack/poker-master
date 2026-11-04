@@ -114,7 +114,7 @@ function renderSidebar() {
       const ready = g.lessons.filter(l => l.ready)
       const done = ready.filter(l => progress.isLessonDone(lessonId(g.id, l.slug))).length
       const pct = ready.length ? Math.round(100 * done / ready.length) : 0
-      return `<div class="track${open.has(g.id) ? ' open' : ''}" data-track="${g.id}">
+      return `<div class="track${open.has(g.id) ? ' open' : ''}${current?.dir === g.id ? ' here' : ''}" data-track="${g.id}">
         <button class="track-head" aria-expanded="${open.has(g.id)}">
           <span class="name">${esc(g.title)}</span>
           <span class="bar" title="${done}/${ready.length} done"><i style="width:${pct}%"></i></span><span class="chev">▶</span>
@@ -124,9 +124,13 @@ function renderSidebar() {
     }).join('')
     const tools = toolsOf(part)
     const toolList = tools.length
-      ? `<ul class="lessons tools">${tools.map(t => `<li><a class="lesson-link tool-link${location.hash.startsWith(`#/tools/${t.slug}`) ? ' current' : ''}" href="#/tools/${t.slug}"><span class="tick"></span><span>${esc(t.title)}</span></a></li>`).join('')}</ul>`
+      ? `<div class="tools-head${location.hash.startsWith('#/tools/') ? ' here' : ''}">Tools</div><ul class="lessons tools">${tools.map(t => {
+          const here = location.hash.startsWith(`#/tools/${t.slug}`)
+          return `<li><a class="lesson-link tool-link${here ? ' current' : ''}"${here ? ' aria-current="page"' : ''} href="#/tools/${t.slug}"><span>${esc(t.title)}</span></a></li>`
+        }).join('')}</ul>`
       : ''
-    return `<div class="part"><div class="part-head">${esc(part.title)}</div>${body}${toolList}</div>`
+    const inFlat = groups.some(g => g.flat && g.id === current?.dir)   // a flat part has no section head, so its own head carries "you are here"
+    return `<div class="part"><div class="part-head${inFlat ? ' here' : ''}">${esc(part.title)}</div>${body}${toolList}</div>`
   }).join('')
 
   nav.querySelectorAll('.track-head').forEach(b => b.addEventListener('click', () => {
@@ -134,15 +138,17 @@ function renderSidebar() {
     t.classList.toggle('open')
     b.setAttribute('aria-expanded', t.classList.contains('open'))
   }))
+  nav.querySelector('.current')?.scrollIntoView({ block: 'nearest' })   // the sidebar can be taller than the screen: keep "you are here" in it
 }
 
 function lessonLink(dir, l) {
   const id = lessonId(dir, l.slug)
   const isDone = progress.isLessonDone(id)
+  const here = current && current.dir === dir && current.slug === l.slug
   const cls = ['lesson-link', l.ready ? '' : 'planned',
     isDone ? 'done' : (progress.drillsFor(id) ? 'started' : ''),
-    current && current.dir === dir && current.slug === l.slug ? 'current' : ''].filter(Boolean).join(' ')
-  return `<li><a class="${cls}" href="#/lesson/${dir}/${l.slug}"${l.ready ? '' : ' aria-disabled="true"'}><span class="tick"></span><span>${esc(l.title)}</span>${l.ready ? '' : '<span class="soon">soon</span>'}</a></li>`
+    here ? 'current' : ''].filter(Boolean).join(' ')
+  return `<li><a class="${cls}"${here ? ' aria-current="page"' : ''} href="#/lesson/${dir}/${l.slug}"${l.ready ? '' : ' aria-disabled="true"'}><span class="tick"></span><span>${esc(l.title)}</span>${l.ready ? '' : '<span class="soon">soon</span>'}</a></li>`
 }
 
 function toggleSidebar(force) {
@@ -165,6 +171,7 @@ function route() {
   const main = $('#main')
   toggleSidebar(false)
   document.documentElement.classList.remove('immersive')
+  document.querySelectorAll('#curriculum .track.open').forEach(t => t.classList.remove('open'))   // each page opens only its own section, so the sidebar stays short
   if (unmountPage) { try { unmountPage() } catch (_) {} ; unmountPage = null }
   mascot.hide()   // a hint belongs to the page it was given on
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)

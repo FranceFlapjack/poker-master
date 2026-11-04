@@ -119,23 +119,25 @@ button { font: inherit; color: inherit; }
 .track { margin-bottom: var(--s-2); }
 .track-head {
   display: flex; align-items: center; gap: var(--s-2); width: 100%;
-  padding: var(--s-2) var(--s-2); border: 0; background: none; cursor: pointer; text-align: left;
+  padding: var(--s-3) var(--s-2); border: 0; background: none; cursor: pointer; text-align: left;
 }
+.track-head:hover { background: var(--nav-hover); }
 .track-head:hover .name { color: var(--ink); }
 .track-head .num { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); width: 1.4em; }
-.track-head .name { flex: 1; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+.track-head .name { flex: 1; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
 .track-head .bar { width: 36px; height: 2px; background: var(--line); overflow: hidden; }
 .track-head .bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 300ms; }
 .track-head .chev { color: var(--ink-3); transition: transform 150ms; font-size: 8px; }
 .track.open .track-head .chev { transform: rotate(90deg); }
-.lessons { list-style: none; margin: 0; padding: 0 0 var(--s-2) calc(1.4em + var(--s-2) + var(--s-2)); display: none; }
+.track.here .track-head .name, .part-head.here, .tools-head.here { color: var(--accent); font-weight: 800; }   /* the section you are in, open or closed */
+.lessons { list-style: none; margin: 0; padding: 0 0 var(--s-2) var(--s-2); display: none; }
 .track.open .lessons { display: block; }
 .lesson-link {
   display: flex; align-items: center; gap: var(--s-2);
-  padding: 5px var(--s-2); text-decoration: none; font-size: var(--fs-1); color: var(--ink-2);
+  padding: 7px var(--s-2); text-decoration: none; font-size: var(--fs-1); line-height: 1.35; color: var(--ink-2);
 }
-.lesson-link:hover { color: var(--ink); }
-.lesson-link.current { color: var(--accent); font-weight: 600; }
+.lesson-link:hover { color: var(--ink); background: var(--nav-hover); }
+.lesson-link.current { color: var(--accent); font-weight: 700; background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--signal); scroll-margin-block: var(--s-6); }   /* you are here: gold is the bar only, never the words */
 .lesson-link.planned { color: var(--ink-3); pointer-events: none; }
 .lesson-link .tick { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line-2); flex: none; display: grid; place-items: center; }
 .lesson-link.done .tick { background: var(--accent); border-color: var(--accent); }
@@ -534,7 +536,7 @@ body[data-mode="grinder"] .beginner-only { display: none; }
 
 /* ---------- two parts, not a numbered ladder ---------- */
 .part { margin-bottom: var(--s-5); }
-.part-head { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); padding: var(--s-2) var(--s-2) var(--s-2); border-bottom: 1px solid var(--line); margin-bottom: var(--s-2); }
+.part-head { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); padding: var(--s-2) var(--s-2) var(--s-2); border-bottom: 1px solid var(--line); margin-bottom: var(--s-2); }
 .lessons.flat { display: block; }
 .part-card { display: block; margin-bottom: var(--s-4); }
 .part-card p { margin: var(--s-2) 0 var(--s-3); color: var(--ink-2); font-size: var(--fs-1); }
@@ -665,8 +667,8 @@ svg.pk-cards { display: block; }
 .gm-howknow li { font-size: var(--fs-1); margin-bottom: var(--s-1); }
 
 /* ---------- tools: calculators, not lessons ---------- */
-.lessons.tools { border-top: 1px solid var(--line); margin-top: var(--s-2); padding-top: var(--s-2); }
-.tool-link .tick { border-radius: 50%; }
+.lessons.tools { display: block; padding-left: 0; }   /* outside any .track, so nothing else would show it */
+.tools-head { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); border-top: 1px solid var(--line); margin-top: var(--s-2); padding: var(--s-3) var(--s-2) var(--s-1); }
 .tool .panel { border-top: 1px solid var(--line); padding-top: var(--s-4); margin-bottom: var(--s-6); }
 .tool .panel h2 { margin-top: 0; }
 .tool .fields { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-bottom: var(--s-4); }
@@ -1053,3 +1055,4 @@ html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }  
    it is a closed drawer on both pages, so there is nothing to move */
 @media (min-width: 761px) { .sidebar { view-transition-name: sidebar; } }
 ::view-transition-group(sidebar) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+@media (pointer: coarse) { .lesson-link, .track-head { min-height: var(--tap); } }   /* a finger, not a pointer */

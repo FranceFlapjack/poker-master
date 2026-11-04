@@ -18,7 +18,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const cardHtml = c => `<span class="pc ${isRed(c) ? 'red' : 'black'}">${RANKS[c >> 2]}${SUIT_GLYPH[c & 3]}</span>`
 
 export async function mountRanges(main) {
-  document.title = 'Preflop ranges · Poker Master'
+  document.title = 'Preflop range trainer · Poker Master'
   const chart = await (await fetch('content/charts/rfi-9max.json')).json()
   const ranges = Object.fromEntries(chart.positions.map(p => [p.id, parseRange(p.range)]))
 
@@ -26,8 +26,8 @@ export async function mountRanges(main) {
     <div class="page tool trainer">
       <header class="hero">
         <span class="eyebrow">Tournament · trainer</span>
-        <h1>${esc(chart.title)}</h1>
-        <p>${esc(chart.subtitle)} · ${esc(chart.stackDepth)}. Open or fold — then see where the hand sits.</p>
+        <h1>Preflop range trainer</h1>
+        <p>${esc(chart.title)}. ${esc(chart.subtitle)} · ${esc(chart.stackDepth)}. Open or fold — then see where the hand sits.</p>
       </header>
 
       <section class="panel spot">

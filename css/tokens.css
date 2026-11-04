@@ -224,6 +224,7 @@
   --sidebar-w: 260px;
   --main-pad-y: var(--s-8);   /* the main column's padding; a full-bleed block cancels exactly this */
   --main-pad-x: var(--s-7);
+  --nav-hover: color-mix(in srgb, var(--accent-soft), transparent 50%);   /* a sidebar row under the pointer: fainter than the current page's tint */
   --tap: 44px;                /* the smallest tap target on a touch screen */
   --bar-h: 44px;              /* the slim top bar (phones, and the full-screen home): one tap target tall */
   --home-w: 1080px;           /* the home's content width: the story's scenes and the course line up on it */
