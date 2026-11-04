@@ -805,8 +805,8 @@ Transition (owner 2026-10-31 to 11-03): the card grows into the page's head, its
 text rises in, and on desktop the sidebar slides out into its column. Chromium only; elsewhere, or with reduced
 motion, a plain jump. On the dark bar the logo is cream lines, no tile.
 The sidebar (owner 2026-11-04): the tools list had been `display:none` since Phase 3, so a tool's page was never
-marked in view. Now the tools show under their own head, the current page is a bold tinted row with a gold bar, its
-section head turns bold navy, each page opens only its own section, and the sidebar keeps the current row in view.
+marked in view. Now the tools show under their own head, each page opens only its own section, and the sidebar keeps
+the current row in view. The current page stays what it always was, bold navy text: that was enough once the tools showed.
 
 ## What is left after Phase 6
 

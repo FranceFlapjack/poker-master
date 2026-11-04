@@ -129,7 +129,6 @@ button { font: inherit; color: inherit; }
 .track-head .bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 300ms; }
 .track-head .chev { color: var(--ink-3); transition: transform 150ms; font-size: 8px; }
 .track.open .track-head .chev { transform: rotate(90deg); }
-.track.here .track-head .name, .part-head.here, .tools-head.here { color: var(--accent); font-weight: 800; }   /* the section you are in, open or closed */
 .lessons { list-style: none; margin: 0; padding: 0 0 var(--s-2) var(--s-2); display: none; }
 .track.open .lessons { display: block; }
 .lesson-link {
@@ -137,7 +136,7 @@ button { font: inherit; color: inherit; }
   padding: 7px var(--s-2); text-decoration: none; font-size: var(--fs-1); line-height: 1.35; color: var(--ink-2);
 }
 .lesson-link:hover { color: var(--ink); background: var(--nav-hover); }
-.lesson-link.current { color: var(--accent); font-weight: 700; background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--signal); scroll-margin-block: var(--s-6); }   /* you are here: gold is the bar only, never the words */
+.lesson-link.current { color: var(--accent); font-weight: 600; scroll-margin-block: var(--s-6); }
 .lesson-link.planned { color: var(--ink-3); pointer-events: none; }
 .lesson-link .tick { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line-2); flex: none; display: grid; place-items: center; }
 .lesson-link.done .tick { background: var(--accent); border-color: var(--accent); }

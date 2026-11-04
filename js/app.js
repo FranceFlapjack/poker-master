@@ -114,7 +114,7 @@ function renderSidebar() {
       const ready = g.lessons.filter(l => l.ready)
       const done = ready.filter(l => progress.isLessonDone(lessonId(g.id, l.slug))).length
       const pct = ready.length ? Math.round(100 * done / ready.length) : 0
-      return `<div class="track${open.has(g.id) ? ' open' : ''}${current?.dir === g.id ? ' here' : ''}" data-track="${g.id}">
+      return `<div class="track${open.has(g.id) ? ' open' : ''}" data-track="${g.id}">
         <button class="track-head" aria-expanded="${open.has(g.id)}">
           <span class="name">${esc(g.title)}</span>
           <span class="bar" title="${done}/${ready.length} done"><i style="width:${pct}%"></i></span><span class="chev">▶</span>
@@ -124,13 +124,12 @@ function renderSidebar() {
     }).join('')
     const tools = toolsOf(part)
     const toolList = tools.length
-      ? `<div class="tools-head${location.hash.startsWith('#/tools/') ? ' here' : ''}">Tools</div><ul class="lessons tools">${tools.map(t => {
+      ? `<div class="tools-head">Tools</div><ul class="lessons tools">${tools.map(t => {
           const here = location.hash.startsWith(`#/tools/${t.slug}`)
           return `<li><a class="lesson-link tool-link${here ? ' current' : ''}"${here ? ' aria-current="page"' : ''} href="#/tools/${t.slug}"><span>${esc(t.title)}</span></a></li>`
         }).join('')}</ul>`
       : ''
-    const inFlat = groups.some(g => g.flat && g.id === current?.dir)   // a flat part has no section head, so its own head carries "you are here"
-    return `<div class="part"><div class="part-head${inFlat ? ' here' : ''}">${esc(part.title)}</div>${body}${toolList}</div>`
+    return `<div class="part"><div class="part-head">${esc(part.title)}</div>${body}${toolList}</div>`
   }).join('')
 
   nav.querySelectorAll('.track-head').forEach(b => b.addEventListener('click', () => {
