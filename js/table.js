@@ -311,7 +311,7 @@ export function mountTable(host, opts) {
       class: ['seat', p.folded ? 'folded' : '', p.allIn ? 'allin' : '', toAct ? 'to-act' : '', isHero ? 'hero' : ''].filter(Boolean).join(' '),
     })
     const slotMid = y - col.figH / 2
-    if (isHero) g.append(el('circle', { class: 'hero-ring', cx: x, cy: slotMid, r: col.ringR }))
+    g.append(el('circle', { class: isHero ? 'hero-ring' : 'seat-plate', cx: x, cy: slotMid, r: col.ringR }))   // Draft 7: every figure stands on a disc — black line drawings need a light ground
     if (toAct) g.append(el('circle', { class: 'act-ring', cx: x, cy: slotMid, r: col.ringR }))
     g.append(illustration(x, y, col.figH, k, o.avatars[k], p.name))
 

@@ -57,7 +57,7 @@ async function boot() {
   $('#main').addEventListener('click', e => {
     // every way off the home into a lesson or a tool: the cards, the story's buttons, the Continue card (owner 2026-10-31)
     const a = e.target.closest('a[href^="#/lesson/"], a[href^="#/tools/"]')
-    if (!a || !document.documentElement.classList.contains('immersive')) return
+    if (!a || !document.documentElement.classList.contains('at-home')) return
     if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return
     e.preventDefault()
     const from = a.closest('.flip-card, .continue') || a   // what grows into the title: the whole card, or the button itself
@@ -82,6 +82,8 @@ async function boot() {
     t.finished.finally(() => named().forEach(el => { if (el) el.style.viewTransitionName = '' }))   // one name per page, or the next transition is skipped
   })
   $('#menu').addEventListener('click', () => toggleSidebar())
+  // a top-bar link to where you already are fires no hashchange: draw the page again, so it lands on its cards
+  $('.topnav').addEventListener('click', e => { const l = e.target.closest('a'); if (l && l.getAttribute('href') === location.hash) { e.preventDefault(); route() } })
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
   progress.onChange(() => renderSidebar())
@@ -156,6 +158,20 @@ function lessonLink(dir, l) {
   return `<li><a class="${cls}"${here ? ' aria-current="page"' : ''} href="#/lesson/${dir}/${l.slug}"${l.ready ? '' : ' aria-disabled="true"'}><span class="tick"></span><span>${esc(l.title)}</span>${l.ready ? '' : '<span class="soon">soon</span>'}</a></li>`
 }
 
+// Draft 7: the top bar says where you are — a lesson belongs to Course, the four trainers to Trainers.
+function markNav(hash) {
+  const at = hash.startsWith('#/lesson/') || hash === '#/course' ? 'course' : hash === '#/tools/game' ? 'game' : hash === '#/tools/play' ? 'play' : hash.startsWith('#/tools/') || hash === '#/train' ? 'train' : ''
+  document.querySelectorAll('.topnav a').forEach(a => { const here = a.dataset.nav === at; a.classList.toggle('current', here); here ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current') })
+}
+
+// Draft 7: every page is a card. Its head carries the rank and suit its card has on the home (and, for a lesson,
+// where it stands in its section), so the card you opened is the page you are on.
+function stampHead(head, card, extra = '') {
+  if (!head || !card) return
+  head.classList.add('page-head'); head.classList.toggle('red', /[♥♦]/.test(card))
+  head.insertAdjacentHTML('beforeend', `${extra}<span class="head-pip" aria-hidden="true"><b>${card.slice(0, -1)}</b>${card.slice(-1)}</span>`)
+}
+
 function toggleSidebar(force) {
   const s = $('#sidebar'), open = force ?? !s.classList.contains('open')
   s.classList.toggle('open', open); $('#scrim').classList.toggle('open', open)
@@ -175,7 +191,8 @@ function route() {
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
-  document.documentElement.classList.remove('immersive')
+  document.documentElement.classList.remove('at-home')
+  markNav(hash)
   document.querySelectorAll('#curriculum .track.open').forEach(t => t.classList.remove('open'))   // each page opens only its own section, so the sidebar stays short
   if (unmountPage) { try { unmountPage() } catch (_) {} ; unmountPage = null }
   mascot.hide()   // a hint belongs to the page it was given on
@@ -186,7 +203,8 @@ function route() {
   current = null
   renderSidebar()
   showHome(main)
-  if (hash === '#/course') $('#course').scrollIntoView()   // the name in the top bar lands on the cards, past the story
+  const land = { '#/course': '#course', '#/train': '#tools' }[hash]   // the top bar's Course and Trainers land on their cards, past the story
+  if (land) $(land).scrollIntoView()
   else window.scrollTo({ top: 0 })                         // the home (and the welcome) start at the top of the story
 }
 
@@ -206,7 +224,7 @@ const TOOL_CARD = { play: '10♠', game: '9♥', ranges: '8♣', pushfold: '7♦
 
 function showHome(main) {
   document.title = 'Poker Master'
-  document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
+  document.documentElement.classList.add('at-home')   // the home: the story, and no cat
   const lessons = courseLessons()
   const last = progress.state.lastLesson && lessons.find(l => lessonId(l.dir, l.slug) === progress.state.lastLesson)
   const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.dir, l.slug)))
@@ -244,7 +262,7 @@ function showHome(main) {
         <span>New to poker? <em>Beginner</em> shows the Basics and keeps the jargon down. Turn it off once you are past it: only the tournament material remains, and the numbers come in full.</span>
       </div>
       ${weakSpotReport(curriculum)}
-      <h2>Tools</h2>
+      <h2 id="tools">Trainers</h2>
       <div class="tool-row">
         ${tools.map(t => flipCard({ href: `#/tools/${t.slug}`, label: 'Tool', card: TOOL_CARD[t.slug] || '2♣', title: esc(t.title), blurb: esc(t.blurb || ''), go: 'Open' })).join('')}
       </div>
@@ -287,6 +305,7 @@ async function showTool(main, slug) {
       view = await mountPushfold(main)
     } else { location.hash = '#/'; return }
     if (view && view.destroy) unmountPage = () => view.destroy()
+    stampHead(main.querySelector('.hero'), TOOL_CARD[slug])
   } catch (e) {
     main.innerHTML = `<div class="page"><p>Could not load this tool.</p><p class="small">${esc(e.message)}</p></div>`
   }
@@ -321,6 +340,9 @@ async function showLesson(main, dir, slug) {
 
   const lessons = courseLessons()
   const idx = lessons.findIndex(x => x.dir === dir && x.slug === slug)
+  const sect = lessons.filter(x => x.dir === dir && x.ready), at = sect.findIndex(x => x.slug === slug)
+  stampHead(page.querySelector('.lesson-head'), SECTION_CARD[dir] || 'A♠', `<p class="head-steps"><span>Lesson ${at + 1} of ${sect.length}</span>${sect.map((x, i) =>
+    `<i class="${i === at ? 'here' : progress.isLessonDone(lessonId(dir, x.slug)) ? 'done' : ''}"></i>`).join('')}</p>`)
   const prev = lessons.slice(0, idx).reverse().find(x => x.ready), next = lessons.slice(idx + 1).find(x => x.ready)
   const row = document.createElement('div'); row.className = 'complete-row'
   const solvedCount = () => drillIds.filter(d => progress.isDrillDone(d)).length

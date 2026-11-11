@@ -251,3 +251,72 @@
   --act-3: #47648e;
   --act-4: #0f2d57;
 }
+
+/* Draft 7 (2026-11-11, owner: "an ALL NEW design, build it like from zero, use the concept and purpose of the
+   old one" — a DRAFT on branch redesign-draft). THE CARD ROOM. One dark room for the whole app; what is lit in
+   it is what matters: the felt, the cards, the players, the number. Nothing above this line is deleted — this
+   block re-points the tokens, so removing it (and css/room.css) is the old look back.
+
+   - ground: midnight, deeper than the brand navy, which becomes the raised surface (a panel, the drawer, a page's
+     head). Ink is cream. The table keeps its sage felt and cream rail: on midnight they read as lit.
+   - ONE accent: brass gold, now for everything primary, selected or done as well as "look here". Red stays what
+     it is on a card (hearts, diamonds) and a wrong answer; green a right one.
+   - type: a tall condensed face for titles and numbers (a tournament clock's lettering), a book serif for the
+     lessons' prose, a plain sans for controls. System faces only — nothing to download or vendor.
+   - shape: a card's rounded corner on every surface; buttons are round, like a chip or the dealer button.
+   The series accent (--brand) is kept for the welcome curtain, which is shared with Chess and Go. */
+:root {
+  --room: #08142b;             /* the ground */
+  --room-2: #0f2447;           /* a raised surface: panels, the drawer, a page's head */
+  --room-3: #19335f;           /* raised again: a hover, a field, a quiet cell */
+  --cream: #f4ecdb;
+  --gold: #e3ad42;
+  --gold-deep: #f3c766;        /* gold under the pointer */
+  --brand: #0f2d57;            /* the series' Poker navy: the welcome curtain, the family tile */
+  --face-ink: #16233c;         /* ink on a lit, cream surface: a card's face, the cat's bubble, the series bubble */
+  --face-ink-2: #4a556a;
+  --face-ink-3: #6a7385;
+
+  --bg: var(--room); --surface: var(--room-2); --surface-2: var(--room-3);
+  --ink: var(--cream); --ink-2: rgba(244, 236, 219, 0.76); --ink-3: rgba(244, 236, 219, 0.58);
+  --line: rgba(244, 236, 219, 0.13); --line-2: rgba(244, 236, 219, 0.30);
+  --accent: var(--gold); --accent-ink: var(--room); --accent-soft: rgba(227, 173, 66, 0.16); --accent-deep: var(--gold-deep);
+  --signal: var(--gold);
+  --nav-hover: rgba(244, 236, 219, 0.07);
+  --story-bg: var(--room); --story-ink: var(--cream); --story-dim: var(--ink-2); --story-line: var(--line);
+  --story-felt: var(--tb-felt); --story-rail: var(--tb-rail);   /* the home's table is the app's table now */
+  --heat-cold: var(--room-3);
+
+  --good: #7ed8a9; --bad: #ff9085; --warn: #edc96b;   /* the same three meanings, light enough to read on midnight */
+  --suit-red-dark: #f08d82;    /* a heart or a diamond set straight on the dark, not on a card */
+
+  --tb-plate: #f7f0e1;         /* every seat's disc: the black line drawings need a light ground */
+  --tb-seat-hero: #fbe7b3;     /* yours, warmer, with the gold ring */
+  --card-back: #23467f; --card-back-edge: #3a5f9c;
+
+  --rg-raise: #3d79df; --rg-call: #6f8fc2; --rg-fold: var(--room-2); --rg-line: var(--room); --rg-hero: var(--gold); --rg-mix: var(--gold);
+  --gr-pair: #3d79df; --gr-suited: #27508f; --gr-offsuit: var(--room-3); --gr-dealt: #5b93ee; --gr-open: #3d79df; --gr-fold: var(--room-2);
+  --act-0: rgba(244, 236, 219, 0.08); --act-1: rgba(227, 173, 66, 0.28); --act-2: rgba(227, 173, 66, 0.5); --act-3: rgba(227, 173, 66, 0.75); --act-4: var(--gold);
+
+  --bubble-bg: rgba(250, 245, 233, 0.94); --bubble-fallback: #faf5e9;
+  --mascot-ink: var(--cream);  /* the meow and the hearts, drawn on the dark beside the cat */
+  --mascot-tip: var(--brand);
+
+  --font-display: "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-text: Charter, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;   /* the lessons' prose */
+  --font-sans: "Avenir Next", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fs-2: 16px;
+  --fs-prose: 18px;
+  --fs-title: clamp(44px, 6.4vw, 88px);
+  --fw-display: 800;
+  --track-display: 0;
+  --lh-display: 0.94;
+  --measure: 680px;
+
+  --radius: 10px;              /* a control, a small panel */
+  --radius-lg: 18px;           /* a panel, a drill */
+  --bar-h: 56px;
+  --page-w: 1040px;
+  --main-pad-y: var(--s-7);
+}

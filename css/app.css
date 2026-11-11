@@ -458,6 +458,7 @@ svg.pk-table { display: block; width: 100%; height: auto; user-select: none; -we
 .pk-table .act-ring { fill: none; stroke: var(--accent); stroke-width: 2.5; }
 /* the hero is always ringed, quietly, so your own seat is found by shape and not by reading names */
 .pk-table .hero-ring { fill: var(--tb-seat-hero); stroke: var(--accent); stroke-width: 1.5; opacity: 0.9; }
+.pk-table .seat-plate { fill: var(--tb-plate, none); }   /* Draft 7: every other seat's disc — lit in the dark room, absent on a light page */
 
 .pk-table .portrait .av-disc { fill: var(--av-disc); }
 .pk-table .portrait .av-figure { fill: var(--av-tint); }
@@ -1068,17 +1069,17 @@ svg.pk-cards { display: block; }
 /* Draft 6: a reading line across the top of a lesson or a tool, drawn by the scroll itself. Browsers without
    scroll-driven animations show nothing (the base is a line of no length). */
 @supports (animation-timeline: scroll()) {
-  html:not(.immersive) .page::before { content: ""; position: fixed; z-index: 12; top: 0; left: var(--sidebar-w); right: 0; height: 2px; background: var(--accent);
+  html:not(.at-home) .page::before { content: ""; position: fixed; z-index: 12; top: 0; left: var(--sidebar-w); right: 0; height: 2px; background: var(--accent);
     transform: scaleX(0); transform-origin: 0 50%; animation: reading-line linear both; animation-timeline: scroll(root); }
   @keyframes reading-line { to { transform: scaleX(1); } }
-  @media (max-width: 760px) { html:not(.immersive) .page::before { left: 0; top: var(--bar-h); } }
+  @media (max-width: 760px) { html:not(.at-home) .page::before { left: 0; top: var(--bar-h); } }
 }
 aside.mascot { view-transition-name: mascot; }   /* the cat keeps its corner while a page rises in */
 
 /* immersive: the story home takes the whole screen; the sidebar becomes the phone's drawer, opened from a
    slim bar in the story's colours — as in Chess Master (owner 2026-10-27) */
 html.immersive .app { grid-template-columns: minmax(0, 1fr); }
-html.immersive aside.mascot { display: none; }   /* no cat on the home page; it is back on every other page */
+html.at-home aside.mascot { display: none; }   /* no cat on the home page; it is back on every other page */
 html.immersive .sidebar { position: fixed; inset: 0 auto 0 0; width: min(var(--sidebar-w), 86vw); transform: translateX(-100%); transition: transform 200ms; z-index: 20; }
 html.immersive .sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0, 0, 0, 0.2); }   /* shadow only when open, or it leaks onto the page edge */
 html.immersive .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 15; display: none; }
