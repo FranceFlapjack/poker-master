@@ -85,7 +85,13 @@ async function boot() {
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
   progress.onChange(() => renderSidebar())
-  window.addEventListener('hashchange', route)
+  // Draft 6: every page change rises in (the same View Transition the home's cards use, without the growing card);
+  // a plain jump where there are none or motion is reduced. The guard: a tab drawing no frames never starts one.
+  window.addEventListener('hashchange', () => {
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return route()
+    const t = document.startViewTransition(route), guard = setTimeout(() => t.skipTransition(), 1000)
+    t.updateCallbackDone.finally(() => clearTimeout(guard)); t.ready.catch(() => {})
+  })
   // the series welcome, the first time this browser opens the app — a curtain over the app, not a route
   if (location.hash !== '#/welcome') welcome()
   window.addEventListener('resize', () => { if (innerWidth > 760) toggleSidebar(false) }) // an `open` left over from the narrow layout is invisible on desktop and must not survive back into it
@@ -186,10 +192,11 @@ function route() {
 
 // A card that turns over (css .flip-card): a playing card's face on the front — rank and suit, the label and the
 // title — and its navy back carrying the description. Text arrives escaped.
-const flipCard = ({ href, label, card, title, blurb, meta = '', go }) => {
+// `pips` (a course section): one suit pip per lesson, true = done — the card counts its own lessons.
+const flipCard = ({ href, label, card, title, blurb, meta = '', go, pips }) => {
   const red = /[♥♦]/.test(card), [rank, suit] = [card.slice(0, -1), card.slice(-1)]
   return `<a class="flip-card" href="${href}"><div class="flip">
-  <div class="face front${red ? ' red' : ''}"><span class="eyebrow">${label}</span><span class="flip-pip" aria-hidden="true"><b>${rank}</b>${suit}</span><h3>${title}</h3></div>
+  <div class="face front${red ? ' red' : ''}"><span class="eyebrow">${label}</span><span class="flip-pip" aria-hidden="true"><b>${rank}</b>${suit}</span><h3>${title}</h3>${pips ? `<span class="flip-lessons" role="img" aria-label="${pips.filter(Boolean).length} of ${pips.length} lessons done">${pips.map(d => `<i${d ? ' class="done"' : ''}>${suit}</i>`).join('')}</span>` : ''}</div>
   <div class="face back"><b aria-hidden="true">${title}</b><p>${blurb}</p>${meta ? `<span class="meta">${meta}</span>` : ''}<span class="go">${go} →</span></div>
 </div></a>`
 }
@@ -228,7 +235,8 @@ function showHome(main) {
           const first = g.lessons.find(l => l.ready)
           return flipCard({ href: first ? `#/lesson/${g.id}/${first.slug}` : '#/course', label: esc(g.part.beginner ? 'Start here' : g.part.title), card: SECTION_CARD[g.id] || 'A♠',
             title: esc(g.title), blurb: esc(g.blurb || ''), meta: `${g.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}`,
-            go: done && done === ready ? 'Review' : done ? 'Continue' : 'Start' })
+            go: done && done === ready ? 'Review' : done ? 'Continue' : 'Start',
+            pips: g.lessons.filter(l => l.ready).map(l => progress.isLessonDone(lessonId(g.id, l.slug))) })
         }).join('')}
       </div>
       <div class="switch-row">

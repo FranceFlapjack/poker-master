@@ -51,22 +51,14 @@ export async function mountGame(main) {
 
   const dropTable = () => { if (view) { view.destroy(); view = null } }
 
-  // --- the intro ---
+  // --- the intro: the game first (start, last games, famous hands); how it is scored, in full, closes the page ---
   function intro() {
     dropTable()
     const past = progress.games.slice(-5).reverse()
     stage.innerHTML = `
-      <section class="panel">
-        <h2>How it is scored</h2>
-        <p class="note">Each decision earns up to 100 points. The best play scores 100. Anything else loses points for what it gives up on average, compared with folding, against what the decision put at stake:</p>
-        <p class="gm-formula">points = 100 × (1 − 2 × EV given up ÷ stake), never below 0</p>
-        <p class="note">So a play that throws away a quarter of the stake on average scores 50, and half of it scores 0. Your score is the average of the ten.</p>
-        <ul class="gm-sources">${SOURCES.map(([k, v]) => `<li><b>${esc(k)}</b> — scored by ${esc(v)}</li>`).join('')}</ul>
-        <p class="note"><b>Dealt near the line.</b> The spots are dealt near the line on purpose — hands half inside and half outside a range, prices tuned so the answer could go either way — because that is where a decision is worth testing. So your score here is how well you play close spots, not your accuracy at a real table, where most decisions are easy.</p>
-        <p class="note"><b>Bet size.</b> The size of an open is scored against the <a href="#/lesson/maths/bet-sizing">Bet sizing</a> lesson's rule — a rule from its sources, not a solved answer. Every other size is explained but not graded: scoring it would need a solver, which this app does not have.</p>
-      </section>
-      ${past.length ? `<section class="panel"><h2>Your last games</h2><p class="note">${past.map(g => `<b>${g.score}%</b> <span class="gm-when">${new Date(g.t).toLocaleDateString()}</span>`).join(' · ')}</p></section>` : ''}
       <div class="actions"><button class="btn primary" data-go="start">Start a game of ten spots</button></div>
+      <p class="note gm-first">Each spot is scored by what this app actually knows: a chart, a solved answer, pot odds or ICM. The opening chart is not solver output. The rules are in full under “How it is scored”, below.</p>
+      ${past.length ? `<section class="panel"><h2>Your last games</h2><p class="note">${past.map(g => `<b>${g.score}%</b> <span class="gm-when">${new Date(g.t).toLocaleDateString()}</span>`).join(' · ')}</p></section>` : ''}
       <section class="panel gm-famous">
         <h2>Famous hands</h2>
         <p class="note">Real hands from the World Series, replayed decision by decision. At each one you choose; then you see what the player really did, why, what each option would have meant, and the maths. <b>Not scored</b>: the players could see only their own cards, so most of these spots have no single right answer — and choosing differently from a world champion is how you find out what they were thinking.</p>
@@ -75,6 +67,15 @@ export async function mountGame(main) {
           <p class="gm-small">${esc(h.blurb)}</p>
           <div class="actions">${Object.keys(h.play).map(seat => `<button class="btn" data-famous="${n}" data-seat="${seat}">Play as ${esc(h.seats[seat].name)}</button>`).join(' ')}</div>
         </li>`).join('')}</ul>
+      </section>
+      <section class="panel">
+        <h2>How it is scored</h2>
+        <p class="note">Each decision earns up to 100 points. The best play scores 100. Anything else loses points for what it gives up on average, compared with folding, against what the decision put at stake:</p>
+        <p class="gm-formula">points = 100 × (1 − 2 × EV given up ÷ stake), never below 0</p>
+        <p class="note">So a play that throws away a quarter of the stake on average scores 50, and half of it scores 0. Your score is the average of the ten.</p>
+        <ul class="gm-sources">${SOURCES.map(([k, v]) => `<li><b>${esc(k)}</b> — scored by ${esc(v)}</li>`).join('')}</ul>
+        <p class="note"><b>Dealt near the line.</b> The spots are dealt near the line on purpose — hands half inside and half outside a range, prices tuned so the answer could go either way — because that is where a decision is worth testing. So your score here is how well you play close spots, not your accuracy at a real table, where most decisions are easy.</p>
+        <p class="note"><b>Bet size.</b> The size of an open is scored against the <a href="#/lesson/maths/bet-sizing">Bet sizing</a> lesson's rule — a rule from its sources, not a solved answer. Every other size is explained but not graded: scoring it would need a solver, which this app does not have.</p>
       </section>`
   }
 

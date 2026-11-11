@@ -184,6 +184,11 @@ button { font: inherit; color: inherit; }
 .flip-pip b { display: block; font-size: 52px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
 .flip-card .front.red .flip-pip { color: var(--suit-red); }
 .flip-card .front h3 { margin: 0; font-size: var(--fs-4); font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: var(--ink); }
+/* Draft 6: a section's card counts its lessons in its own suit — pale until the lesson is done */
+.flip-lessons { display: flex; gap: 7px; font-size: var(--fs-4); line-height: 1; }
+.flip-lessons i { font-style: normal; opacity: .25; }
+.flip-lessons i.done { opacity: 1; }
+.flip-card .front.red .flip-lessons { color: var(--suit-red); }
 .flip-card .back { transform: rotateY(180deg); color: var(--accent-ink); border: 1px solid var(--accent-deep);
   background: repeating-linear-gradient(45deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 9px), var(--accent); }   /* the card back's lattice, as on the welcome card */
 .flip-card .back b { font-size: var(--fs-3); font-weight: 800; letter-spacing: -0.01em; }
@@ -203,6 +208,7 @@ button { font: inherit; color: inherit; }
   .flip-card .front { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s-4); align-items: center; border-radius: var(--card-radius) var(--card-radius) 0 0; }
   .flip-card .front .eyebrow { grid-area: 1 / 1; align-self: end; }
   .flip-card .front h3 { grid-area: 2 / 1; align-self: start; }
+  .flip-lessons { grid-area: 3 / 1; }
   .flip-pip { grid-area: 1 / 2 / 3 / 3; margin: 0; font-size: 40px; }
   .flip-pip b { font-size: 32px; margin-bottom: 2px; }
   .flip-card .back { transform: none; border-radius: 0 0 var(--card-radius) var(--card-radius); }
@@ -626,6 +632,7 @@ svg.pk-cards { display: block; }
 .game-page .gm-sources li { margin-bottom: var(--s-2); }
 .game-page .gm-sources b { color: var(--ink); }
 .game-page .gm-when { color: var(--ink-3); font-size: 11px; }
+.game-page .gm-first { margin: var(--s-3) 0 var(--s-6); max-width: var(--measure); }   /* Draft 6: what scores the game, in a line under Start; the rules in full close the page */
 .gm-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-3); }
 .gm-running { font-size: var(--fs-1); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .gm-table { margin-bottom: var(--s-2); }
@@ -966,7 +973,7 @@ svg.pk-cards { display: block; }
 .story-in > :nth-child(2) { transition-delay: .1s; } .story-in > :nth-child(3) { transition-delay: .2s; } .story-in > :nth-child(4) { transition-delay: .3s; }
 .story-kicker { font-size: var(--fs-label); font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 var(--s-4); }
 .story-title, .story-h { font-weight: var(--fw-display); letter-spacing: var(--track-display); line-height: var(--lh-display); text-transform: none; color: var(--ink); margin: 0 0 var(--s-5); }
-.story-title { font-size: clamp(44px, 6.4vw, 96px); }
+.story-title { font-size: clamp(40px, 5vw, 68px); }   /* Draft 6: sized for its column beside the cards (was up to 96px, alone on the screen) */
 .story-h { font-size: clamp(32px, 4.4vw, 60px); max-width: 15ch; }
 .story-title em, .story-h em { font-style: normal; color: var(--signal); }   /* gold text: only here, on the dark ground */
 .story-lead, .story-body { font-size: clamp(16px, 1.5vw, 19px); line-height: 1.55; color: var(--ink-2); max-width: 32em; margin: 0 0 var(--s-3); }
@@ -975,8 +982,8 @@ svg.pk-cards { display: block; }
 .story-cta .btn { padding: 12px 20px; font-size: 12px; }
 .story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
 /* the hand: words scroll on the left, the cards stay pinned on the right (on a phone, pinned on top) */
-.story-hand { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5vw; padding: 0 max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); border-top: 1px solid var(--line); }
-.story-steps { padding: 6vh 0 24vh; }
+.story-hand { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 5vw; padding: 0 max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); }
+.story-steps { padding: 0 0 24vh; }
 .story-step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; opacity: .25; transition: opacity .5s; }
 .story-step.on { opacity: 1; }
 .story-stage { position: sticky; top: var(--bar-h); height: calc(100vh - var(--bar-h)); display: flex; flex-direction: column; justify-content: center; gap: var(--s-4); }
@@ -1029,6 +1036,44 @@ svg.pk-cards { display: block; }
   .story-scene > * { opacity: 1; transform: none; transition: none; }
   .sc-turn, .story-meter i, .story-step { transition: none; }
 }
+
+/* Draft 6 — the first screen deals the hand. The intro is the hand's first step, so the cards are beside the
+   title from the first paint: face down on a table drawn in light, yours edged in gold and lying askew until
+   they turn. Values in tokens.css. */
+.story { overflow-x: clip; }   /* the table runs off the right edge, and cards fly in from beyond it */
+.story-intro { min-height: calc(100vh - var(--bar-h)); }
+.story-felt { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--s-4); text-align: center; margin-bottom: var(--s-7); }   /* the table from your seat: the board in the middle, your hand at the near rail, the numbers on your side of it */
+.story-felt .story-row { justify-content: center; }
+.story-felt::before { content: ""; position: absolute; z-index: -1; inset: -56px -22% -72px; border-radius: 50%;
+  border: 1px solid var(--story-rail); outline: 1px solid var(--story-rail); outline-offset: 14px;
+  background: radial-gradient(closest-side, var(--story-felt), transparent); }
+.story-hole .sc { cursor: pointer; transition: rotate .7s cubic-bezier(.45, .05, .2, 1), translate .7s cubic-bezier(.45, .05, .2, 1); }
+.story-hole .sc-back { border-color: var(--signal); }
+.story-hole .sc:not(.up):first-child { rotate: calc(-1 * var(--hole-tilt)); }
+.story-hole .sc:not(.up):last-child { rotate: var(--hole-tilt); translate: -10px 6px; }
+.sc { animation: story-deal var(--deal-ms) cubic-bezier(.2, .8, .2, 1) calc(var(--k, 0) * var(--deal-gap)) both; }
+@keyframes story-deal { from { opacity: 0; transform: translate(42vw, -34vh) rotate(28deg); } }
+.story-cue { align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; margin-top: var(--s-6); padding: 0; min-height: var(--tap);
+  border: 0; background: none; cursor: pointer; color: var(--ink-2); font-size: var(--fs-1); }
+.story-cue:hover { color: var(--ink); }
+.story-cue::before { content: ""; width: 1px; height: 30px; background: var(--signal); transform-origin: top; animation: story-cue 2s ease-in-out infinite; }
+@keyframes story-cue { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+@media (max-width: 760px) {
+  .story-intro { min-height: 0; justify-content: flex-start; padding: var(--s-5) 0 var(--s-8); }
+  .story-felt { gap: var(--s-2); align-items: flex-start; text-align: left; margin-bottom: 0; }
+  .story-felt::before { display: none; }   /* the phone's pinned strip is a strip, not a table */
+}
+@media (prefers-reduced-motion: reduce) { .sc, .story-cue::before { animation: none; } .story-hole .sc { transition: none; } }
+
+/* Draft 6: a reading line across the top of a lesson or a tool, drawn by the scroll itself. Browsers without
+   scroll-driven animations show nothing (the base is a line of no length). */
+@supports (animation-timeline: scroll()) {
+  html:not(.immersive) .page::before { content: ""; position: fixed; z-index: 12; top: 0; left: var(--sidebar-w); right: 0; height: 2px; background: var(--accent);
+    transform: scaleX(0); transform-origin: 0 50%; animation: reading-line linear both; animation-timeline: scroll(root); }
+  @keyframes reading-line { to { transform: scaleX(1); } }
+  @media (max-width: 760px) { html:not(.immersive) .page::before { left: 0; top: var(--bar-h); } }
+}
+aside.mascot { view-transition-name: mascot; }   /* the cat keeps its corner while a page rises in */
 
 /* immersive: the story home takes the whole screen; the sidebar becomes the phone's drawer, opened from a
    slim bar in the story's colours — as in Chess Master (owner 2026-10-27) */

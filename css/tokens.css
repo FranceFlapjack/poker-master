@@ -35,6 +35,12 @@
    seats need; the table now has --table-max, and a drill puts its question under a table that will not
    fit beside it.
 
+   Draft 6 (2026-11-11, owner's request: "more interesting, great visual" — a DRAFT on its own branch): the
+   home's first screen deals your hand. The cards are there from the first paint, face down on a table drawn
+   in light on the navy (the --story-felt / --story-rail tokens), your two edged in the gold that says "yours";
+   they land one after another (--deal-ms, --deal-gap) and square up as they turn. Course cards carry one pip
+   per lesson, solid once done; lessons get a reading line across the top; pages rise in on every change.
+
    Comment on any line here and it becomes a small diff. */
 :root {
   /* ground & ink */
@@ -66,6 +72,14 @@
   --story-ink: #f6f1e7;
   --story-dim: rgba(246, 241, 231, 0.72);
   --story-line: rgba(246, 241, 231, 0.16);
+
+  /* Draft 6: the table under the story's cards — a pool of light and a rail, both drawn in light, no green:
+     gold stays the story's only colour */
+  --story-felt: rgba(122, 162, 226, 0.22);
+  --story-rail: rgba(246, 241, 231, 0.16);
+  --deal-ms: 700ms;            /* one card's flight from the deck */
+  --deal-gap: 80ms;            /* between one card landing and the next */
+  --hole-tilt: 6deg;           /* how far your two cards lie askew while face down */
 
   /* heatmaps: a cell's share of the hottest cell, mixed from cold to hot */
   --heat-cold: #f1ece2;

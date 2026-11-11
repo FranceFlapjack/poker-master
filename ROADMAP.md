@@ -808,6 +808,28 @@ The sidebar (owner 2026-11-04): the tools list had been `display:none` since Pha
 marked in view. Now the tools show under their own head, each page opens only its own section, and the sidebar keeps
 the current row in view. The current page stays what it always was, bold navy text: that was enough once the tools showed.
 
+## Design draft 6 — a DRAFT on branch `redesign-draft`, not merged — 2026-11-11
+
+The owner's request: a redesign, "more interesting, great visual", as a draft. One bold change and four quiet ones;
+every value is in `css/tokens.css` (Draft 6).
+
+- **The first screen deals your hand.** The home opened on words alone, with the cards a screen further down. The
+  intro is now the hand's first step: seven cards land one after another, face down on a table drawn in light on
+  the navy, your two edged in gold and lying askew until they turn. "Turn your cards over" (or a click on them)
+  moves to the next step. The old first step ("Two cards. Yours.") is gone; its sentence is in the intro. The title
+  is smaller (68px at most, was 96px) because it shares the screen with the cards.
+- **Course cards count their lessons**: one pip per ready lesson in the card's suit, solid once done.
+- **Test yourself opens on the game**: Start, your last games, the famous hands; "How it is scored" is unchanged
+  and in full, now at the end, with one line under Start saying what scores it and that the chart is not solver output.
+- **A reading line** across the top of lessons and tools, drawn by the scroll (nothing in browsers without
+  scroll-driven animations).
+- **Every page change rises in**, not only those opened from a home card.
+- **Fixed on the way:** a count-up still running when the stage went back to "?" overwrote it with a number.
+
+Checked at 1440, 1024 and 375px: no sideways scroll, no console output, all six checkers pass. NOT watched live:
+the Browser pane was hidden during the session, which pauses animations and scroll events, so the deal, the page
+rise and the reading line were checked by their end states, not by eye; reduced motion was not emulated.
+
 ## What is left after Phase 6
 
 - **Phase 7, publishing — published 2026-09-27** at https://franceflapjack.github.io/poker-master/

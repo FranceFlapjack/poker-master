@@ -21,7 +21,7 @@ const RANDOM = new Float32Array(169).fill(1)       // "one random hand": all 1,3
 const TRIALS = 12000                               // sampled: about a point either way, and the page says "about"
 const MM = { hole: parseCards('Ks 7h'), board: parseCards('9s 2d 6s 8s 3h') }   // content/famous/moneymaker-bluff-2003.json
 
-const card = c => `<div class="sc"><div class="sc-turn"><div class="sc-side sc-back"></div><div class="sc-side sc-front${isRed(c) ? ' red' : ''}"><b>${rk(RANKS[rankOf(c)])}</b><i>${SUIT_GLYPH[suitOf(c)]}</i></div></div></div>`
+const card = (c, k) => `<div class="sc" style="--k:${k}"><div class="sc-turn"><div class="sc-side sc-back"></div><div class="sc-side sc-front${isRed(c) ? ' red' : ''}"><b>${rk(RANKS[rankOf(c)])}</b><i>${SUIT_GLYPH[suitOf(c)]}</i></div></div></div>`
 
 /** `cta`: { href, label, today, secondary: { href, label } } — decided by the app (start or continue). `grinder`: the mode switch. */
 export function mountStory(el, { cta, grinder = false }) {
@@ -29,19 +29,14 @@ export function mountStory(el, { cta, grinder = false }) {
   const grid1 = gridAgainst(1)
   el.className = 'story' + (still ? ' story-still' : '')
   el.innerHTML = `
-    <section class="story-scene story-intro">
-      <p class="story-kicker">A course in no-limit hold’em</p>
-      <h1 class="story-title">52 cards.<br>${n(COUNTS.starting)} hands.<br><em>One of them is yours.</em></h1>
-      <p class="story-lead">Two cards of your own, five to share, and a bet at every turn. Scroll, and a hand is dealt to you one street at a time — or start right now.</p>
-      <div class="story-cta"><a class="btn primary" href="${cta.href}">${cta.label}</a>${cta.secondary ? `<a class="btn" href="${cta.secondary.href}">${cta.secondary.label}</a>` : ''}</div>
-    </section>
-
     <div class="story-hand">
       <div class="story-steps">
-        <section class="story-step" data-s="0">
-          <p class="story-kicker">Your hand</p>
-          <h2 class="story-h">Two cards. <em>Yours.</em></h2>
-          <p class="story-body">Of the <b>${n(COUNTS.starting)}</b> two-card hands the deck can deal, this is the one you got. Keep scrolling and it plays out.</p>
+        <section class="story-step story-intro" data-s="0">
+          <p class="story-kicker">A course in no-limit hold’em</p>
+          <h1 class="story-title">52 cards.<br>${n(COUNTS.starting)} hands.<br><em>One of them<br>is yours.</em></h1>
+          <p class="story-lead">It has just been dealt to you, face down: two cards of your own, and five to share. Scroll, and it plays out one street at a time — or start right now.</p>
+          <div class="story-cta"><a class="btn primary" href="${cta.href}">${cta.label}</a>${cta.secondary ? `<a class="btn" href="${cta.secondary.href}">${cta.secondary.label}</a>` : ''}</div>
+          <button class="story-cue" type="button" data-turn>Turn your cards over</button>
         </section>
         <section class="story-step" data-s="1">
           <p class="story-kicker">Before the flop</p>
@@ -72,8 +67,10 @@ export function mountStory(el, { cta, grinder = false }) {
         </section>
       </div>
       <div class="story-stage" aria-live="polite">
-        <div><div class="story-label">The board</div><div class="story-row" id="ss-board"></div></div>
-        <div class="story-hole"><div class="story-label" id="ss-hole-label">Your hand</div><div class="story-row" id="ss-hole"></div></div>
+        <div class="story-felt">
+          <div><div class="story-label">The board</div><div class="story-row" id="ss-board"></div></div>
+          <div class="story-hole"><div class="story-label" id="ss-hole-label">Your hand</div><div class="story-row" id="ss-hole"></div></div>
+        </div>
         <div class="story-read">
           <div class="story-big" id="ss-big">?</div>
           <div><div class="story-delta" id="ss-delta"></div><div class="story-made" id="ss-made"></div></div>
@@ -99,10 +96,9 @@ export function mountStory(el, { cta, grinder = false }) {
     </section>`
   const $ = s => el.querySelector(s)
 
-  // the intro and the timeline rise in as they arrive
+  // the timeline rises in as it arrives
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('story-in') }), { threshold: 0.2 })
   el.querySelectorAll('.story-scene').forEach(s => io.observe(s))
-  setTimeout(() => $('.story-intro').classList.add('story-in'), 30)   // the first screen never waits for the observer
 
   // --- the hand ------------------------------------------------------------------------------------------
   let hole, board, cell, eq, shown = -1, shownEq = null, raf = 0
@@ -161,7 +157,7 @@ export function mountStory(el, { cta, grinder = false }) {
     if (face !== (famous ? 'famous' : 'mine')) {
       face = famous ? 'famous' : 'mine'
       shownEq = null   // a different hand on the stage: no "up" or "down" across the swap
-      $('#ss-hole').innerHTML = h.map(card).join(''); $('#ss-board').innerHTML = b.map(card).join('')
+      $('#ss-hole').innerHTML = h.map(card).join(''); $('#ss-board').innerHTML = b.map((c, k) => card(c, k + 2)).join('')   // --k: hole cards land first, then the board
     }
     $('#ss-hole-label').textContent = famous ? 'Moneymaker’s hand' : 'Your hand'
     const up = famous ? 5 : [0, 0, 3, 4, 5][s]
@@ -169,7 +165,7 @@ export function mountStory(el, { cta, grinder = false }) {
     el.querySelectorAll('#ss-board .sc').forEach((c, k) => c.classList.toggle('up', k < up))
     $('#ss-mini').classList.toggle('on', s === 1)
     words(s)
-    if (s === 0) { $('#ss-big').textContent = '?'; $('#ss-delta').textContent = ''; $('#ss-made').textContent = ''; $('#ss-meter').style.width = '0'; shownEq = null; return }
+    if (s === 0) { cancelAnimationFrame(raf); $('#ss-big').textContent = '?'; $('#ss-delta').textContent = ''; $('#ss-made').textContent = ''; $('#ss-meter').style.width = '0'; shownEq = null; return }
     setNumber(famous ? equityMC([MM.hole, RANDOM], MM.board, [], { trials: TRIALS, seed: 7 }).equity[0] : eq(s))
     $('#ss-made').textContent = s === 1 ? handWords(cell.name) : describe(evaluate([...h, ...b.slice(0, up)]))
   }
@@ -186,6 +182,10 @@ export function mountStory(el, { cta, grinder = false }) {
   const onScroll = () => { const s = current(); steps.forEach(x => x.classList.toggle('on', +x.dataset.s === s)); show(s) }
   addEventListener('scroll', onScroll, { passive: true })
   el.querySelectorAll('[data-again]').forEach(b => b.addEventListener('click', () => { face = null; deal(); steps[0].scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' }) }))
+  // the cue under the first words, and your own cards while they are face down, both move on to the next step
+  const turn = () => steps[Math.min(shown + 1, steps.length - 1)].scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' })
+  $('[data-turn]').addEventListener('click', turn)
+  $('#ss-hole').addEventListener('click', () => { if (shown === 0) turn() })
   deal(); onScroll()
 
   return () => { io.disconnect(); removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
