@@ -27,6 +27,11 @@ names must match their references exactly — Pages is case-sensitive, a Mac is 
   hairline borders, square corners). The theme colour is **deep navy `--accent` (#0f2d57)**, owner-approved
   2026-09-24 — the siblings' tone rotated to blue, and the only cool accent of the three, chosen so the
   Poker tile reads as distinct beside Chess's green and Go's red in the family bubble.
+- **On branch `redesign-draft` only (2026-11-14): Draft 8, "the drawn table"**, the direction the owner chose
+  for an all-new design and asked to keep refining — NOT merged, so the paragraph above still describes `main`.
+  One thick black line, flat pastels, round corners, taken from the portraits and the cat; a pastel per section;
+  a top bar and a drawer in place of the sidebar column. Tokens: the Draft 8 block in `css/tokens.css`; shapes:
+  `css/drawn.css`. The whole story is in `ROADMAP.md`. For a redesign, show directions as pictures first.
 - Carried over from Chess Master: the activity grid shades by **volume, not points, and there is no
   streak**; **no progress export/import** in the UI. `js/progress.js` deliberately exposes neither.
 

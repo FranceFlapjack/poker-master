@@ -866,12 +866,19 @@ are the concept and purpose, and are untouched.
 - Kept from Draft 6: the first screen deals the hand, lesson pips on course cards, Test yourself opens on Start,
   the reading line, pages rising in.
 
-Checked by looking, at 1440px and 375px: home, course cards, three lessons (table, hand rankings, drills, the
-grid), Play, push/fold, a game spot, the drawer. No console output, no sideways scroll, all checkers pass
-(content, engine, drills, charts, game, famous, bot, render-table). NOT checked: the odds, ICM and range-trainer
-pages, the famous-hand replay, the game's result screen and the cat's bubble in this look; the 1,056-spot table
-audit was not re-run; contrast was judged by eye; animations by end state only (the pane was hidden, and its
-screenshots sometimes lag a page behind); other browsers; a machine without the rounded face.
+**Refined the same day, after the owner said "yes, keep refining":** the trainers are one run of six cards on a
+desktop (they wrapped four and two); the answer on a page is set in the title face (the game's score, a tool's
+figures); a verdict is a note with the line round it (butter, sage for yes, peach for no); a drill's right and
+wrong answers are filled, not only recoloured; a field with a note under its label lines up with its neighbour;
+the reading line is butter (black read as a second rule under the bar); the page's last row clears the cat.
+
+Checked by looking, at 1440px and 375px: the home from first screen to trainers (story steps, timeline), course
+cards, three lessons (table, hand rankings, drills, the grid, the end of a lesson), all six tools, a full game
+to its result screen, a famous-hand replay, a wrong answer with the cat's hint, the drawer. No console output,
+no sideways scroll, all checkers pass (content, engine, drills, charts, game, famous, bot, render-table).
+NOT checked: the 1,056-spot table audit was not re-run; contrast was judged by eye; animations by end state
+only (the pane was hidden, and its screenshots sometimes lag a page behind); other browsers; a machine without
+the rounded face. Testing wrote a game score and drill attempts into the pane's progress; they were removed.
 Known and left: the series welcome is still navy (it is shared with Chess and Go) and now opens onto a pastel
 home; it also sets POKER in the app's new sans. `CLAUDE.md` still describes the old look and should change only
 if this draft is approved.

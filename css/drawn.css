@@ -71,7 +71,8 @@ html.immersive .scrim { background: rgba(27, 27, 27, 0.35); }
 /* ---------- the page: a centred column under a block of its section's colour ---------- */
 .main { overflow-x: clip; }
 .page { margin-inline: auto; }
-html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 4px; background: var(--ink); }   /* the reading line, under the bar */
+html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; background: var(--signal); }   /* the reading line, under the bar: butter, so it never reads as a second black rule */
+.main { padding-bottom: 140px; }   /* the page's last row clears the cat in its corner */
 .lesson-head, .tool > .hero {
   position: relative; isolation: isolate; max-width: none; margin: 0 0 var(--s-7); padding: var(--s-6) 0 var(--s-7); border: 0; }
 .lesson-head::before, .tool > .hero::before {
@@ -211,4 +212,33 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 4px; back
   .flip-card:nth-child(n) { rotate: 0deg; }
   .flip-card .front::after { display: none; }
   .flip-card .front { padding-bottom: var(--s-4); border-bottom: 0; }
+}
+
+/* ---------- refinements after the owner chose this direction (2026-11-14) ---------- */
+/* numbers that are the answer are set in the title face */
+.gm-big, .tool .stat .v { font-family: var(--font-display); font-weight: var(--fw-display); color: var(--ink); }
+.gm-big { font-size: 84px; letter-spacing: -0.02em; }
+.tool .stat .v { font-size: 26px; }
+.tool .fields { align-items: end; }   /* a field with a note under its label no longer sits lower than its neighbour */
+/* a verdict is a note with the line round it: butter by default, sage for yes, peach for no */
+.tool .verdict { display: inline-block; margin-bottom: var(--s-2); padding: 8px 14px; border: 2px solid var(--ink); border-radius: var(--radius); background: var(--accent-soft); }
+.tool .verdict.good { background: #dff0e3; border-color: var(--ink); }
+.tool .verdict.bad { background: #fbe1da; border-color: var(--ink); }
+/* a drill's answer is filled in, not only recoloured */
+:is(.exercise, .gm-opts) .opt.right { background: #dff0e3; color: var(--ink); }
+:is(.exercise, .gm-opts) .opt.right .mark { color: var(--good); }
+:is(.exercise, .gm-opts) .opt.wrong { background: #fbe1da; }
+.gm-review > li { border-left-width: 4px; }
+/* the six trainers are one run of cards, ten down to five, dealt in a single row where there is room */
+@media (min-width: 1000px) {
+  .tool-row { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-3); }
+  .tool-row .flip-card .face { padding: var(--s-3); border-radius: 14px; }
+  .tool-row .flip-card .front { padding-bottom: calc(var(--s-3) + 10px); }
+  .tool-row .flip-card .front::after { height: 10px; border-radius: 0 0 11px 11px; }
+  .tool-row .flip-card .front h3 { font-size: 17px; line-height: 1.1; }
+  .tool-row .flip-pip { font-size: 38px; }
+  .tool-row .flip-pip b { font-size: 42px; }
+  .tool-row .flip-card .back b { font-size: 16px; }
+  .tool-row .flip-card .back p { font-size: 12.5px; line-height: 1.35; }
+  .tool-row .flip-card .back .go { font-size: 15px; }
 }
