@@ -219,7 +219,7 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .flip-card { transition: rotate 200ms; }
 .flip-card:nth-child(odd) { rotate: -1.2deg; }
 .flip-card:nth-child(even) { rotate: 1deg; }
-.flip-card:hover, .flip-card:focus-visible { rotate: 0deg; }
+.flip-card:hover, .flip-card:focus-visible, .flip-card.turned { rotate: 0deg; }
 .flip-card .face { border-radius: 18px; }
 .flip-card .front { background: var(--surface); border: var(--stroke) solid var(--ink); color: var(--ink); }
 .flip-card .front::after { content: ""; position: absolute; inset: auto 0 0 0; height: 12px; background: var(--tone); border-top: var(--stroke) solid var(--ink); border-radius: 0 0 15px 15px; }   /* the section's colour, along the card's foot */
@@ -235,7 +235,7 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .flip-card .back .go { font-family: var(--font-display); font-size: 18px; letter-spacing: 0; }
 .continue { background: var(--surface); }
 .continue h3 { font-size: 28px; line-height: 1.05; font-weight: var(--fw-display); }
-.switch { height: 22px; width: 40px; border-radius: 11px; border: 2px solid var(--ink); background: var(--surface); }
+.switch { flex: none; height: 22px; width: 40px; border-radius: 11px; border: 2px solid var(--ink); background: var(--surface); }   /* flex: none — beside a long sentence on a phone it was squeezed to a sliver */
 .switch::after { top: 2px; left: 2px; width: 14px; height: 14px; background: var(--ink); }
 .switch[aria-checked="true"] { background: var(--sage); }
 .switch[aria-checked="true"]::after { transform: translateX(18px); }
@@ -243,10 +243,19 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .report .wbar i { background: var(--peach); }
 @media (prefers-reduced-motion: reduce) { .flip-card, .lesson-nav a { transition: none; } }
 @media (max-width: 760px) {
-  .flip-card:nth-child(n) { rotate: 0deg; }
-  .flip-card .front::after { display: none; }
-  .flip-card .front { padding-bottom: var(--s-4); border-bottom: 0; border-radius: 18px 18px 0 0; }   /* one card: the face above, its coloured back below, one line between */
-  .flip-card .back { border-radius: 0 0 18px 18px; }
+  /* a phone deals the cards two to a row, small, and they turn over on a tap (owner 2026-11-14) */
+  .track-grid, .tool-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3); }
+  .flip-card .face { padding: var(--s-3); border-radius: 14px; }
+  .flip-card .front { padding-bottom: calc(var(--s-3) + 10px); }
+  .flip-card .front::after { height: 10px; border-radius: 0 0 11px 11px; }
+  .flip-card .front h3 { font-size: 17px; line-height: 1.1; }
+  .flip-pip { font-size: 38px; }
+  .flip-pip b { font-size: 42px; }
+  .flip-lessons { font-size: 15px; gap: 5px; }
+  .flip-card .back b { font-size: 16px; }
+  .flip-card .back p { font-size: 12.5px; line-height: 1.35; }
+  .flip-card .back .meta { display: none; }   /* the lesson count is the row of pips on the face */
+  .flip-card .back .go { font-size: 15px; }
 }
 
 /* ---------- refinements after the owner chose this direction (2026-11-14) ---------- */

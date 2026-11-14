@@ -912,6 +912,18 @@ strip jump; a course card's face and its coloured back are joined as one card. L
 with the pane visible: the home from first screen to the famous river, the course cards, a lesson's head, the
 hand rankings and a drill.
 
+**Cards that turn over on a phone, the same day (owner: "can mobile version be the flipping card also?").** On a
+touch screen the course and trainer cards used to be a short face with the description stacked under it, because
+there is no hover to turn them. Now they are cards there too, two to a row, and the FIRST TAP TURNS a card over
+and the SECOND OPENS it; tapping another card, or anywhere else, turns it back. A line above the cards says so
+("Tap a card to turn it over, then tap again to open it"), shown only where there is no hover. `js/app.js`
+catches the first tap before the card-opening transition sees it; the rule is keyed on `(hover: none)`, so a
+mouse still turns a card by pointing at it and opens it with one click. The lesson count leaves the small card's
+back (it is the row of pips on its face). Checked at 375px: a first tap turns the card and stays on the page, a
+tap on a second card turns that one and turns the first back, a second tap opens the page; no description
+overflows its card; at 1280px with a mouse one click still opens the lesson. Also fixed: the Beginner switch was
+squeezed to a sliver beside its sentence on a phone.
+
 Known and left: `CLAUDE.md` describes the old look except for one note about this branch, and should be
 rewritten only if this draft is merged.
 

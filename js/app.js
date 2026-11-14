@@ -54,6 +54,15 @@ async function boot() {
   // A course or tool card (or a button) grows into the title of the page it opens, as the page fades in (owner 2026-10-31: "more
   // interesting but not too much"). The browser's View Transitions; a plain jump where there are none, or where
   // motion is reduced, or for a click meant for a new tab.
+  // On a touch screen there is no hover, so a card turns over on the first tap and opens on the second (owner
+  // 2026-11-14). Caught on the way down, so the card-opening transition below never sees the first tap; a tap
+  // anywhere else turns the cards back.
+  $('#main').addEventListener('click', e => {
+    if (!matchMedia('(hover: none)').matches) return
+    const card = e.target.closest('.flip-card')
+    document.querySelectorAll('.flip-card.turned').forEach(c => { if (c !== card) c.classList.remove('turned') })
+    if (card && !card.classList.contains('turned')) { e.preventDefault(); e.stopImmediatePropagation(); card.classList.add('turned') }
+  }, true)
   $('#main').addEventListener('click', e => {
     // every way off the home into a lesson or a tool: the cards, the story's buttons, the Continue card (owner 2026-10-31)
     const a = e.target.closest('a[href^="#/lesson/"], a[href^="#/tools/"]')
@@ -64,7 +73,7 @@ async function boot() {
     from.style.viewTransitionName = 'opening'
     // the title the reader sees on the card flies on its own into the page's h1, so the words stay words while the box grows
     // (a turned card shows its back, whose title is the <b>)
-    const title = from.matches('.flip-card') ? from.querySelector(from.matches(':hover, :focus-visible') ? '.back b' : '.front h3') : from.querySelector('h3')
+    const title = from.matches('.flip-card') ? from.querySelector(from.matches('.turned, :hover, :focus-visible') ? '.back b' : '.front h3') : from.querySelector('h3')
     if (title) title.style.viewTransitionName = 'opening-title'
     const named = () => [$('#main .lesson-head, #main .hero'), $('#main :is(.lesson-head, .hero) h1')]
     const t = document.startViewTransition(async () => {
@@ -249,6 +258,7 @@ function showHome(main) {
     <div class="page home-course" id="course">
       <h2>The course</h2>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.part)}</div></div><a class="btn primary" href="#/lesson/${cont.dir}/${cont.slug}">Open lesson</a></div>` : ''}
+      <p class="small flip-hint">Tap a card to turn it over, then tap again to open it.</p>
       <div class="track-grid">
         ${sections.map(g => {
           const ready = g.lessons.filter(l => l.ready).length

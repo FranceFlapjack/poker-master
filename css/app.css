@@ -170,8 +170,8 @@ button { font: inherit; color: inherit; }
 @media (max-width: 760px) { .continue { flex-direction: column; align-items: stretch; } .continue .btn { text-align: center; } }   /* phones: the button under the title, full width */
 /* flip cards (the course's sections and the tools, flipCard() in js/app.js): the front is a playing card's face —
    rank and suit, the label and the title; on hover (or keyboard focus) it turns over to its navy back with the
-   description. Rows are three wide (one on phones). The link itself never moves, so the pointer cannot fall off
-   a card mid-turn. Modelled on Chess Master's flip cards, 2026-10-27. */
+   description; on a touch screen the first tap turns it and the second opens it. The link itself never moves, so
+   the pointer cannot fall off a card mid-turn. Modelled on Chess Master's flip cards, 2026-10-27. */
 .track-grid, .tool-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
 .tool-row { margin: var(--s-4) 0 var(--s-6); }
 @media (max-width: 760px) { .track-grid, .tool-row { grid-template-columns: minmax(0, 1fr); } }
@@ -203,17 +203,15 @@ button { font: inherit; color: inherit; }
   .track-grid, .tool-row { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .flip-card .face { min-height: 0; aspect-ratio: 72 / 100; }
 }
-@media (hover: none) {   /* touch: nothing turns over; a short card (title beside the rank and suit) with the description under it */
-  .flip-card .face { grid-area: auto; min-height: 0; padding: var(--s-4) var(--s-5); }
-  .flip-card .front { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s-4); align-items: center; border-radius: var(--card-radius) var(--card-radius) 0 0; }
-  .flip-card .front .eyebrow { grid-area: 1 / 1; align-self: end; }
-  .flip-card .front h3 { grid-area: 2 / 1; align-self: start; }
-  .flip-lessons { grid-area: 3 / 1; }
-  .flip-pip { grid-area: 1 / 2 / 3 / 3; margin: 0; font-size: 40px; }
-  .flip-pip b { font-size: 32px; margin-bottom: 2px; }
-  .flip-card .back { transform: none; border-radius: 0 0 var(--card-radius) var(--card-radius); }
-  .flip-card .back b { display: none; }
+@media (hover: none) {   /* touch: there is no hover, so a card turns over on the first tap and opens on the second
+                            (js/app.js adds .turned). It was a short card with its description under it; the owner
+                            asked for the flip on a phone too, 2026-11-14 */
+  .flip-card.turned .flip { transform: rotateY(180deg); }
+  .track-grid, .tool-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .flip-card .face { min-height: 0; aspect-ratio: 72 / 100; }
 }
+.flip-hint { display: none; margin: 0 0 var(--s-4); }
+@media (hover: none) { .flip-hint { display: block; } }   /* said once, above the cards, where a tap is the only way to turn one */
 @media (prefers-reduced-motion: reduce) { .flip-card .flip { transition: none; } }
 .switch-row { display: flex; align-items: center; gap: var(--s-3); margin: var(--s-6) 0 var(--s-4); font-size: var(--fs-1); color: var(--ink-2); }
 .switch { position: relative; width: 34px; height: 18px; border-radius: 9px; background: var(--line-2); border: 0; cursor: pointer; padding: 0; transition: background 150ms; }
