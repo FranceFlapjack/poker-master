@@ -857,9 +857,9 @@ are the concept and purpose, and are untouched.
   `html.at-home` marks the home. `#/train` lands on the trainers' cards.
 - **Every page is a card.** Its head carries a drawn card with the rank and suit it has on the home, lying a
   little askew, and for a lesson a row of dots for where it stands in its section.
-- **The home's table has players.** Sage felt with the line for a rail, white cards, and three of the app's own
-  portraits sitting at it (two opponents and you), each cropped to its ink box and never redrawn. They are
-  decoration: the chance shown is still against one random hand, and the page still says so. Course and trainer
+- **You sit at the home's table.** Sage felt with the line for a rail, white cards, and the app's own portrait of
+  your seat, cropped to its ink box and never redrawn (two opponents stood above the table at first; see "The
+  intro" below). The chance shown is still against one random hand, and the page still says so. Course and trainer
   cards lie dealt, each a degree off square, straightening under the pointer.
 - **The table**: black rail, ink for pot and bets (cream no longer reads on the lighter felt), a dotted ring on
   the seat to act. The `.seat-plate` disc added for Draft 7 stays in `js/table.js` but draws nothing here.
@@ -887,6 +887,17 @@ face, a butter back, rank and suit in outline so the word stays the only solid b
 `git diff main`), so the series' shared files stay shared. The word is still fitted by its ink: 46.2px each side
 at 1440px, 14.1px each side at 375px. Poker's tile in the series bubble is still navy, because that colour lives
 in the shared registry and changing it is a change to all three apps.
+
+**The intro, the same day (owner: the words on the left and the table and player overlap; the two players above
+the table "look weird, the head is cut out, remove 2 on top").** The two opponents are gone; only your own
+portrait sits at the table, at the right-hand end of the near rail, away from the words and from the number.
+The table no longer reaches out of its column: the felt is exactly as wide as the stage, the two columns are
+equal, and the cards are sized from the stage's width (container units) so they always sit inside the rim.
+Measured, the clear space between the last word on the left and the felt is 83px at 1440, 68px at 1280, 71px at
+1024 and 51px at 800 wide, with the cards 43–77px inside the rim on each side. On a short window the column now
+starts at its top instead of losing the rim under the bar, and drops the small 169-grid (it is in the words
+beside it): at 1024×768, 800×700, 1280×720 and 1440×900 the whole rim clears the bar and "Deal another hand"
+stays on screen.
 
 Known and left: `CLAUDE.md` describes the old look except for one note about this branch, and should be
 rewritten only if this draft is merged.

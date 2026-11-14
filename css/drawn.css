@@ -162,13 +162,21 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .story-title em, .story-h em { color: inherit; background: linear-gradient(transparent 56%, var(--butter) 56% 94%, transparent 94%); -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .08em; margin: 0 -.08em; }
 .story-delta.up { color: var(--good); }
 /* the table: flat sage, the line for a rail, and two of the app's players sitting at it with you */
-.story-felt { margin-top: var(--s-5); }
-.story-felt::before { inset: -46px -22% -62px; border: var(--stroke) solid var(--ink); outline: 0; background: var(--sage); box-shadow: none; }
+/* The table keeps to its own column (owner 2026-11-14: it and the player ran into the words on the left). The
+   felt is exactly as wide as the stage, the cards are sized from the stage's width so they always sit inside
+   the rim, and you stand at the right-hand end of the near rail, away from the text and from the number. */
+.story-hand { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.story-stage { container-type: inline-size; }
+.story-felt::before { inset: -64px 0 -56px; border: var(--stroke) solid var(--ink); outline: 0; background: var(--sage); box-shadow: none; }
+@media (min-width: 761px) {
+  .story-stage { justify-content: safe center; }   /* on a short window the column starts at its top instead of losing it under the bar */
+  .story-felt { margin-top: 72px; margin-bottom: var(--s-8); }   /* the rim's rise above the cards is room the column really takes */
+  .sc { width: 12.4cqw; font-size: 2.8cqw; }
+  .story-hole .sc { width: 17.5cqw; font-size: 4cqw; }
+}
 .story-felt .story-label { color: var(--ink); font-weight: 600; }
-.story-fig { position: absolute; z-index: 1; height: 112px; pointer-events: none; }
-.story-fig.a { left: -21%; top: -56px; height: 104px; }   /* on the rim's shoulders, clear of the board */
-.story-fig.b { right: -21%; top: -56px; height: 100px; }
-.story-fig.you { left: -21%; bottom: -58px; height: 132px; }
+.story-fig { position: absolute; z-index: 1; pointer-events: none; }
+.story-fig.you { right: 1%; bottom: -56px; height: clamp(84px, 24cqw, 128px); }
 /* and its cards are drawn cards: white, the line, a periwinkle back; yours are butter-backed */
 .sc-side { border-radius: 10px; }
 .sc-front { background: var(--surface); border: var(--stroke) solid var(--ink); color: var(--ink); font-family: var(--font-display); }
@@ -184,8 +192,8 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .story-time { border-top: var(--stroke) solid var(--ink); }
 .story-time li::before { width: 13px; height: 13px; top: -8px; border: 2px solid var(--ink); background: var(--surface); }
 .story-time li:last-child::before { background: var(--butter); }
+@media (min-width: 761px) and (max-height: 880px) { .story-mini { display: none; } }   /* a short window keeps the table, the number and the button; the small grid is in the words beside it */
 @media (max-width: 760px) {
-  .story-felt { margin-top: 0; }
   .story-fig { display: none; }
   .story-stage { background: var(--paper); border-bottom: var(--stroke) solid var(--ink); }
   .story-time { border-top: 0; border-left: var(--stroke) solid var(--ink); }
