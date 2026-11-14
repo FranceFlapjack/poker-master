@@ -66,7 +66,20 @@ html.immersive .scrim { background: rgba(27, 27, 27, 0.35); }
 .track-head { border-radius: var(--radius); }
 .track-head .bar { height: 6px; border-radius: 3px; background: var(--paper-2); }
 .track-head .bar i { background: var(--sage); }
-.wl { --accent: var(--brand); }   /* the welcome curtain stays the series' Poker navy (the file is shared with Chess and Go) */
+/* The series welcome, in Poker's look. The shared files (js/welcome.js, css/welcome.css) are untouched and stay
+   identical across the series: this app only says what its colour, its ink and its lettering are, as it always
+   said its --accent. Periwinkle is the old navy's own hue, lightened — still the one cool colour of the three. */
+.wl { --accent: var(--peri); --wl-ink: var(--ink); --wl-word-weight: var(--fw-display); --wl-word-track: -0.02em; }
+.wl .wl-word { font-family: var(--font-display); }
+.wl .wl-master, .wl .wl-cue { font-weight: 700; }
+.wl .wl-cue i, .wl .wl-cue i::after { width: 3px; border-radius: 2px; }
+/* its turning card is a drawn card: white, the line, a butter back. Rank and suit stay in outline, so the word
+   in front of them is the only solid black on the screen */
+.wl-card-edge { fill: var(--surface); stroke: var(--ink); stroke-opacity: 1; stroke-width: 3px; }
+.wl-card-side.back .wl-card-edge { fill: var(--butter); }
+.wl-card-ink text { stroke: var(--ink); stroke-opacity: 1; stroke-width: 4px; font-family: var(--font-display); font-weight: var(--fw-display); }
+.wl-card-ink.red text { stroke: var(--suit-red); stroke-opacity: 1; }
+#wl-card-lattice path, .wl-card-lattice { stroke: var(--ink); stroke-opacity: .35; stroke-width: 1.5px; }
 
 /* ---------- the page: a centred column under a block of its section's colour ---------- */
 .main { overflow-x: clip; }

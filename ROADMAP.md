@@ -879,9 +879,17 @@ no sideways scroll, all checkers pass (content, engine, drills, charts, game, fa
 NOT checked: the 1,056-spot table audit was not re-run; contrast was judged by eye; animations by end state
 only (the pane was hidden, and its screenshots sometimes lag a page behind); other browsers; a machine without
 the rounded face. Testing wrote a game score and drill attempts into the pane's progress; they were removed.
-Known and left: the series welcome is still navy (it is shared with Chess and Go) and now opens onto a pastel
-home; it also sets POKER in the app's new sans. `CLAUDE.md` still describes the old look and should change only
-if this draft is approved.
+**The welcome, the same day (owner: "fix the welcome").** It was still navy with cream lettering and opened onto
+a pastel home. It is now periwinkle — the old navy's own hue, lightened, still the one cool colour of the three
+apps — with POKER in the rounded title face in black, and its turning card drawn in the app's line: a white
+face, a butter back, rank and suit in outline so the word stays the only solid black. Done entirely from
+`css/drawn.css`: `js/welcome.js`, `css/welcome.css` and `js/family.js` are byte-identical to `main` (checked with
+`git diff main`), so the series' shared files stay shared. The word is still fitted by its ink: 46.2px each side
+at 1440px, 14.1px each side at 375px. Poker's tile in the series bubble is still navy, because that colour lives
+in the shared registry and changing it is a change to all three apps.
+
+Known and left: `CLAUDE.md` describes the old look except for one note about this branch, and should be
+rewritten only if this draft is merged.
 
 ## What is left after Phase 6
 

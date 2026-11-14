@@ -266,7 +266,8 @@
    - ink is the artwork's black, for text and for every outline. Red stays hearts, diamonds and a wrong answer.
    - type: a rounded bold for titles (the line's own roundness), a plain friendly sans for reading. System
      faces only; where there is no rounded face the fallback is an ordinary bold sans.
-   The series accent (--brand) is kept for the welcome curtain, which is shared with Chess and Go. */
+   The welcome curtain is periwinkle with black lettering (css/drawn.css restyles it from outside; the shared
+   welcome files are untouched). The old navy survives only as Poker's tile in the series bubble (js/family.js). */
 :root {
   --paper: #fdf7ea;
   --paper-2: #f3ebd8;          /* a quiet fill: a hover, a fold cell, a formula */
@@ -277,7 +278,6 @@
   --sky: #a9d6f3;
   --pink: #f6bcd0;
   --stroke: 2.5px;             /* THE line: every outline in the app */
-  --brand: #0f2d57;            /* the series' Poker navy: the welcome curtain */
 
   --bg: var(--paper); --surface: #ffffff; --surface-2: var(--paper-2);
   --ink: #1b1b1b; --ink-2: #4b4a45; --ink-3: #736f66;

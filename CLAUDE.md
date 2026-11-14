@@ -31,7 +31,9 @@ names must match their references exactly — Pages is case-sensitive, a Mac is 
   for an all-new design and asked to keep refining — NOT merged, so the paragraph above still describes `main`.
   One thick black line, flat pastels, round corners, taken from the portraits and the cat; a pastel per section;
   a top bar and a drawer in place of the sidebar column. Tokens: the Draft 8 block in `css/tokens.css`; shapes:
-  `css/drawn.css`. The whole story is in `ROADMAP.md`. For a redesign, show directions as pictures first.
+  `css/drawn.css`. The welcome is periwinkle with black lettering there, restyled from `css/drawn.css` alone — the
+  shared welcome and family files are untouched. The whole story is in `ROADMAP.md`. For a redesign, show
+  directions as pictures first.
 - Carried over from Chess Master: the activity grid shades by **volume, not points, and there is no
   streak**; **no progress export/import** in the UI. `js/progress.js` deliberately exposes neither.
 
