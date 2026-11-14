@@ -899,6 +899,19 @@ starts at its top instead of losing the rim under the bar, and drops the small 1
 beside it): at 1024×768, 800×700, 1280×720 and 1440×900 the whole rim clears the bar and "Deal another hand"
 stays on screen.
 
+**The phone, the same day (owner: "on mobile version look weird").** It was broken, not just odd, and by the
+intro fix above: its two-column rule was written outside any media query in `css/drawn.css`, which loads after
+`app.css`, so it also overrode the phone's single column — the words were squeezed into the right half of the
+screen and the cards drifted over them. The check after that fix had measured sideways scroll on the phone and
+never looked at it, and the report said the phone was unchanged. It was not. The rule is desktop-only now.
+A script then compared every phone rule in `app.css` with the unscoped rules in `drawn.css`: one more real clash
+(the big number), fixed. Any rule added to `drawn.css` for the desktop goes inside `@media (min-width: 761px)`.
+While there: the phone's pinned strip is one row — the board, then your hand at its right — 213–232px tall
+where it was 333px, so the words have most of the screen; "Moneymaker's hand" no longer wraps and makes the
+strip jump; a course card's face and its coloured back are joined as one card. Looked at on a 375×812 screen
+with the pane visible: the home from first screen to the famous river, the course cards, a lesson's head, the
+hand rankings and a drill.
+
 Known and left: `CLAUDE.md` describes the old look except for one note about this branch, and should be
 rewritten only if this draft is merged.
 
