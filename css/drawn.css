@@ -286,3 +286,12 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
   .tool-row .flip-card .back p { font-size: 12.5px; line-height: 1.35; }
   .tool-row .flip-card .back .go { font-size: 15px; }
 }
+/* ---------- the air round a row of buttons (owner 2026-11-14: the Start button sat a long way under the page's
+   head and touching the line beneath it, "also in another page too"). Measured on a phone before: 0px under
+   Start, 8px over the famous hands' and the push/fold buttons, 3px between the table and its buttons. One rule
+   now: a row of buttons has 16px over it and 16px under it, 24px where a paragraph follows the page's first. */
+.tool .actions, .trainer .actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin: var(--s-4) 0; }
+#stage > .actions:first-child { margin-top: 0; }   /* straight under the head, the head's own margin is the air above */
+.tool .note.gm-first { margin: var(--s-5) 0 var(--s-6); }   /* was losing to `.tool .note` and sitting flush under the button */
+.gm-hands .actions { margin: var(--s-4) 0 var(--s-2); }
+.table-actions { margin-top: var(--s-4); }

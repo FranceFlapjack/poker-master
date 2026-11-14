@@ -924,6 +924,14 @@ tap on a second card turns that one and turns the first back, a second tap opens
 overflows its card; at 1280px with a mouse one click still opens the lesson. Also fixed: the Beginner switch was
 squeezed to a sliver beside its sentence on a phone.
 
+**The air round buttons, the same day (owner, with a screenshot of Start on a phone: no balance between the
+space above the yellow button and the text under it, "also in another page too").** Measured on a phone before:
+0px under "Start a game of ten spots" (its note's margin was losing to `.tool .note`), 8px over the famous
+hands' buttons and over push/fold's, 3px between a table and its buttons. One rule now, at the end of
+`css/drawn.css`: a row of buttons has 16px over it and 16px under it. Measured after: Start has 32px above (the
+page head's own margin; 48px on a desktop) and 24px below; the famous hands', push/fold's and the range
+trainer's buttons 16px above; a table's buttons 19px under the table; "Next spot" 24px under its verdict.
+
 Known and left: `CLAUDE.md` describes the old look except for one note about this branch, and should be
 rewritten only if this draft is merged.
 
