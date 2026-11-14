@@ -830,38 +830,51 @@ Checked at 1440, 1024 and 375px: no sideways scroll, no console output, all six 
 the Browser pane was hidden during the session, which pauses animations and scroll events, so the deal, the page
 rise and the reading line were checked by their end states, not by eye; reduced motion was not emulated.
 
-## Design draft 7 — the card room: an all-new design — a DRAFT on `redesign-draft`, not merged — 2026-11-11
+## Design draft 8 — the drawn table: an all-new design — a DRAFT on `redesign-draft`, not merged — 2026-11-14
 
-Draft 6 kept the series look and the owner's verdict was "it looks the same old design"; the request became "an
-ALL NEW design, build it like from zero, use the concept and purpose of the old one". So everything you see is
-new; the engine, the lessons, the drills, the trainers and the table's measured geometry are the concept and
-purpose, and are untouched.
+How it got here. Draft 6 kept the series look: "it looks the same old design". The request became "an ALL NEW
+design, build it like from zero, use the concept and purpose of the old one". **Draft 7, a dark card room**
+(midnight ground, gold, condensed type), was built and turned down — "different direction"; it is commit
+`7f6d1ba` if ever wanted. Three mock-ups were then shown side by side (Drawn table, Tournament floor, Printed
+deck) and the owner chose **Drawn table**. Lesson kept: show directions as pictures before building one.
 
-- **One dark room.** Midnight ground, the brand navy as the raised surface, cream ink, sage felt and cream rail
-  lit in it. Gold is the one accent: primary, selected, done, "look here". Tokens: the Draft 7 block at the end of
-  `css/tokens.css`. Shapes: `css/room.css`, layered over `app.css` (a shortcut, said in the file: fold it in once
-  approved, or delete the file, its link and the token block to go back).
-- **Type.** A tall condensed face for titles and numbers, a book serif for the lessons' prose, a plain sans for
-  controls. System faces only (Avenir Next Condensed, Charter, Avenir Next, with fallbacks) — nothing vendored,
-  and on a machine without them the fallbacks are plainer.
-- **The shell.** No sidebar column: one top bar on every page (Course, Trainers, Test yourself, Play a hand) and
-  the curriculum in the drawer behind the menu, as the home already had. `html.immersive` is now permanent;
+Everything you see is new; the engine, the lessons, the drills, the trainers and the table's measured geometry
+are the concept and purpose, and are untouched.
+
+- **The look comes from the artwork the app already has** — shigureni's players and the cat: one thick black
+  line (`--stroke`), flat pastel fills, round corners, nothing shaded. Paper ground; raised things are white with
+  the line round them. Tokens: the Draft 8 block at the end of `css/tokens.css`. Shapes: `css/drawn.css`, layered
+  over `app.css` (a shortcut, said in the file: fold it in once approved, or delete the file, its link and the
+  token block to go back).
+- **Colour means a place.** Each section and trainer has its own pastel (`SECTION_TONE` / `TOOL_TONE` in
+  `js/app.js`): Basics butter, Ranges periwinkle, Stack depth sage, Maths peach; the page's head is a block of it
+  and the home card carries it along its foot and on its back. Butter is also "do this": the primary button, your
+  seat, the backs of your two cards, the marker under a headline's last line.
+- **Type.** A rounded bold for titles (Arial Rounded MT Bold, then the system's rounded face), Avenir Next for
+  reading. System faces only — nothing vendored; where neither exists the fallback is an ordinary bold sans.
+- **The shell** (kept from Draft 7): no sidebar column — one top bar on every page (Course, Trainers, Test
+  yourself, Play a hand), the curriculum in the drawer behind the menu. `html.immersive` is permanent;
   `html.at-home` marks the home. `#/train` lands on the trainers' cards.
-- **Every page is a card.** A lesson or a tool opens under a head that is the back of its card (navy, lattice)
-  carrying the rank and suit it has on the home, and for a lesson where it stands in its section.
-- **The home's table is the app's table**: sage felt, cream rail, real cream-faced cards. Course and trainer cards
-  lie on the dark with a shadow.
-- **Every seat stands on a disc** (`.seat-plate`, one line in `js/table.js`): the portraits are black line
-  drawings and need a light ground. Layout is unchanged — the disc is the hero ring's circle, drawn for everyone.
-- Drills are raised panels; buttons are round; previous/next are two cards.
+- **Every page is a card.** Its head carries a drawn card with the rank and suit it has on the home, lying a
+  little askew, and for a lesson a row of dots for where it stands in its section.
+- **The home's table has players.** Sage felt with the line for a rail, white cards, and three of the app's own
+  portraits sitting at it (two opponents and you), each cropped to its ink box and never redrawn. They are
+  decoration: the chance shown is still against one random hand, and the page still says so. Course and trainer
+  cards lie dealt, each a degree off square, straightening under the pointer.
+- **The table**: black rail, ink for pot and bets (cream no longer reads on the lighter felt), a dotted ring on
+  the seat to act. The `.seat-plate` disc added for Draft 7 stays in `js/table.js` but draws nothing here.
+- Kept from Draft 6: the first screen deals the hand, lesson pips on course cards, Test yourself opens on Start,
+  the reading line, pages rising in.
 
-Checked by looking, at 1440px and 375px: home, course cards, four lessons (table, drills, both grids), all six
-tools, a game spot, the cat's hint, the drawer, the welcome. No console output, no sideways scroll, all checkers
-pass (content, engine, drills, charts, game, famous, bot, render-table). NOT checked: the famous-hand replay and
-the game's result screen in the new look; the 1,056-spot table audit was not re-run (only a disc was added);
-contrast was judged by eye, not measured; animations by end state only (the pane was hidden); other browsers.
-Known and left: the series welcome now sets POKER in the new sans, because the shared file inherits the app's
-font; `CLAUDE.md` still describes the old look and should change only if this draft is approved.
+Checked by looking, at 1440px and 375px: home, course cards, three lessons (table, hand rankings, drills, the
+grid), Play, push/fold, a game spot, the drawer. No console output, no sideways scroll, all checkers pass
+(content, engine, drills, charts, game, famous, bot, render-table). NOT checked: the odds, ICM and range-trainer
+pages, the famous-hand replay, the game's result screen and the cat's bubble in this look; the 1,056-spot table
+audit was not re-run; contrast was judged by eye; animations by end state only (the pane was hidden, and its
+screenshots sometimes lag a page behind); other browsers; a machine without the rounded face.
+Known and left: the series welcome is still navy (it is shared with Chess and Go) and now opens onto a pastel
+home; it also sets POKER in the app's new sans. `CLAUDE.md` still describes the old look and should change only
+if this draft is approved.
 
 ## What is left after Phase 6
 

@@ -252,71 +252,68 @@
   --act-4: #0f2d57;
 }
 
-/* Draft 7 (2026-11-11, owner: "an ALL NEW design, build it like from zero, use the concept and purpose of the
-   old one" — a DRAFT on branch redesign-draft). THE CARD ROOM. One dark room for the whole app; what is lit in
-   it is what matters: the felt, the cards, the players, the number. Nothing above this line is deleted — this
-   block re-points the tokens, so removing it (and css/room.css) is the old look back.
+/* Draft 8 (2026-11-14, owner's choice of three mock-ups: "Drawn table" — a DRAFT on branch redesign-draft).
+   Draft 7, the dark card room, was turned down ("different direction"); it is commit 7f6d1ba if wanted again.
 
-   - ground: midnight, deeper than the brand navy, which becomes the raised surface (a panel, the drawer, a page's
-     head). Ink is cream. The table keeps its sage felt and cream rail: on midnight they read as lit.
-   - ONE accent: brass gold, now for everything primary, selected or done as well as "look here". Red stays what
-     it is on a card (hearts, diamonds) and a wrong answer; green a right one.
-   - type: a tall condensed face for titles and numbers (a tournament clock's lettering), a book serif for the
-     lessons' prose, a plain sans for controls. System faces only — nothing to download or vendor.
-   - shape: a card's rounded corner on every surface; buttons are round, like a chip or the dealer button.
+   THE DRAWN TABLE. The design takes its look from the artwork the app already has — shigureni's players and
+   the cat: one thick black line, flat pastel fills, round corners, nothing shaded. Nothing above this line is
+   deleted; this block re-points the tokens, so removing it (and css/drawn.css) is the old look back.
+
+   - ground: warm paper. Raised things are white with the black line round them.
+   - colour is flat and means a PLACE: each section and trainer has its own pastel (--tone, set per page and per
+     card from js/app.js), so you know where you are by colour. Butter is also "do this" (the primary button,
+     your seat, your cards' backs) and the marker under a headline's last line.
+   - ink is the artwork's black, for text and for every outline. Red stays hearts, diamonds and a wrong answer.
+   - type: a rounded bold for titles (the line's own roundness), a plain friendly sans for reading. System
+     faces only; where there is no rounded face the fallback is an ordinary bold sans.
    The series accent (--brand) is kept for the welcome curtain, which is shared with Chess and Go. */
 :root {
-  --room: #08142b;             /* the ground */
-  --room-2: #0f2447;           /* a raised surface: panels, the drawer, a page's head */
-  --room-3: #19335f;           /* raised again: a hover, a field, a quiet cell */
-  --cream: #f4ecdb;
-  --gold: #e3ad42;
-  --gold-deep: #f3c766;        /* gold under the pointer */
-  --brand: #0f2d57;            /* the series' Poker navy: the welcome curtain, the family tile */
-  --face-ink: #16233c;         /* ink on a lit, cream surface: a card's face, the cat's bubble, the series bubble */
-  --face-ink-2: #4a556a;
-  --face-ink-3: #6a7385;
+  --paper: #fdf7ea;
+  --paper-2: #f3ebd8;          /* a quiet fill: a hover, a fold cell, a formula */
+  --butter: #f8d965;
+  --peri: #aba8ff;             /* periwinkle — the blanket */
+  --sage: #a8cdb1;             /* the felt */
+  --peach: #f7aa8e;            /* the mug */
+  --sky: #a9d6f3;
+  --pink: #f6bcd0;
+  --stroke: 2.5px;             /* THE line: every outline in the app */
+  --brand: #0f2d57;            /* the series' Poker navy: the welcome curtain */
 
-  --bg: var(--room); --surface: var(--room-2); --surface-2: var(--room-3);
-  --ink: var(--cream); --ink-2: rgba(244, 236, 219, 0.76); --ink-3: rgba(244, 236, 219, 0.58);
-  --line: rgba(244, 236, 219, 0.13); --line-2: rgba(244, 236, 219, 0.30);
-  --accent: var(--gold); --accent-ink: var(--room); --accent-soft: rgba(227, 173, 66, 0.16); --accent-deep: var(--gold-deep);
-  --signal: var(--gold);
-  --nav-hover: rgba(244, 236, 219, 0.07);
-  --story-bg: var(--room); --story-ink: var(--cream); --story-dim: var(--ink-2); --story-line: var(--line);
-  --story-felt: var(--tb-felt); --story-rail: var(--tb-rail);   /* the home's table is the app's table now */
-  --heat-cold: var(--room-3);
+  --bg: var(--paper); --surface: #ffffff; --surface-2: var(--paper-2);
+  --ink: #1b1b1b; --ink-2: #4b4a45; --ink-3: #736f66;
+  --line: #e4d9c0; --line-2: var(--ink);
+  --accent: var(--ink); --accent-ink: #ffffff; --accent-soft: #fcefb9; --accent-deep: #000000;
+  --signal: #eeb92a;           /* a dot, a bar, the hot end of a heatmap: butter, deep enough to see on paper */
+  --nav-hover: rgba(27, 27, 27, 0.06);
+  --story-bg: var(--paper); --story-ink: var(--ink); --story-dim: var(--ink-2); --story-line: var(--line);
+  --heat-cold: var(--paper-2);
+  --good: #1c7a4c; --bad: #cf3a29; --warn: #8a6100;
 
-  --good: #7ed8a9; --bad: #ff9085; --warn: #edc96b;   /* the same three meanings, light enough to read on midnight */
-  --suit-red-dark: #f08d82;    /* a heart or a diamond set straight on the dark, not on a card */
+  --tb-felt: var(--sage); --tb-felt-2: #98c1a2; --tb-rail: var(--ink); --tb-rail-w: 3px;
+  --tb-seat-hero: var(--butter); --tb-dealer: #ffffff;
+  --tb-bet-ink: var(--ink); --tb-bet-rule: var(--ink); --tb-pot-ink: var(--ink);
+  --card-face: #ffffff; --card-edge: var(--ink); --card-back: var(--peri); --card-back-edge: var(--ink); --card-shadow: transparent;
+  --suit-red: #dc4a37; --suit-black: var(--ink);
 
-  --tb-plate: #f7f0e1;         /* every seat's disc: the black line drawings need a light ground */
-  --tb-seat-hero: #fbe7b3;     /* yours, warmer, with the gold ring */
-  --card-back: #23467f; --card-back-edge: #3a5f9c;
+  --rg-raise: #8f8bf7; --rg-call: var(--peri); --rg-fold: var(--paper-2); --rg-line: var(--paper); --rg-hero: #dc4a37; --rg-mix: #dc4a37;
+  --gr-pair: var(--peri); --gr-suited: var(--sky); --gr-offsuit: var(--paper-2); --gr-dealt: #6f6be0; --gr-open: var(--peri); --gr-fold: var(--paper-2);
+  --act-0: var(--paper-2); --act-1: #dedcff; --act-2: var(--peri); --act-3: #8480f0; --act-4: #5a55d6;
 
-  --rg-raise: #3d79df; --rg-call: #6f8fc2; --rg-fold: var(--room-2); --rg-line: var(--room); --rg-hero: var(--gold); --rg-mix: var(--gold);
-  --gr-pair: #3d79df; --gr-suited: #27508f; --gr-offsuit: var(--room-3); --gr-dealt: #5b93ee; --gr-open: #3d79df; --gr-fold: var(--room-2);
-  --act-0: rgba(244, 236, 219, 0.08); --act-1: rgba(227, 173, 66, 0.28); --act-2: rgba(227, 173, 66, 0.5); --act-3: rgba(227, 173, 66, 0.75); --act-4: var(--gold);
-
-  --bubble-bg: rgba(250, 245, 233, 0.94); --bubble-fallback: #faf5e9;
-  --mascot-ink: var(--cream);  /* the meow and the hearts, drawn on the dark beside the cat */
-  --mascot-tip: var(--brand);
-
-  --font-display: "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  --font-text: Charter, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;   /* the lessons' prose */
+  --font-display: "Arial Rounded MT Bold", ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Varela Round", "Avenir Next", -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-sans: "Avenir Next", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --fs-2: 16px;
-  --fs-prose: 18px;
-  --fs-title: clamp(44px, 6.4vw, 88px);
-  --fw-display: 800;
-  --track-display: 0;
-  --lh-display: 0.94;
+  --fs-prose: 17px;
+  --fs-title: clamp(40px, 5.6vw, 76px);
+  --fw-display: 400;           /* Arial Rounded MT Bold is one weight, already bold: asking for more smears it */
+  --track-display: -0.01em;
+  --lh-display: 1;
   --measure: 680px;
 
-  --radius: 10px;              /* a control, a small panel */
-  --radius-lg: 18px;           /* a panel, a drill */
-  --bar-h: 56px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --card-radius: 10px;
+  --bar-h: 60px;
   --page-w: 1040px;
   --main-pad-y: var(--s-7);
 }

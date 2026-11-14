@@ -166,9 +166,9 @@ function markNav(hash) {
 
 // Draft 7: every page is a card. Its head carries the rank and suit its card has on the home (and, for a lesson,
 // where it stands in its section), so the card you opened is the page you are on.
-function stampHead(head, card, extra = '') {
+function stampHead(head, card, tone, extra = '') {
   if (!head || !card) return
-  head.classList.add('page-head'); head.classList.toggle('red', /[♥♦]/.test(card))
+  head.classList.add('page-head'); head.classList.toggle('red', /[♥♦]/.test(card)); head.style.setProperty('--tone', `var(--${tone})`)
   head.insertAdjacentHTML('beforeend', `${extra}<span class="head-pip" aria-hidden="true"><b>${card.slice(0, -1)}</b>${card.slice(-1)}</span>`)
 }
 
@@ -211,15 +211,18 @@ function route() {
 // A card that turns over (css .flip-card): a playing card's face on the front — rank and suit, the label and the
 // title — and its navy back carrying the description. Text arrives escaped.
 // `pips` (a course section): one suit pip per lesson, true = done — the card counts its own lessons.
-const flipCard = ({ href, label, card, title, blurb, meta = '', go, pips }) => {
+const flipCard = ({ href, label, card, title, blurb, meta = '', go, pips, tone }) => {
   const red = /[♥♦]/.test(card), [rank, suit] = [card.slice(0, -1), card.slice(-1)]
-  return `<a class="flip-card" href="${href}"><div class="flip">
+  return `<a class="flip-card" href="${href}" style="--tone:var(--${tone})"><div class="flip">
   <div class="face front${red ? ' red' : ''}"><span class="eyebrow">${label}</span><span class="flip-pip" aria-hidden="true"><b>${rank}</b>${suit}</span><h3>${title}</h3>${pips ? `<span class="flip-lessons" role="img" aria-label="${pips.filter(Boolean).length} of ${pips.length} lessons done">${pips.map(d => `<i${d ? ' class="done"' : ''}>${suit}</i>`).join('')}</span>` : ''}</div>
   <div class="face back"><b aria-hidden="true">${title}</b><p>${blurb}</p>${meta ? `<span class="meta">${meta}</span>` : ''}<span class="go">${go} →</span></div>
 </div></a>`
 }
 // the course runs down from the ace, the tools carry on from the ten — red and black alternating, as a dealt run would
 const SECTION_CARD = { basics: 'A♠', ranges: 'K♥', stacks: 'Q♣', maths: 'J♦' }
+// Draft 8: every section and trainer has its own pastel (tokens.css); its card and its page share it, so colour says where you are
+const SECTION_TONE = { basics: 'butter', ranges: 'peri', stacks: 'sage', maths: 'peach' }
+const TOOL_TONE = { play: 'sage', game: 'butter', ranges: 'peri', pushfold: 'peach', odds: 'sky', icm: 'pink' }
 const TOOL_CARD = { play: '10♠', game: '9♥', ranges: '8♣', pushfold: '7♦', odds: '6♠', icm: '5♥' }
 
 function showHome(main) {
@@ -254,7 +257,7 @@ function showHome(main) {
           return flipCard({ href: first ? `#/lesson/${g.id}/${first.slug}` : '#/course', label: esc(g.part.beginner ? 'Start here' : g.part.title), card: SECTION_CARD[g.id] || 'A♠',
             title: esc(g.title), blurb: esc(g.blurb || ''), meta: `${g.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}`,
             go: done && done === ready ? 'Review' : done ? 'Continue' : 'Start',
-            pips: g.lessons.filter(l => l.ready).map(l => progress.isLessonDone(lessonId(g.id, l.slug))) })
+            pips: g.lessons.filter(l => l.ready).map(l => progress.isLessonDone(lessonId(g.id, l.slug))), tone: SECTION_TONE[g.id] || 'butter' })
         }).join('')}
       </div>
       <div class="switch-row">
@@ -264,7 +267,7 @@ function showHome(main) {
       ${weakSpotReport(curriculum)}
       <h2 id="tools">Trainers</h2>
       <div class="tool-row">
-        ${tools.map(t => flipCard({ href: `#/tools/${t.slug}`, label: 'Tool', card: TOOL_CARD[t.slug] || '2♣', title: esc(t.title), blurb: esc(t.blurb || ''), go: 'Open' })).join('')}
+        ${tools.map(t => flipCard({ href: `#/tools/${t.slug}`, label: 'Tool', card: TOOL_CARD[t.slug] || '2♣', title: esc(t.title), blurb: esc(t.blurb || ''), go: 'Open', tone: TOOL_TONE[t.slug] || 'sky' })).join('')}
       </div>
     </div>`
   const stopStory = mountStory(main.querySelector('#story'), { cta, grinder })
@@ -305,7 +308,7 @@ async function showTool(main, slug) {
       view = await mountPushfold(main)
     } else { location.hash = '#/'; return }
     if (view && view.destroy) unmountPage = () => view.destroy()
-    stampHead(main.querySelector('.hero'), TOOL_CARD[slug])
+    stampHead(main.querySelector('.hero'), TOOL_CARD[slug], TOOL_TONE[slug] || 'sky')
   } catch (e) {
     main.innerHTML = `<div class="page"><p>Could not load this tool.</p><p class="small">${esc(e.message)}</p></div>`
   }
@@ -341,7 +344,7 @@ async function showLesson(main, dir, slug) {
   const lessons = courseLessons()
   const idx = lessons.findIndex(x => x.dir === dir && x.slug === slug)
   const sect = lessons.filter(x => x.dir === dir && x.ready), at = sect.findIndex(x => x.slug === slug)
-  stampHead(page.querySelector('.lesson-head'), SECTION_CARD[dir] || 'A♠', `<p class="head-steps"><span>Lesson ${at + 1} of ${sect.length}</span>${sect.map((x, i) =>
+  stampHead(page.querySelector('.lesson-head'), SECTION_CARD[dir] || 'A♠', SECTION_TONE[dir] || 'butter', `<p class="head-steps"><span>Lesson ${at + 1} of ${sect.length}</span>${sect.map((x, i) =>
     `<i class="${i === at ? 'here' : progress.isLessonDone(lessonId(dir, x.slug)) ? 'done' : ''}"></i>`).join('')}</p>`)
   const prev = lessons.slice(0, idx).reverse().find(x => x.ready), next = lessons.slice(idx + 1).find(x => x.ready)
   const row = document.createElement('div'); row.className = 'complete-row'

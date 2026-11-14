@@ -1,0 +1,214 @@
+/* Draft 8 — THE DRAWN TABLE (2026-11-14, a draft on branch redesign-draft). The new design, on top of app.css.
+   Values are tokens in tokens.css (its Draft 8 block); this file is the shapes. The whole look is one rule taken
+   from the players' portraits and the cat: a thick black line round a flat colour, round corners, no shading.
+
+   shortcut: this is layered over app.css, so some rules here undo rules there. Once the owner approves the
+   draft, fold it into app.css and delete what it overrides; if they reject it, delete this file, its <link>,
+   and the Draft 8 block in tokens.css. */
+
+/* ---------- ground and type ---------- */
+body { font-size: var(--fs-2); }
+::selection { background: var(--butter); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--peri); outline-offset: 2px; }
+
+h1, h2, .story-title, .story-h, .story-big, .home-course > h2, .flip-card h3, .flip-card .back b, .story-time b, .flip-pip, .head-pip, .brand-text, .btn, .continue h3, .lesson-nav a {
+  font-family: var(--font-display); font-weight: var(--fw-display); letter-spacing: var(--track-display); }
+h1 { line-height: var(--lh-display); }
+h2 { font-size: clamp(24px, 2.6vw, 32px); line-height: 1.1; text-transform: none; color: var(--ink); margin-top: var(--s-8); margin-bottom: var(--s-4); }
+h3 { font-size: var(--fs-3); font-weight: 700; }
+.eyebrow { font-size: 11px; letter-spacing: 0.14em; color: var(--ink-2); }
+.small { font-size: 14px; }
+.lesson-body { font-size: var(--fs-prose); line-height: 1.7; }
+.lesson-body table { font-size: var(--fs-2); }
+.lesson-body strong { font-weight: 700; }
+.lesson-body h2:first-child { margin-top: 0; }
+
+/* ---------- buttons: a pill with the line round it; the one to press is butter ---------- */
+.btn { border-radius: 999px; border: var(--stroke) solid var(--ink); background: var(--surface); padding: 8px 18px; font-size: 15px; letter-spacing: 0; text-transform: none; color: var(--ink);
+  transition: transform 120ms, background 120ms; }
+.btn:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-2); transform: translateY(-2px); }
+.btn:active { transform: none; }
+.btn.primary { background: var(--butter); color: var(--ink); border-color: var(--ink); padding: 10px 24px; font-size: 16px; letter-spacing: 0; }
+.btn.primary:hover { background: #fbe384; border-color: var(--ink); }
+.btn.quiet { border-color: var(--ink); color: var(--ink); }
+.icon-btn { border-radius: 50%; width: 38px; height: 38px; border: var(--stroke) solid var(--ink); background: var(--surface); color: var(--ink); }
+.story-cta .btn { padding: 12px 26px; font-size: 18px; }
+.seg .btn.on, .gb-switch button[aria-pressed="true"], .gb-seats button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.gb-switch button, .gb-seats button { border-width: 2px; }
+.tool .fields input, .tool .fields select { border: 2px solid var(--ink); border-radius: var(--radius); background: var(--surface); }
+.tool .fields input:focus, .tool .fields select:focus { background: var(--accent-soft); }
+input[type=range] { accent-color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover { transform: none; } }
+
+/* ---------- the shell: one bar, every page; the curriculum waits in the drawer ---------- */
+html.immersive .topbar { gap: var(--s-3); padding: 0 var(--s-5); background: var(--paper); color: var(--ink); border-bottom: var(--stroke) solid var(--ink); }
+html.immersive .topbar .brand-text { font-size: 20px; letter-spacing: 0; text-transform: none; }
+html.immersive .topbar .logo-btn, .sidebar .logo-btn { color: var(--ink); }
+html.immersive .topbar .logo rect[fill] { fill: var(--butter); }
+.sidebar .logo rect[fill] { fill: var(--butter); }
+html.immersive .topbar .icon-btn { border: 0; background: none; }
+.topnav { margin-left: auto; display: flex; align-items: center; gap: var(--s-1); }
+.topnav a { padding: 7px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; border: 2px solid transparent; }
+.topnav a:hover { background: var(--paper-2); }
+.topnav a.current { background: var(--ink); color: #fff; }
+@media (max-width: 760px) { .topnav { display: none; } html.immersive .topbar { padding: 0 var(--s-4); } }   /* the drawer carries the same places on a phone */
+
+html.immersive .sidebar { background: var(--surface); border-right: var(--stroke) solid var(--ink); width: min(300px, 86vw); }
+html.immersive .sidebar.open { box-shadow: none; }
+html.immersive .scrim { background: rgba(27, 27, 27, 0.35); }
+.sidebar .brand-text { font-size: 18px; letter-spacing: 0; text-transform: none; }
+.lesson-link { font-size: 14px; border-radius: var(--radius); }
+.lesson-link.current { color: var(--ink); font-weight: 700; background: var(--accent-soft); }
+.lesson-link .tick { border: 2px solid var(--ink); width: 14px; height: 14px; }
+.lesson-link.done .tick { background: var(--sage); border-color: var(--ink); }
+.lesson-link.done .tick::after { border-color: var(--ink); }
+.lesson-link.started .tick { border-color: var(--ink); background: linear-gradient(90deg, var(--butter) 50%, transparent 50%); }
+.track-head { border-radius: var(--radius); }
+.track-head .bar { height: 6px; border-radius: 3px; background: var(--paper-2); }
+.track-head .bar i { background: var(--sage); }
+.wl { --accent: var(--brand); }   /* the welcome curtain stays the series' Poker navy (the file is shared with Chess and Go) */
+
+/* ---------- the page: a centred column under a block of its section's colour ---------- */
+.main { overflow-x: clip; }
+.page { margin-inline: auto; }
+html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 4px; background: var(--ink); }   /* the reading line, under the bar */
+.lesson-head, .tool > .hero {
+  position: relative; isolation: isolate; max-width: none; margin: 0 0 var(--s-7); padding: var(--s-6) 0 var(--s-7); border: 0; }
+.lesson-head::before, .tool > .hero::before {
+  content: ""; position: absolute; z-index: -1; top: calc(-1 * var(--main-pad-y)); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%);
+  background: var(--tone, var(--butter)); border-bottom: var(--stroke) solid var(--ink); }
+:is(.lesson-head, .tool > .hero) .eyebrow { color: var(--ink); }
+:is(.lesson-head, .tool > .hero) h1 { margin: var(--s-3) 0 var(--s-4); max-width: calc(100% - 190px); text-wrap: balance; }
+.lesson-head .lede, .tool > .hero p { font-size: 19px; line-height: 1.5; color: var(--ink); max-width: min(34em, calc(100% - 190px)); margin: 0; }
+/* the page's card: drawn as a card, lying a little askew, as dealt */
+.head-pip { position: absolute; right: 8px; top: 50%; width: 124px; aspect-ratio: 72 / 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--surface); border: var(--stroke) solid var(--ink); border-radius: 14px; transform: translateY(-50%) rotate(5deg); font-size: 56px; line-height: .95; color: var(--ink); }
+.head-pip b { display: block; font-size: 60px; font-weight: var(--fw-display); }
+.red > .head-pip { color: var(--suit-red); }
+.head-steps { display: flex; align-items: center; gap: 7px; margin: var(--s-5) 0 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+.head-steps span { margin-right: 6px; }
+.head-steps i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); background: transparent; }
+.head-steps i.done { background: var(--ink); }
+.head-steps i.here { background: var(--surface); box-shadow: 0 0 0 3px var(--ink); }
+@media (max-width: 760px) {
+  .lesson-head, .tool > .hero { padding: var(--s-4) 0 var(--s-6); margin-bottom: var(--s-6); }
+  :is(.lesson-head, .tool > .hero) h1, .lesson-head .lede, .tool > .hero p { max-width: none; }
+  .lesson-head .lede, .tool > .hero p { font-size: 17px; }
+  .head-pip { top: var(--s-3); right: 0; width: auto; aspect-ratio: auto; flex-direction: row; gap: 3px; padding: 3px 9px; border-width: 2px; border-radius: 8px; transform: rotate(4deg); font-size: 18px; }
+  .head-pip b { display: inline; font-size: 20px; }
+  :is(.lesson-head, .tool > .hero) .eyebrow { display: block; padding-right: 72px; }
+}
+
+/* ---------- surfaces: white, with the line round them ---------- */
+.card { border: var(--stroke) solid var(--ink); border-radius: var(--radius-lg); background: var(--surface); }
+.exercise { padding: var(--s-5); border: var(--stroke) solid var(--ink); border-radius: var(--radius-lg); background: var(--surface); }
+.exercise.solved { background: #eef7f0; border-color: var(--ink); }
+.exercise.broken { border-color: var(--bad); }
+:is(.exercise, .gm-opts) .opt { padding-left: var(--s-2); }
+:is(.exercise, .gm-opts) .opt:hover { color: var(--ink); background: var(--accent-soft); }
+:is(.exercise, .gm-opts) .opt:hover .mark { color: var(--ink); }
+:is(.exercise, .gm-opts) .opt .mark { font-weight: 700; }
+.callout { border: var(--stroke) solid var(--ink); border-left-width: var(--stroke); background: var(--butter); border-radius: var(--radius); padding: var(--s-3) var(--s-4); }
+.game-page .gm-formula, pre, code { border-radius: 8px; }
+.lesson-nav { border-top: 0; gap: var(--s-4); }
+.lesson-nav > div { flex: 1 1 0; }
+.lesson-nav a { display: block; height: 100%; padding: var(--s-4) var(--s-5); border: var(--stroke) solid var(--ink); border-radius: var(--radius-lg); background: var(--surface); font-size: 20px; line-height: 1.2; color: var(--ink); transition: transform 120ms; }
+.lesson-nav a:hover { background: var(--accent-soft); transform: translateY(-2px); }
+.lesson-nav .eyebrow { font-family: var(--font-sans); margin-bottom: 6px; }
+.complete-row { font-size: var(--fs-2); border-color: var(--ink); border-width: 2px 0; }
+.complete-row.done .msg { color: var(--good); }
+.tool .panel { border-top: 2px solid var(--ink); }
+
+/* ---------- the table: the same line ---------- */
+.pk-table .dealer { stroke: var(--ink); stroke-width: 1.6; }
+.pk-table .hero-ring { stroke: var(--ink); stroke-width: 2; opacity: 1; }
+.pk-table .act-ring { stroke: var(--ink); stroke-width: 3; stroke-dasharray: 2 6; stroke-linecap: round; }   /* the seat to act: a dotted ring, drawn */
+.pk-table .hero .seat-name { fill: var(--ink); }
+.pk-table .pot { font-weight: 700; }
+:is(.pk-table, .pk-hands, .pk-cards) .card rect { stroke-width: 1.8; }
+.pk-table .seat-name, .pk-table .pot, .pk-table .street, .pk-table .seat-detail, .pk-table .bet-t { font-family: var(--font-sans); }
+.tool .table-wrap { margin-inline: auto; }   /* a tool's table is the page: centred. A lesson's keeps the text's left edge */
+.tool .table-actions { margin-inline: auto; justify-content: center; }
+
+/* grids: pastel squares take ink, not white */
+.grid169, .lesson-grid { border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; }
+.grid169 .c.on, .grid169 .c.here, .lesson-grid .c.pair, .chart-grid .c.raise { color: var(--ink); }
+.grid169 .c.off.here { color: #fff; }
+.grid169 .c.here, .lesson-grid .c.picked { outline-width: 3px; outline-offset: -3px; }
+.trainer .hand .pc.black { color: var(--ink); }
+
+/* ---------- the home ---------- */
+.story { --ink-3: var(--ink-2); --line-2: var(--ink); --accent: var(--ink); --accent-ink: #fff; --accent-deep: #000; }
+.story-title { font-size: clamp(42px, 5vw, 74px); }
+.story-h { font-size: clamp(34px, 4.2vw, 60px); max-width: 15ch; line-height: 1.02; }
+.story-big { font-size: clamp(54px, 6.6vw, 96px); letter-spacing: -0.02em; }
+.story-lead, .story-body { font-size: clamp(17px, 1.5vw, 20px); color: var(--ink); }
+.story-kicker { color: var(--ink); letter-spacing: 0.14em; }
+/* the last words of a headline are run over with a marker, not set in another colour */
+.story-title em, .story-h em { color: inherit; background: linear-gradient(transparent 56%, var(--butter) 56% 94%, transparent 94%); -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .08em; margin: 0 -.08em; }
+.story-delta.up { color: var(--good); }
+/* the table: flat sage, the line for a rail, and two of the app's players sitting at it with you */
+.story-felt { margin-top: var(--s-5); }
+.story-felt::before { inset: -46px -22% -62px; border: var(--stroke) solid var(--ink); outline: 0; background: var(--sage); box-shadow: none; }
+.story-felt .story-label { color: var(--ink); font-weight: 600; }
+.story-fig { position: absolute; z-index: 1; height: 112px; pointer-events: none; }
+.story-fig.a { left: -21%; top: -56px; height: 104px; }   /* on the rim's shoulders, clear of the board */
+.story-fig.b { right: -21%; top: -56px; height: 100px; }
+.story-fig.you { left: -21%; bottom: -58px; height: 132px; }
+/* and its cards are drawn cards: white, the line, a periwinkle back; yours are butter-backed */
+.sc-side { border-radius: 10px; }
+.sc-front { background: var(--surface); border: var(--stroke) solid var(--ink); color: var(--ink); font-family: var(--font-display); }
+.sc-front b { font-weight: var(--fw-display); font-size: 2.2em; }
+.sc-back { padding: 0; border: var(--stroke) solid var(--ink); background-color: var(--peri); background-clip: border-box;
+  background-image: repeating-linear-gradient(45deg, rgba(27, 27, 27, .16) 0 1.5px, transparent 1.5px 9px), repeating-linear-gradient(-45deg, rgba(27, 27, 27, .16) 0 1.5px, transparent 1.5px 9px); }
+.story-hole .sc-back { border-color: var(--ink); background-color: var(--butter); }
+.story-meter { height: 14px; border: 2px solid var(--ink); border-radius: 7px; background: var(--surface); overflow: hidden; }
+.story-meter i { background: var(--butter); }
+.story-mini rect { fill: var(--paper-2); }
+.story-mini rect.me { fill: var(--ink); }
+.story-cue::before { width: 3px; border-radius: 2px; background: var(--ink); }
+.story-time { border-top: var(--stroke) solid var(--ink); }
+.story-time li::before { width: 13px; height: 13px; top: -8px; border: 2px solid var(--ink); background: var(--surface); }
+.story-time li:last-child::before { background: var(--butter); }
+@media (max-width: 760px) {
+  .story-felt { margin-top: 0; }
+  .story-fig { display: none; }
+  .story-stage { background: var(--paper); border-bottom: var(--stroke) solid var(--ink); }
+  .story-time { border-top: 0; border-left: var(--stroke) solid var(--ink); }
+  .story-time li::before { top: 4px; left: -8px; }
+}
+
+/* the course and the trainers: cards dealt onto the paper, each a little askew, each with its section's colour on the back */
+.home-course { padding-top: var(--s-7); }
+.home-course > h2 { font-size: clamp(36px, 4.6vw, 56px); line-height: 1; margin: var(--s-8) 0 var(--s-5); }
+.flip-card { transition: rotate 200ms; }
+.flip-card:nth-child(odd) { rotate: -1.2deg; }
+.flip-card:nth-child(even) { rotate: 1deg; }
+.flip-card:hover, .flip-card:focus-visible { rotate: 0deg; }
+.flip-card .face { border-radius: 18px; }
+.flip-card .front { background: var(--surface); border: var(--stroke) solid var(--ink); color: var(--ink); }
+.flip-card .front::after { content: ""; position: absolute; inset: auto 0 0 0; height: 12px; background: var(--tone); border-top: var(--stroke) solid var(--ink); border-radius: 0 0 15px 15px; }   /* the section's colour, along the card's foot */
+.flip-card .front { position: relative; padding-bottom: calc(var(--s-5) + 12px); }
+.flip-card .front h3 { font-size: 26px; line-height: 1.05; font-weight: var(--fw-display); }
+.flip-pip { font-size: 60px; }
+.flip-pip b { font-size: 64px; font-weight: var(--fw-display); letter-spacing: 0; }
+.flip-lessons i { opacity: .2; }
+.flip-card .back { color: var(--ink); border: var(--stroke) solid var(--ink); background: var(--tone); }
+.flip-card .back b { font-size: 24px; line-height: 1.05; font-weight: var(--fw-display); }
+.flip-card .back p { opacity: 1; }
+.flip-card .back .meta { opacity: .8; }
+.flip-card .back .go { font-family: var(--font-display); font-size: 18px; letter-spacing: 0; }
+.continue { background: var(--surface); }
+.continue h3 { font-size: 28px; line-height: 1.05; font-weight: var(--fw-display); }
+.switch { height: 22px; width: 40px; border-radius: 11px; border: 2px solid var(--ink); background: var(--surface); }
+.switch::after { top: 2px; left: 2px; width: 14px; height: 14px; background: var(--ink); }
+.switch[aria-checked="true"] { background: var(--sage); }
+.switch[aria-checked="true"]::after { transform: translateX(18px); }
+.report .wbar { height: 10px; border: 2px solid var(--ink); border-radius: 5px; overflow: hidden; background: var(--surface); }
+.report .wbar i { background: var(--peach); }
+@media (prefers-reduced-motion: reduce) { .flip-card, .lesson-nav a { transition: none; } }
+@media (max-width: 760px) {
+  .flip-card:nth-child(n) { rotate: 0deg; }
+  .flip-card .front::after { display: none; }
+  .flip-card .front { padding-bottom: var(--s-4); border-bottom: 0; }
+}

@@ -10,6 +10,7 @@ import { evaluate, describe } from './engine/evaluator.js'
 import { equityMC } from './engine/equity.js'
 import { handToCell } from './engine/ranges.js'
 import { COUNTS, ODDS, gridAgainst } from './story-facts.js'
+import { HERO_AVATAR, OPPONENT_AVATARS } from './avatars.js'
 
 const rk = r => (r === 'T' ? '10' : r)
 /** "32o" → "3-2 offsuit", "AA" → "A-A", "76s" → "7-6 suited". */
@@ -21,6 +22,9 @@ const RANDOM = new Float32Array(169).fill(1)       // "one random hand": all 1,3
 const TRIALS = 12000                               // sampled: about a point either way, and the page says "about"
 const MM = { hole: parseCards('Ks 7h'), board: parseCards('9s 2d 6s 8s 3h') }   // content/famous/moneymaker-bluff-2003.json
 
+// Draft 8: the home's table has players — the app's own portraits, each cropped to its drawing (the ink box in
+// js/avatars.js), never redrawn. Decoration: the hand is still against one RANDOM hand, and the page says so.
+const fig = (a, cls) => `<svg class="story-fig ${cls}" viewBox="${a.ink.join(' ')}" aria-hidden="true"><image href="${a.src}" width="${a.size[0]}" height="${a.size[1]}"/></svg>`
 const card = (c, k) => `<div class="sc" style="--k:${k}"><div class="sc-turn"><div class="sc-side sc-back"></div><div class="sc-side sc-front${isRed(c) ? ' red' : ''}"><b>${rk(RANKS[rankOf(c)])}</b><i>${SUIT_GLYPH[suitOf(c)]}</i></div></div></div>`
 
 /** `cta`: { href, label, today, secondary: { href, label } } — decided by the app (start or continue). `grinder`: the mode switch. */
@@ -68,6 +72,7 @@ export function mountStory(el, { cta, grinder = false }) {
       </div>
       <div class="story-stage" aria-live="polite">
         <div class="story-felt">
+          ${fig(OPPONENT_AVATARS[1], 'a')}${fig(OPPONENT_AVATARS[5], 'b')}${fig(HERO_AVATAR, 'you')}
           <div><div class="story-label">The board</div><div class="story-row" id="ss-board"></div></div>
           <div class="story-hole"><div class="story-label" id="ss-hole-label">Your hand</div><div class="story-row" id="ss-hole"></div></div>
         </div>
