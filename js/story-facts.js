@@ -28,15 +28,23 @@ export function gridAgainst(opponents) {
   return cells
 }
 
-// "Even aces lose": the best starting hand against the second best, all in before the flop.
-export const ACES = parseCards('As Ah'), KINGS = parseCards('Ks Kh')
+// "Even aces lose": two hands, all in before the flop, dealt out again and again. `a` is the favourite in each.
+// `what` is said on the page, so each claim in it is checked by scripts/engine-test.mjs: AA, KK and 32o are ranks
+// 1, 2 and 169 of the app's own table of the 169 hands against one random hand.
+const matchup = (id, tab, names, a, b, what) => ({ id, tab, names, a: parseCards(a), b: parseCards(b), what })
+export const MATCHUPS = [
+  matchup('aa-kk', 'Aces v kings', ['Aces', 'Kings'], 'As Ah', 'Ks Kh', 'The best starting hand against the second best.'),
+  matchup('qq-ak', 'Pair v ace-king', ['Queens', 'Ace-king'], 'Qs Qh', 'Ac Kd', 'A pair against two higher cards. Players call it a coin flip, though the pair is a little ahead.'),
+  matchup('ak-aq', 'Ace-king v ace-queen', ['Ace-king', 'Ace-queen'], 'Ac Kd', 'Ah Qs', 'Both hold an ace, and one has the better card beside it. Players call that being dominated.'),
+  matchup('aa-32', 'Best v worst', ['Aces', '3-2 offsuit'], 'As Ah', '3c 2d', 'The best starting hand against the worst.'),
+]
 
-/** One such hand dealt out from a fresh shuffle of the other 48 cards: the five board cards, and who won
- *  (1 aces, -1 kings, 0 a split pot). */
-export function acesVsKingsOnce(rng = Math.random) {
-  const board = shuffle(deckWithout([...ACES, ...KINGS]), rng).slice(0, 5)
-  return { board, result: Math.sign(compare(evaluate([...ACES, ...board]), evaluate([...KINGS, ...board]))) }
+/** One hand of a match-up dealt out from a fresh shuffle of the other 48 cards: the five board cards, and who won
+ *  (1 the favourite `a`, -1 the underdog `b`, 0 a split pot). */
+export function dealOnce(m, rng = Math.random) {
+  const board = shuffle(deckWithout([...m.a, ...m.b]), rng).slice(0, 5)
+  return { board, result: Math.sign(compare(evaluate([...m.a, ...board]), evaluate([...m.b, ...board]))) }
 }
 
-/** How often the aces win outright in the long run. Sampled (the page says "about"); worked out when asked for. */
-export const acesLongRun = () => equityMC([ACES, KINGS], [], [], { trials: 40000, seed: 7 }).win[0]
+/** How often the favourite wins outright in the long run. Sampled (the page says "about"); worked out when asked for. */
+export const longRun = m => equityMC([m.a, m.b], [], [], { trials: 40000, seed: 7 }).win[0]

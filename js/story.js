@@ -1,7 +1,7 @@
 // The home page's story, on the dark navy ground before the course: "Your hand" (owner 2026-10-31, from a draft
 // they tried). Each visitor is dealt one real hand, and scrolling deals it street by street — the cards stay
 // pinned while the words go by, and at every street the engine names the hand and works out its chance against
-// one random hand. Then Moneymaker's 2003 river, and "Even aces lose": aces against kings dealt a thousand times,
+// one random hand. Then Moneymaker's 2003 river, and "Even aces lose": one of four match-ups dealt a thousand times,
 // counted as they fall (owner 2026-11-16, in place of a timeline). The fixed facts live in
 // js/story-facts.js and are checked by scripts/engine-test.mjs; the rest is computed here, for this deal.
 //
@@ -10,7 +10,7 @@ import { makeDeck, shuffle, rankOf, suitOf, isRed, RANKS, SUIT_GLYPH, parseCards
 import { evaluate, describe } from './engine/evaluator.js'
 import { equityMC } from './engine/equity.js'
 import { handToCell } from './engine/ranges.js'
-import { COUNTS, ODDS, gridAgainst, ACES, KINGS, acesVsKingsOnce, acesLongRun } from './story-facts.js'
+import { COUNTS, ODDS, gridAgainst, MATCHUPS, dealOnce, longRun } from './story-facts.js'
 import { HERO_AVATAR } from './avatars.js'
 
 const rk = r => (r === 'T' ? '10' : r)
@@ -93,11 +93,12 @@ export function mountStory(el, { cta, grinder = false }) {
     <section class="story-scene story-luck">
       <p class="story-kicker">One last thing</p>
       <h2 class="story-h">Even aces <em>lose.</em></h2>
-      <p class="story-body">The best starting hand against the second best, all the money in before the flop. Deal it a thousand times and count. Every hand is a real shuffle by this app’s own engine.</p>
+      <p class="story-body"><span id="lk-what"></span> All the money goes in before the flop. Deal it a thousand times and count. Every hand is a real shuffle by this app’s own engine.</p>
+      <div class="seg seg-wrap luck-pick" role="group" aria-label="Match-up">${MATCHUPS.map((m, k) => `<button class="btn" type="button" data-m="${k}" aria-pressed="false">${m.tab}</button>`).join('')}</div>
       <div class="luck">
-        <div class="luck-side"><div class="story-label">Aces</div><div class="story-row">${ACES.map((c, k) => up(card(c, k))).join('')}</div><b class="luck-n" id="lk-a">0</b></div>
-        <div class="luck-board"><div class="story-label" id="lk-count">The board</div><div class="story-row" id="lk-board">${[0, 1, 2, 3, 4].map(k => card(0, k)).join('')}</div></div>
-        <div class="luck-side luck-kings"><div class="story-label">Kings</div><div class="story-row">${KINGS.map((c, k) => up(card(c, k))).join('')}</div><b class="luck-n" id="lk-k">0</b></div>
+        <div class="luck-side"><div class="story-label" id="lk-na"></div><div class="story-row" id="lk-ha"></div><b class="luck-n" id="lk-a">0</b></div>
+        <div class="luck-board"><div class="story-label" id="lk-count">The board</div><div class="story-row" id="lk-board"></div></div>
+        <div class="luck-side luck-kings"><div class="story-label" id="lk-nb"></div><div class="story-row" id="lk-hb"></div><b class="luck-n" id="lk-k">0</b></div>
         <div class="story-meter"><i id="lk-bar"></i></div>
         <svg class="luck-line" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path id="lk-long" d=""/><polyline id="lk-path" points=""/></svg>
       </div>
@@ -199,12 +200,23 @@ export function mountStory(el, { cta, grinder = false }) {
   $('#ss-hole').addEventListener('click', () => { if (shown === 0) turn() })
   deal(); onScroll()
 
-  // --- even aces lose: a thousand hands, dealt in handfuls so the count can be watched ---------------------
+  // --- even aces lose: a thousand hands of the chosen match-up, dealt in handfuls so the count can be watched ---
   const HANDS = 1000
-  let luckRun = 0, long = null
+  let luckRun = 0, m = null
+  function pick(k) {   // a match-up on the table, nothing dealt yet
+    m = MATCHUPS[k]; luckRun++
+    el.querySelectorAll('[data-m]').forEach((b, i) => { b.classList.toggle('on', i === k); b.setAttribute('aria-pressed', i === k) })
+    $('#lk-what').textContent = m.what
+    $('#lk-na').textContent = m.names[0]; $('#lk-nb').textContent = m.names[1]
+    $('#lk-ha').innerHTML = m.a.map((c, i) => up(card(c, i))).join(''); $('#lk-hb').innerHTML = m.b.map((c, i) => up(card(c, i))).join('')
+    $('#lk-a').textContent = $('#lk-k').textContent = '0'
+    $('#lk-count').textContent = 'The board'; $('#lk-board').innerHTML = [0, 1, 2, 3, 4].map(i => card(0, i)).join('')
+    $('#lk-bar').style.width = '0'; $('#lk-path').setAttribute('points', ''); $('#lk-long').setAttribute('d', ''); $('#lk-say').textContent = ''
+    const btn = $('[data-luck]'); btn.disabled = false; btn.textContent = 'Deal 1,000 hands'
+  }
   function luck() {
-    const me = ++luckRun, btn = $('[data-luck]')
-    long ??= acesLongRun()
+    const me = ++luckRun, now = m, btn = $('[data-luck]')
+    const long = now.long ??= longRun(now)
     let a = 0, k = 0, split = 0, done = 0, streak = 0, worst = 0, last = null
     const pts = []
     const y = share => Math.max(0, Math.min(100, (1 - share) * 200)).toFixed(1)   // the chart shows 50% to 100%
@@ -213,7 +225,7 @@ export function mountStory(el, { cta, grinder = false }) {
     const step = () => {
       if (me !== luckRun || !el.isConnected) return
       for (let i = still ? HANDS : 20; i > 0 && done < HANDS; i--) {
-        last = acesVsKingsOnce(); done++
+        last = dealOnce(now); done++
         if (last.result > 0) { a++; streak = 0 } else if (last.result < 0) { k++; worst = Math.max(worst, ++streak) } else split++
         pts.push(`${done},${y(a / done)}`)
       }
@@ -223,13 +235,15 @@ export function mountStory(el, { cta, grinder = false }) {
       $('#lk-bar').style.width = `${(100 * a / done).toFixed(1)}%`
       $('#lk-path').setAttribute('points', pts.join(' '))
       if (done < HANDS) return void setTimeout(step, 50)
-      $('#lk-say').innerHTML = `Aces won <b>${n(a)}</b>, kings <b>${n(k)}</b>${split ? `, and ${split} ${split === 1 ? 'was' : 'were'} split` : ''}. Over the long run aces win about <b>${pct(long)}</b> of the time: the dashed line.` +
-        (worst > 1 ? ` Yet at one point here the kings won <b>${worst} in a row</b>.` : '') + ' The better hand is a favourite, never a promise.'
+      $('#lk-say').innerHTML = `${now.names[0]}: <b>${n(a)}</b>. ${now.names[1]}: <b>${n(k)}</b>.${split ? ` Split: ${split}.` : ''} Over the long run the favourite wins this about <b>${pct(long)}</b> of the time: the dashed line.` +
+        (worst > 1 ? ` Yet at one point here the underdog won <b>${worst} in a row</b>.` : '') + ' The better hand is a favourite, never a promise.'
       btn.disabled = false; btn.textContent = 'Deal another 1,000'
     }
     step()
   }
   $('[data-luck]').addEventListener('click', luck)
+  el.querySelector('.luck-pick').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) { pick(+b.dataset.m); luck() } })
+  pick(0)
 
   return () => { luckRun = -1; io.disconnect(); removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
 }

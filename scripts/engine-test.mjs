@@ -658,16 +658,22 @@ section('story')
   eq(COUNTS.flops, 19600, 'story: 19,600 flops for one hand')
   eq(Math.round(ODDS.flushDraw * 100), 35, 'story: a flush draw arrives 35% by the river')
   {
-    const { acesVsKingsOnce, acesLongRun, ACES, KINGS } = await import('../js/story-facts.js')
+    const { MATCHUPS, dealOnce, longRun } = await import('../js/story-facts.js')
     const { mulberry32 } = await import('../js/engine/cards.js')
-    const rng = mulberry32(11), tally = { 1: 0, 0: 0, '-1': 0 }
-    let clean = true
-    for (let k = 0; k < 4000; k++) { const { board, result } = acesVsKingsOnce(rng); tally[result]++; if (new Set([...board, ...ACES, ...KINGS]).size !== 9) clean = false }
-    ok(clean, 'story: aces v kings is dealt five board cards, none of them a hole card')
-    const long = acesLongRun()
-    ok(long > 0.80 && long < 0.84, `story: aces beat kings about 82% in the long run (${long.toFixed(3)})`)
-    ok(Math.abs(tally[1] / 4000 - long) < 0.03, `story: 4,000 dealt hands agree with the long run (${(tally[1] / 4000).toFixed(3)})`)
-    ok(tally[-1] > 0 && tally[0] < 100, 'story: kings do win some, and split pots are rare')
+    const band = { 'aa-kk': [0.80, 0.84], 'qq-ak': [0.54, 0.60], 'ak-aq': [0.69, 0.75], 'aa-32': [0.83, 0.89] }   // the favourite's long run, loosely
+    eq(MATCHUPS.length, Object.keys(band).length, 'story: every match-up on the page is checked here')
+    for (const m of MATCHUPS) {
+      const rng = mulberry32(11), tally = { 1: 0, 0: 0, '-1': 0 }
+      let clean = true
+      for (let k = 0; k < 4000; k++) { const { board, result } = dealOnce(m, rng); tally[result]++; if (new Set([...board, ...m.a, ...m.b]).size !== 9) clean = false }
+      ok(clean, `story ${m.id}: five board cards, none of them a hole card`)
+      const long = longRun(m), [lo, hi] = band[m.id]
+      ok(long > lo && long < hi, `story ${m.id}: the favourite wins ${lo}–${hi} in the long run (${long.toFixed(3)})`)
+      ok(Math.abs(tally[1] / 4000 - long) < 0.03, `story ${m.id}: 4,000 dealt hands agree with the long run (${(tally[1] / 4000).toFixed(3)})`)
+      ok(tally[-1] > 0 && tally[0] < 200, `story ${m.id}: the underdog wins some, and split pots are rare`)
+    }
+    const name = k => gridAgainst(1).find(c => c.rank === k).name
+    ok(name(1) === 'AA' && name(2) === 'KK' && name(169) === '32o', 'story: AA, KK and 32o are the best, second best and worst of the 169')
   }
   const g = gridAgainst(1), ranks = g.map(c => c.rank).sort((a, b) => a - b)
   eq(g.length, 169, 'story: 169 kinds of starting hand')

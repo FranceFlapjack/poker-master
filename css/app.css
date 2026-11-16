@@ -982,6 +982,7 @@ svg.pk-cards { display: block; }
 .story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
 /* even aces lose: the two hands either side of the last board dealt, the running count, and the win rate settling */
 .luck { display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: var(--s-5) var(--s-5); max-width: 760px; margin: var(--s-5) 0 var(--s-4); }
+.luck-pick { margin: var(--s-4) 0 0; }
 .luck .sc { animation: none; width: clamp(52px, 6vw, 84px); font-size: clamp(12px, 1.4vw, 19px); }   /* its own sizes: the stage's cards are sized from the stage */
 .luck-kings { text-align: right; }
 .luck-kings .story-row { justify-content: flex-end; }
