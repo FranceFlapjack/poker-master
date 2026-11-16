@@ -657,6 +657,18 @@ section('story')
   eq(COUNTS.starting, 1326, 'story: 1,326 starting hands')
   eq(COUNTS.flops, 19600, 'story: 19,600 flops for one hand')
   eq(Math.round(ODDS.flushDraw * 100), 35, 'story: a flush draw arrives 35% by the river')
+  {
+    const { acesVsKingsOnce, acesLongRun, ACES, KINGS } = await import('../js/story-facts.js')
+    const { mulberry32 } = await import('../js/engine/cards.js')
+    const rng = mulberry32(11), tally = { 1: 0, 0: 0, '-1': 0 }
+    let clean = true
+    for (let k = 0; k < 4000; k++) { const { board, result } = acesVsKingsOnce(rng); tally[result]++; if (new Set([...board, ...ACES, ...KINGS]).size !== 9) clean = false }
+    ok(clean, 'story: aces v kings is dealt five board cards, none of them a hole card')
+    const long = acesLongRun()
+    ok(long > 0.80 && long < 0.84, `story: aces beat kings about 82% in the long run (${long.toFixed(3)})`)
+    ok(Math.abs(tally[1] / 4000 - long) < 0.03, `story: 4,000 dealt hands agree with the long run (${(tally[1] / 4000).toFixed(3)})`)
+    ok(tally[-1] > 0 && tally[0] < 100, 'story: kings do win some, and split pots are rare')
+  }
   const g = gridAgainst(1), ranks = g.map(c => c.rank).sort((a, b) => a - b)
   eq(g.length, 169, 'story: 169 kinds of starting hand')
   ok(ranks.every((r, k) => r === k + 1), 'story: the ranks run 1 to 169, each once')

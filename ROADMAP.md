@@ -792,7 +792,11 @@ a drawer, no cat. `js/story.js` is **"Your hand"** (owner 2026-10-31, after tryi
 first version that copied Chess's scene-after-scene layout): each visitor is dealt one real hand, the cards stay
 pinned while the words scroll, and each step deals a street — the hand's rank among the 169, then at the flop,
 turn and river the engine names the hand and works out its chance against one random hand (sampled, "about").
-Then Moneymaker's 2003 river, without Farha's cards, and a sourced timeline (1970, 2003, 2017, 2019). The fixed
+Then Moneymaker's 2003 river, without Farha's cards, and a sourced timeline (1970, 2003, 2017, 2019) — replaced
+on `redesign-draft`, 2026-11-16, by "Even aces lose" (the owner: "no need timeline"; chosen from three sketches):
+aces against kings dealt 1,000 times with real shuffles, the count and the win rate settling on the long-run 82%,
+the kings' longest streak named. `acesVsKingsOnce` and `acesLongRun` in `js/story-facts.js`, checked by
+`scripts/engine-test.mjs`. The fixed
 numbers come from `js/story-facts.js` and are checked in `scripts/engine-test.mjs` ("story"). The highlight is
 `--signal`, brass gold #d9a441 (owner 2026-10-28): gold text only on the dark story; on light pages, only for
 dots, bars and heatmap marks. Sections and tools are flip cards: a playing card's face (A♠ K♥ Q♣ J♦ for the

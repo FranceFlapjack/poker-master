@@ -1,7 +1,8 @@
 // The home page's story, on the dark navy ground before the course: "Your hand" (owner 2026-10-31, from a draft
 // they tried). Each visitor is dealt one real hand, and scrolling deals it street by street — the cards stay
 // pinned while the words go by, and at every street the engine names the hand and works out its chance against
-// one random hand. Then Moneymaker's 2003 river, and a sourced timeline. The fixed facts live in
+// one random hand. Then Moneymaker's 2003 river, and "Even aces lose": aces against kings dealt a thousand times,
+// counted as they fall (owner 2026-11-16, in place of a timeline). The fixed facts live in
 // js/story-facts.js and are checked by scripts/engine-test.mjs; the rest is computed here, for this deal.
 //
 // Everything stops when the page is left (the returned function); reduced motion gets no turning or counting.
@@ -9,7 +10,7 @@ import { makeDeck, shuffle, rankOf, suitOf, isRed, RANKS, SUIT_GLYPH, parseCards
 import { evaluate, describe } from './engine/evaluator.js'
 import { equityMC } from './engine/equity.js'
 import { handToCell } from './engine/ranges.js'
-import { COUNTS, ODDS, gridAgainst } from './story-facts.js'
+import { COUNTS, ODDS, gridAgainst, ACES, KINGS, acesVsKingsOnce, acesLongRun } from './story-facts.js'
 import { HERO_AVATAR } from './avatars.js'
 
 const rk = r => (r === 'T' ? '10' : r)
@@ -26,9 +27,10 @@ const MM = { hole: parseCards('Ks 7h'), board: parseCards('9s 2d 6s 8s 3h') }   
 // in js/avatars.js), never redrawn. Only you: two opponents stood above the table at first and the owner had them
 // taken out (2026-11-14: "look weird, the head is cut out").
 const fig = (a, cls) => `<svg class="story-fig ${cls}" viewBox="${a.ink.join(' ')}" aria-hidden="true"><image href="${a.src}" width="${a.size[0]}" height="${a.size[1]}"/></svg>`
+const up = html => html.replace('class="sc"', 'class="sc up"')
 const card = (c, k) => `<div class="sc" style="--k:${k}"><div class="sc-turn"><div class="sc-side sc-back"></div><div class="sc-side sc-front${isRed(c) ? ' red' : ''}"><b>${rk(RANKS[rankOf(c)])}</b><i>${SUIT_GLYPH[suitOf(c)]}</i></div></div></div>`
 
-/** `cta`: { href, label, today, secondary: { href, label } } — decided by the app (start or continue). `grinder`: the mode switch. */
+/** `cta`: { href, label, secondary: { href, label } } — decided by the app (start or continue). `grinder`: the mode switch. */
 export function mountStory(el, { cta, grinder = false }) {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches
   const grid1 = gridAgainst(1)
@@ -88,21 +90,24 @@ export function mountStory(el, { cta, grinder = false }) {
       </div>
     </div>
 
-    <section class="story-scene">
-      <p class="story-kicker">The story so far</p>
-      <h2 class="story-h">Since 1970, <em>five moments.</em></h2>
-      <ol class="story-time">
-        <li><b>1970</b><span>Las Vegas: the first World Series of Poker, at Binion’s Horseshoe. Its champion, Johnny Moss, is voted in by the players.</span></li>
-        <li><b>2003</b><span>Chris Moneymaker, who qualified online, wins the main event. It grows from 839 players that year to 8,773 by 2006.</span></li>
-        <li><b>2017</b><span>Pittsburgh: Libratus, from Carnegie Mellon, beats four top pros heads-up over 120,000 hands.</span></li>
-        <li><b>2019</b><span>Pluribus, from Carnegie Mellon and Facebook’s AI lab, beats professionals at a six-player table.</span></li>
-        <li><b>Today</b><span>You. <a href="${cta.href}">${cta.today}</a>.</span></li>
-      </ol>
-      <p class="story-src">Sources: Wikipedia, “World Series of Poker”, “Libratus” and “Pluribus (poker bot)” (CC BY-SA); the 2003 hand from PokerNews and CardPlayer, credited on its replay. Every chance on this page is worked out by this app: before the flop from its table of the 169 hands (scripts/build-preflop-strength.mjs), after it by dealing out ${n(TRIALS)} random finishes, so each is good to about a point.</p>
+    <section class="story-scene story-luck">
+      <p class="story-kicker">One last thing</p>
+      <h2 class="story-h">Even aces <em>lose.</em></h2>
+      <p class="story-body">The best starting hand against the second best, all the money in before the flop. Deal it a thousand times and count. Every hand is a real shuffle by this app’s own engine.</p>
+      <div class="luck">
+        <div class="luck-side"><div class="story-label">Aces</div><div class="story-row">${ACES.map((c, k) => up(card(c, k))).join('')}</div><b class="luck-n" id="lk-a">0</b></div>
+        <div class="luck-board"><div class="story-label" id="lk-count">The board</div><div class="story-row" id="lk-board">${[0, 1, 2, 3, 4].map(k => card(0, k)).join('')}</div></div>
+        <div class="luck-side luck-kings"><div class="story-label">Kings</div><div class="story-row">${KINGS.map((c, k) => up(card(c, k))).join('')}</div><b class="luck-n" id="lk-k">0</b></div>
+        <div class="story-meter"><i id="lk-bar"></i></div>
+        <svg class="luck-line" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path id="lk-long" d=""/><polyline id="lk-path" points=""/></svg>
+      </div>
+      <p class="story-body" id="lk-say" aria-live="polite"></p>
+      <div class="story-cta"><button class="btn primary" type="button" data-luck>Deal 1,000 hands</button><a class="btn" href="${cta.href}">${cta.label}</a></div>
+      <p class="story-src">Sources: the 2003 hand from PokerNews and CardPlayer, credited on its replay. Every chance on this page is worked out by this app: before the flop from its table of the 169 hands (scripts/build-preflop-strength.mjs), after it by dealing out ${n(TRIALS)} random finishes, so each is good to about a point. The thousand hands above are dealt here, one shuffle each; nothing about them is stored or scripted.</p>
     </section>`
   const $ = s => el.querySelector(s)
 
-  // the timeline rises in as it arrives
+  // the last scene rises in as it arrives
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('story-in') }), { threshold: 0.2 })
   el.querySelectorAll('.story-scene').forEach(s => io.observe(s))
 
@@ -194,5 +199,37 @@ export function mountStory(el, { cta, grinder = false }) {
   $('#ss-hole').addEventListener('click', () => { if (shown === 0) turn() })
   deal(); onScroll()
 
-  return () => { io.disconnect(); removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
+  // --- even aces lose: a thousand hands, dealt in handfuls so the count can be watched ---------------------
+  const HANDS = 1000
+  let luckRun = 0, long = null
+  function luck() {
+    const me = ++luckRun, btn = $('[data-luck]')
+    long ??= acesLongRun()
+    let a = 0, k = 0, split = 0, done = 0, streak = 0, worst = 0, last = null
+    const pts = []
+    const y = share => Math.max(0, Math.min(100, (1 - share) * 200)).toFixed(1)   // the chart shows 50% to 100%
+    $('#lk-long').setAttribute('d', `M0 ${y(long)}H1000`)
+    btn.disabled = true
+    const step = () => {
+      if (me !== luckRun || !el.isConnected) return
+      for (let i = still ? HANDS : 20; i > 0 && done < HANDS; i--) {
+        last = acesVsKingsOnce(); done++
+        if (last.result > 0) { a++; streak = 0 } else if (last.result < 0) { k++; worst = Math.max(worst, ++streak) } else split++
+        pts.push(`${done},${y(a / done)}`)
+      }
+      $('#lk-a').textContent = n(a); $('#lk-k').textContent = n(k)
+      $('#lk-count').textContent = `Hand ${n(done)}`
+      $('#lk-board').innerHTML = last.board.map((c, i) => up(card(c, i))).join('')
+      $('#lk-bar').style.width = `${(100 * a / done).toFixed(1)}%`
+      $('#lk-path').setAttribute('points', pts.join(' '))
+      if (done < HANDS) return void setTimeout(step, 50)
+      $('#lk-say').innerHTML = `Aces won <b>${n(a)}</b>, kings <b>${n(k)}</b>${split ? `, and ${split} ${split === 1 ? 'was' : 'were'} split` : ''}. Over the long run aces win about <b>${pct(long)}</b> of the time: the dashed line.` +
+        (worst > 1 ? ` Yet at one point here the kings won <b>${worst} in a row</b>.` : '') + ' The better hand is a favourite, never a promise.'
+      btn.disabled = false; btn.textContent = 'Deal another 1,000'
+    }
+    step()
+  }
+  $('[data-luck]').addEventListener('click', luck)
+
+  return () => { luckRun = -1; io.disconnect(); removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
 }

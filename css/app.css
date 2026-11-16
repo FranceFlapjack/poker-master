@@ -980,6 +980,27 @@ svg.pk-cards { display: block; }
 .story-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 .story-cta .btn { padding: 12px 20px; font-size: 12px; }
 .story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
+/* even aces lose: the two hands either side of the last board dealt, the running count, and the win rate settling */
+.luck { display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: var(--s-5) var(--s-5); max-width: 760px; margin: var(--s-5) 0 var(--s-4); }
+.luck .sc { animation: none; width: clamp(52px, 6vw, 84px); font-size: clamp(12px, 1.4vw, 19px); }   /* its own sizes: the stage's cards are sized from the stage */
+.luck-kings { text-align: right; }
+.luck-kings .story-row { justify-content: flex-end; }
+.luck-board .story-row { justify-content: center; }
+.luck-board .story-label { text-align: center; }
+.luck .luck-board .sc { width: clamp(34px, 4vw, 54px); font-size: clamp(9px, 1vw, 13px); }
+.luck-n { display: block; margin-top: 8px; font-size: clamp(28px, 3.4vw, 46px); font-weight: var(--fw-display); line-height: 1; font-variant-numeric: tabular-nums; }
+.luck .story-meter, .luck-line { grid-column: 1 / -1; }
+.luck-line { width: 100%; height: 72px; overflow: visible; }
+.luck-line * { fill: none; vector-effect: non-scaling-stroke; }
+#lk-path { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+#lk-long { stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 5 5; }
+#lk-say { min-height: 4.5em; }
+@media (max-width: 760px) {
+  .luck { grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+  .luck-board { grid-column: 1 / -1; grid-row: 2; }
+  .luck .sc { width: 46px; font-size: 11px; }
+  .luck .luck-board .sc { width: 40px; font-size: 10px; }
+}
 /* the hand: words scroll on the left, the cards stay pinned on the right (on a phone, pinned on top) */
 .story-hand { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 5vw; padding: 0 max(var(--main-pad-x), calc((100% - var(--home-w)) / 2)); }
 .story-steps { padding: 0 0 24vh; }
@@ -1014,12 +1035,6 @@ svg.pk-cards { display: block; }
 .story-mini rect { fill: rgba(246, 241, 231, .08); }
 .story-mini rect.me { fill: var(--signal); }
 .story-again { align-self: flex-start; }
-.story-time { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
-.story-time li { padding: var(--s-4) var(--s-4) 0 0; position: relative; margin: 0; }
-.story-time li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
-.story-time li:last-child::before { background: var(--signal); }
-.story-time b { display: block; font-size: clamp(20px, 2.2vw, 30px); font-weight: var(--fw-display); letter-spacing: -.02em; }
-.story-time span { display: block; color: var(--ink-2); font-size: var(--fs-1); line-height: 1.45; margin-top: 6px; }
 @media (max-width: 760px) {
   .story-hand { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .story-stage { order: -1; height: auto; padding: var(--s-3) 0; gap: var(--s-2); background: var(--bg); z-index: 4; border-bottom: 1px solid var(--line); }
@@ -1027,9 +1042,6 @@ svg.pk-cards { display: block; }
   .story-step { min-height: 72vh; }
   .story-mini, .story-again { display: none; }   /* the phone's pinned strip keeps to the cards and the number; the steps carry the rest */
   .story-big { font-size: 40px; }
-  .story-time { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--line-2); }
-  .story-time li { padding: 0 0 var(--s-5) var(--s-5); }
-  .story-time li::before { top: 6px; left: -5px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .story-scene > * { opacity: 1; transform: none; transition: none; }

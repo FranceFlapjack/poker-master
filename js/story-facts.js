@@ -5,6 +5,9 @@
 import { cellName, GRID } from './engine/ranges.js'
 import { preflopStrength } from './engine/preflop-strength.js'
 import { outsEquity } from './engine/ev.js'
+import { parseCards, deckWithout, shuffle } from './engine/cards.js'
+import { evaluate, compare } from './engine/evaluator.js'
+import { equityMC } from './engine/equity.js'
 
 const choose = (n, k) => { let r = 1; for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1); return Math.round(r) }
 
@@ -24,3 +27,16 @@ export function gridAgainst(opponents) {
   ;[...cells].sort((a, b) => b.equity - a.equity).forEach((c, k) => { c.rank = k + 1 })
   return cells
 }
+
+// "Even aces lose": the best starting hand against the second best, all in before the flop.
+export const ACES = parseCards('As Ah'), KINGS = parseCards('Ks Kh')
+
+/** One such hand dealt out from a fresh shuffle of the other 48 cards: the five board cards, and who won
+ *  (1 aces, -1 kings, 0 a split pot). */
+export function acesVsKingsOnce(rng = Math.random) {
+  const board = shuffle(deckWithout([...ACES, ...KINGS]), rng).slice(0, 5)
+  return { board, result: Math.sign(compare(evaluate([...ACES, ...board]), evaluate([...KINGS, ...board]))) }
+}
+
+/** How often the aces win outright in the long run. Sampled (the page says "about"); worked out when asked for. */
+export const acesLongRun = () => equityMC([ACES, KINGS], [], [], { trials: 40000, seed: 7 }).win[0]

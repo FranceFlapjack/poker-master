@@ -246,10 +246,10 @@ function showHome(main) {
   const test = { href: '#/tools/game', label: 'Test yourself' }
   const tour = lessons.find(l => l.ready && l.dir !== 'basics')
   const cta = last && cont === last
-    ? { href: `#/lesson/${cont.dir}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, today: 'Pick up where you left off', secondary: test }
+    ? { href: `#/lesson/${cont.dir}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, secondary: test }
     : grinder || !cont
-      ? { href: tour ? `#/lesson/${tour.dir}/${tour.slug}` : '#/tools/game', label: 'Start the tournament course', today: 'Start the tournament course', secondary: test }
-      : { href: `#/lesson/${cont.dir}/${cont.slug}`, label: 'New to poker? Start here', today: 'Your first lesson takes five minutes', secondary: tour && { href: `#/lesson/${tour.dir}/${tour.slug}`, label: 'I know the rules' } }
+      ? { href: tour ? `#/lesson/${tour.dir}/${tour.slug}` : '#/tools/game', label: 'Start the tournament course', secondary: test }
+      : { href: `#/lesson/${cont.dir}/${cont.slug}`, label: 'New to poker? Start here', secondary: tour && { href: `#/lesson/${tour.dir}/${tour.slug}`, label: 'I know the rules' } }
 
   const sections = parts().flatMap(part => groupsOf(part).map(g => ({ ...g, part })))
   const tools = parts().flatMap(toolsOf)

@@ -11,7 +11,7 @@ body { font-size: var(--fs-2); }
 ::selection { background: var(--butter); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--peri); outline-offset: 2px; }
 
-h1, h2, .story-title, .story-h, .story-big, .home-course > h2, .flip-card h3, .flip-card .back b, .story-time b, .flip-pip, .head-pip, .brand-text, .btn, .continue h3, .lesson-nav a {
+h1, h2, .story-title, .story-h, .story-big, .home-course > h2, .flip-card h3, .flip-card .back b, .luck-n, .flip-pip, .head-pip, .brand-text, .btn, .continue h3, .lesson-nav a {
   font-family: var(--font-display); font-weight: var(--fw-display); letter-spacing: var(--track-display); }
 h1 { line-height: var(--lh-display); }
 h2 { font-size: clamp(24px, 2.6vw, 32px); line-height: 1.1; text-transform: none; color: var(--ink); margin-top: var(--s-8); margin-bottom: var(--s-4); }
@@ -187,12 +187,10 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
 .story-hole .sc-back { border-color: var(--ink); background-color: var(--butter); }
 .story-meter { height: 14px; border: 2px solid var(--ink); border-radius: 7px; background: var(--surface); overflow: hidden; }
 .story-meter i { background: var(--butter); }
+#lk-path { stroke-width: 2.5; }
 .story-mini rect { fill: var(--paper-2); }
 .story-mini rect.me { fill: var(--ink); }
 .story-cue::before { width: 3px; border-radius: 2px; background: var(--ink); }
-.story-time { border-top: var(--stroke) solid var(--ink); }
-.story-time li::before { width: 13px; height: 13px; top: -8px; border: 2px solid var(--ink); background: var(--surface); }
-.story-time li:last-child::before { background: var(--butter); }
 @media (min-width: 761px) and (max-height: 880px) { .story-mini { display: none; } }   /* a short window keeps the table, the number and the button; the small grid is in the words beside it */
 @media (max-width: 760px) {
   .story-fig { display: none; }
@@ -209,8 +207,6 @@ html:not(.at-home) .page::before { left: 0; top: var(--bar-h); height: 5px; back
   .story-hole { display: flex; flex-direction: column; align-items: flex-end; }
   .story-hole .story-label { white-space: nowrap; }   /* "Moneymaker's hand" runs left over the empty space instead of wrapping and making the strip jump */
   .story-stage { background: var(--paper); border-bottom: var(--stroke) solid var(--ink); }
-  .story-time { border-top: 0; border-left: var(--stroke) solid var(--ink); }
-  .story-time li::before { top: 4px; left: -8px; }
 }
 
 /* the course and the trainers: cards dealt onto the paper, each a little askew, each with its section's colour on the back */
