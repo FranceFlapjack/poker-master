@@ -813,7 +813,7 @@ The sidebar (owner 2026-11-04): the tools list had been `display:none` since Pha
 marked in view. Now the tools show under their own head, each page opens only its own section, and the sidebar keeps
 the current row in view. The current page stays what it always was, bold navy text: that was enough once the tools showed.
 
-## Design draft 6 — a DRAFT on branch `redesign-draft`, not merged — 2026-11-11
+## Design draft 6 — 2026-11-11 (Draft 8 is built on it)
 
 The owner's request: a redesign, "more interesting, great visual", as a draft. One bold change and four quiet ones;
 every value is in `css/tokens.css` (Draft 6).
@@ -835,7 +835,7 @@ Checked at 1440, 1024 and 375px: no sideways scroll, no console output, all six 
 the Browser pane was hidden during the session, which pauses animations and scroll events, so the deal, the page
 rise and the reading line were checked by their end states, not by eye; reduced motion was not emulated.
 
-## Design draft 8 — the drawn table: an all-new design — a DRAFT on `redesign-draft`, not merged — 2026-11-14
+## Design draft 8 — the drawn table: an all-new design — 2026-11-14
 
 How it got here. Draft 6 kept the series look: "it looks the same old design". The request became "an ALL NEW
 design, build it like from zero, use the concept and purpose of the old one". **Draft 7, a dark card room**

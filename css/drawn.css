@@ -1,10 +1,9 @@
-/* Draft 8 — THE DRAWN TABLE (2026-11-14, a draft on branch redesign-draft). The new design, on top of app.css.
+/* Draft 8 — THE DRAWN TABLE (chosen by the owner 2026-11-14). The design, on top of app.css.
    Values are tokens in tokens.css (its Draft 8 block); this file is the shapes. The whole look is one rule taken
    from the players' portraits and the cat: a thick black line round a flat colour, round corners, no shading.
 
-   shortcut: this is layered over app.css, so some rules here undo rules there. Once the owner approves the
-   draft, fold it into app.css and delete what it overrides; if they reject it, delete this file, its <link>,
-   and the Draft 8 block in tokens.css. */
+   shortcut: this is layered over app.css, so some rules here undo rules there. It ships layered because that is
+   the version that was tested; fold it into app.css (and delete what it overrides) as its own tested pass. */
 
 /* ---------- ground and type ---------- */
 body { font-size: var(--fs-2); }

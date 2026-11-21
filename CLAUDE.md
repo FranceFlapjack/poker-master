@@ -23,17 +23,16 @@ names must match their references exactly — Pages is case-sensitive, a Mac is 
 - Wants explanations before implementation, additive development, and **no claims that something works
   without running it**.
 - Design is iterated by comment: keep visual decisions in `css/tokens.css` so each comment is a small diff.
-  Draft 1 follows the series language (white ground, Helvetica Neue, small uppercase letter-spaced labels,
-  hairline borders, square corners). The theme colour is **deep navy `--accent` (#0f2d57)**, owner-approved
-  2026-09-24 — the siblings' tone rotated to blue, and the only cool accent of the three, chosen so the
-  Poker tile reads as distinct beside Chess's green and Go's red in the family bubble.
-- **On branch `redesign-draft` only (2026-11-14): Draft 8, "the drawn table"**, the direction the owner chose
-  for an all-new design and asked to keep refining — NOT merged, so the paragraph above still describes `main`.
+- **The design is Draft 8, "the drawn table"** (chosen by the owner 2026-11-14): an all-new
+  look in place of the series' first language (white, Helvetica, hairlines, square corners, deep navy `#0f2d57`).
   One thick black line, flat pastels, round corners, taken from the portraits and the cat; a pastel per section;
-  a top bar and a drawer in place of the sidebar column. Tokens: the Draft 8 block in `css/tokens.css`; shapes:
-  `css/drawn.css`. The welcome is periwinkle with black lettering there, restyled from `css/drawn.css` alone — the
-  shared welcome and family files are untouched. The whole story is in `ROADMAP.md`. For a redesign, show
-  directions as pictures first.
+  butter for "do this"; one top bar and a drawer on every page in place of the sidebar column. Tokens: the Draft 8
+  block at the end of `css/tokens.css` (it re-points the older tokens above it); shapes: `css/drawn.css`, layered
+  over `css/app.css` — folding it in is a later, separately tested pass. The welcome is periwinkle with black
+  lettering, restyled from `css/drawn.css` alone, so the shared welcome and family files stay identical across the
+  series; the old navy survives only as Poker's tile in the series bubble until `js/family.js` is updated in all
+  three apps together. The whole story is in `ROADMAP.md`. For a redesign, show directions as pictures first;
+  never draw illustrative artwork — find a free set by its own creator and let the owner choose.
 - Carried over from Chess Master: the activity grid shades by **volume, not points, and there is no
   streak**; **no progress export/import** in the UI. `js/progress.js` deliberately exposes neither.
 
