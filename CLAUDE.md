@@ -30,8 +30,9 @@ names must match their references exactly — Pages is case-sensitive, a Mac is 
   block at the end of `css/tokens.css` (it re-points the older tokens above it); shapes: `css/drawn.css`, layered
   over `css/app.css` — folding it in is a later, separately tested pass. The welcome is periwinkle with black
   lettering, restyled from `css/drawn.css` alone, so the shared welcome and family files stay identical across the
-  series; the old navy survives only as Poker's tile in the series bubble until `js/family.js` is updated in all
-  three apps together. The whole story is in `ROADMAP.md`. For a redesign, show directions as pictures first;
+  series. In the series bubble (`js/family.js`, identical in all three apps) each app's tile is a deeper shade of its
+  new colour since 2026-11-21: Chess teal `#2f8576`, Go green `#4f8232`, Poker periwinkle `#5a55d6`. The whole story
+  is in `ROADMAP.md`. For a redesign, show directions as pictures first;
   never draw illustrative artwork — find a free set by its own creator and let the owner choose.
 - Carried over from Chess Master: the activity grid shades by **volume, not points, and there is no
   streak**; **no progress export/import** in the UI. `js/progress.js` deliberately exposes neither.
