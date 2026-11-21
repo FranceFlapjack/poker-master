@@ -12,10 +12,12 @@ const LOGO_NEXT = `<svg viewBox="-4 -4 40 40" aria-hidden="true" fill="none" str
 const LOGO_GO = `<svg viewBox="-6 -6 44 44" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M1 1 H31 M1 16 H31 M1 31 H31 M1 1 V31 M16 1 V31 M31 1 V31"/><circle cx="16" cy="16" r="5" fill="currentColor" stroke="none"/><circle cx="31" cy="1" r="5" fill="#fff"/></svg>`
 const LOGO_POKER = `<svg viewBox="-4 -4 40 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2" y="6" width="16" height="24" transform="rotate(-16 10 18)"/><rect x="13" y="4" width="17" height="25" fill="#fff"/><path d="M21.5 9 L26 16.5 L21.5 24 L17 16.5 Z" fill="currentColor" stroke="none"/></svg>`
 
+// Accents: a deeper shade of each app's colour since the drawn redesign (2026-11-21) — Chess's teal, Go's moss, Poker's
+// periwinkle — dark enough for a line logo on the glass (each at least 4.4:1 against white).
 export const FAMILY = [
-  { id: 'chess', name: 'Chess Master', accent: '#0f4c3a', path: '../chess-master/', dev: 'http://localhost:8000/', logo: LOGO_CHESS },
-  { id: 'go',    name: 'Go Master',    accent: '#6f0b10', path: '../go-master/',    dev: 'http://localhost:8001/', logo: LOGO_GO },
-  { id: 'poker', name: 'Poker Master', accent: '#0f2d57', path: '../poker-master/', dev: 'http://localhost:8002/', logo: LOGO_POKER },
+  { id: 'chess', name: 'Chess Master', accent: '#2f8576', path: '../chess-master/', dev: 'http://localhost:8000/', logo: LOGO_CHESS },
+  { id: 'go',    name: 'Go Master',    accent: '#4f8232', path: '../go-master/',    dev: 'http://localhost:8001/', logo: LOGO_GO },
+  { id: 'poker', name: 'Poker Master', accent: '#5a55d6', path: '../poker-master/', dev: 'http://localhost:8002/', logo: LOGO_POKER },
 ]
 
 const isLocal = () => /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)
